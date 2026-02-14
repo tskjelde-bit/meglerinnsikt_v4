@@ -454,7 +454,7 @@ const HomePage: React.FC<{
         <div className="max-w-[1700px] mx-auto px-3 md:px-14">
 
           {/* Features Section */}
-          <div className="text-center mb-24">
+          <div className="text-center">
             <h2 className="text-[32px] md:text-[42px] font-black text-slate-950 uppercase tracking-tighter mb-4">
               Få mer ut av markedet
             </h2>
