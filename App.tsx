@@ -234,12 +234,27 @@ const HomePage: React.FC<{
                       : 'bg-white/95 backdrop-blur-md shadow-2xl border border-slate-200 md:bg-white/70 md:border-slate-100'
                 }`}>
                   <div className="grid grid-cols-3 md:grid-cols-4">
-                    {[
-                      { icon: <TrendingUp size={18} className="md:w-7 md:h-7" />, label: "PRISENDRING", mobileLabel: "PRISENDRING", value: `+${selectedDistrict.priceChange}%`, color: 'blue', hideOnMobile: false },
-                      { icon: <Clock size={18} className="md:w-7 md:h-7" />, label: "SALGSTID", mobileLabel: "SALGSTID", value: `${selectedDistrict.avgDaysOnMarket}`, color: 'blue', hideOnMobile: false },
-                      { icon: <Building2 size={18} className="md:w-7 md:h-7" />, label: "MEDIANPRIS", mobileLabel: "MEDIAN", value: `${(selectedDistrict.medianPrice / 1000000).toFixed(1)}M`, color: 'blue', hideOnMobile: true },
-                      { icon: <Coins size={18} className="md:w-7 md:h-7" />, label: "KR/M²", mobileLabel: "KR/M²", value: `${Math.round(selectedDistrict.pricePerSqm / 1000)}k`, color: 'blue', hideOnMobile: false }
-                    ].map((stat, i) => (
+                    {(() => {
+                      const oslo = OSLO_DISTRICTS[0];
+                      const priceDiff = selectedDistrict.priceChange - oslo.priceChange;
+                      const daysDiff = selectedDistrict.avgDaysOnMarket - oslo.avgDaysOnMarket;
+                      const sqmDiff = selectedDistrict.pricePerSqm - oslo.pricePerSqm;
+                      const getColor = (diff: number, invert = false) => {
+                        const d = invert ? -diff : diff;
+                        if (d > 0.3 || (!invert && d > 1) || (invert && diff < -1)) return 'text-emerald-400';
+                        if (d < -0.3 || (!invert && d < -1) || (invert && diff > 1)) return 'text-red-400';
+                        return 'text-amber-400';
+                      };
+                      const priceColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (priceDiff > 0.3 ? 'text-emerald-400' : priceDiff < -0.3 ? 'text-red-400' : 'text-amber-400');
+                      const daysColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (daysDiff < -1 ? 'text-emerald-400' : daysDiff > 1 ? 'text-red-400' : 'text-amber-400');
+                      const sqmColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (sqmDiff > 0 ? 'text-emerald-400' : sqmDiff < 0 ? 'text-red-400' : 'text-amber-400');
+                      return [
+                        { icon: <TrendingUp size={18} className="md:w-7 md:h-7" />, label: "PRISENDRING", mobileLabel: "PRISENDRING", value: `+${selectedDistrict.priceChange}%`, iconColor: priceColor, hideOnMobile: false },
+                        { icon: <Clock size={18} className="md:w-7 md:h-7" />, label: "SALGSTID", mobileLabel: "SALGSTID", value: `${selectedDistrict.avgDaysOnMarket}`, iconColor: daysColor, hideOnMobile: false },
+                        { icon: <Building2 size={18} className="md:w-7 md:h-7" />, label: "MEDIANPRIS", mobileLabel: "MEDIAN", value: `${(selectedDistrict.medianPrice / 1000000).toFixed(1)}M`, iconColor: 'text-blue-400', hideOnMobile: true },
+                        { icon: <Coins size={18} className="md:w-7 md:h-7" />, label: "KR/M²", mobileLabel: "KR/M²", value: `${Math.round(selectedDistrict.pricePerSqm / 1000)}k`, iconColor: sqmColor, hideOnMobile: false }
+                      ];
+                    })().map((stat, i) => (
                       <div
                         key={i}
                         className={`flex flex-col items-center justify-center p-2 gap-1 md:flex-row md:gap-4 md:py-5 md:px-4
@@ -247,7 +262,7 @@ const HomePage: React.FC<{
                           ${i !== 0 ? `border-l ${isDarkMode ? 'border-white/5' : 'border-slate-100'}` : ''}
                         `}
                       >
-                        <div className={isDarkMode ? 'text-blue-400' : 'text-blue-500'}>
+                        <div className={stat.iconColor}>
                           {stat.icon}
                         </div>
                         <div className="flex flex-col items-center md:items-start">
