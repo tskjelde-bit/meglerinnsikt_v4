@@ -360,7 +360,7 @@ const HomePage: React.FC<{
                       onClick={() => setIsChatOpen(true)}
                       className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-3 md:py-4 rounded-b-lg md:rounded-b-xl transition-all uppercase tracking-widest text-[10px] md:text-[11px]"
                     >
-                      Chat med meg om dine boligplaner <ArrowRight size={16} />
+                      Få verdivurdering {getPreposition(selectedDistrict.name)} {selectedDistrict.name.replace(' (Totalt)', '')} <ArrowRight size={16} />
                     </button>
                   </div>
                 </div>
