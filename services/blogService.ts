@@ -127,12 +127,18 @@ export const blogService = {
   async publishPosts(): Promise<{ success: boolean; message: string }> {
     const posts = this.getLocalPosts();
     try {
+      // In dev mode, always use the origin (localhost) to hit the Vite dev server
+      const origin = window.location.origin;
       const basePath = import.meta.env.BASE_URL || '/';
-      const res = await fetch(`${basePath}api/save-posts`, {
+      const url = `${origin}${basePath}api/save-posts`;
+      const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(posts)
       });
+      if (!res.ok) {
+        return { success: false, message: `Server svarte med ${res.status}. Kun tilgjengelig under npm run dev.` };
+      }
       const data = await res.json();
       if (data.success) {
         return { success: true, message: `${data.count} innlegg lagret til posts.json` };

@@ -10,9 +10,8 @@ function savePostsPlugin(): Plugin {
     name: 'save-posts-api',
     configureServer(server) {
       server.middlewares.use((req: any, res: any, next: any) => {
-        // Match the API path regardless of base URL prefix
-        const url = req.url || '';
-        if (!url.endsWith('/api/save-posts') && url !== '/api/save-posts') {
+        const url = (req.originalUrl || req.url || '');
+        if (!url.includes('api/save-posts')) {
           return next();
         }
         if (req.method !== 'POST') {
