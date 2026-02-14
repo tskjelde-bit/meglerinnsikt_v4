@@ -175,12 +175,12 @@ const HomePage: React.FC<{
                       </div>
                     ))}
                   </div>
-                </div>
 
-                <div className={`hidden md:block overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected ? 'max-h-20 opacity-100 mt-3' : 'max-h-0 opacity-0 mt-0'}`}>
-                  <button className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl transition-all uppercase tracking-widest text-[11px] shadow-xl shadow-blue-600/20">
-                    Hva betyr dette for min bolig? <ArrowRight size={16} />
-                  </button>
+                  <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected ? 'max-h-20 opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <button className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-3 md:py-4 rounded-b-xl md:rounded-b-[20px] transition-all uppercase tracking-widest text-[10px] md:text-[11px]">
+                      Hva betyr dette for min bolig? <ArrowRight size={16} />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
