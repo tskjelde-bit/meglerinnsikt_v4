@@ -95,7 +95,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
 
         return {
           fillColor,
-          fillOpacity: 0.9,
+          fillOpacity: 0.55,
           weight: 1.5,
           color: '#FFFFFF',
           opacity: 0.8,
@@ -114,7 +114,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
             if (!sel || district.name !== sel.name) {
               target.setStyle({
                 fillColor: getHoverColor(district.priceChange),
-                fillOpacity: 0.95,
+                fillOpacity: 0.7,
               });
               target.bringToFront();
             }
@@ -204,7 +204,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
     // Tile layer – muted blue-grey tones for water/land context
     L.tileLayer('https://{s}.basemaps.cartocdn.com/voyager_nolabels/{z}/{x}/{y}{r}.png', {
       maxZoom: 19,
-      opacity: 0.7,
+      opacity: 0.85,
     }).addTo(map);
 
     mapRef.current = map;
