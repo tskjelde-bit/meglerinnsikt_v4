@@ -799,13 +799,13 @@ const App: React.FC = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsChatOpen(!isChatOpen)}
-              className="w-10 h-10 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:border-blue-300 transition-all"
+              className="hidden md:flex w-10 h-10 rounded-xl border border-slate-200 bg-white items-center justify-center text-slate-500 hover:bg-slate-50 hover:border-blue-300 transition-all"
             >
               <MessageCircle size={18} />
             </button>
             <button
               onClick={() => setIsDarkMode(!isDarkMode)}
-              className="w-10 h-10 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:border-blue-300 transition-all"
+              className="hidden md:flex w-10 h-10 rounded-xl border border-slate-200 bg-white items-center justify-center text-slate-500 hover:bg-slate-50 hover:border-blue-300 transition-all"
             >
               {isDarkMode ? <Moon size={18} /> : <Sun size={18} className="text-amber-500" />}
             </button>
