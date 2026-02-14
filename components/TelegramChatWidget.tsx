@@ -198,12 +198,12 @@ const TelegramChatWidget: React.FC<TelegramChatWidgetProps> = ({ isDarkMode, isO
         </div>
       </div>
 
-      {/* Floating bubble - hidden when chat is open on mobile */}
+      {/* Floating bubble - hidden on mobile (nav button handles it), visible on desktop */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-6 right-6 z-[9999] w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-all hover:scale-110 ${
+        className={`fixed bottom-6 right-6 z-[9999] w-14 h-14 rounded-full hidden md:flex items-center justify-center shadow-2xl transition-all hover:scale-110 ${
           isOpen
-            ? 'bg-slate-700 text-white md:flex hidden'
+            ? 'bg-slate-700 text-white'
             : 'bg-blue-600 text-white shadow-blue-600/30'
         }`}
       >

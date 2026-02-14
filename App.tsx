@@ -15,7 +15,7 @@ import {
   Plus, Minus, Layers, Target, Zap, Coins,
   ChevronRight, Compass, TrendingUp, TrendingDown, Clock,
   LineChart, ArrowRight, LayoutGrid, Users, Phone,
-  Diamond, MessageSquareMore, Sun, Moon
+  Diamond, MessageSquareMore, Sun, Moon, MessageCircle
 } from 'lucide-react';
 
 const LOGO_URL = "https://cdn.prod.website-files.com/691779eac33d8a85e5cce47f/692a5a3fb0a7a66a7673d639_Azure-stacked-c.png";
@@ -199,7 +199,7 @@ const HomePage: React.FC<{
                           }`}
                         >
                           <span className="hidden md:inline text-[9px] font-black uppercase tracking-widest">Lukk</span>
-                          <ChevronDown size={16} className="rotate-180 md:!w-[10px] md:!h-[10px]" />
+                          <ChevronDown size={20} className="md:!w-[10px] md:!h-[10px]" />
                         </button>
                       </div>
 
@@ -343,7 +343,7 @@ const HomePage: React.FC<{
                         }`}
                       >
                         <span className="hidden md:inline text-[9px] font-black uppercase tracking-widest">Se analyse</span>
-                        <ChevronDown size={16} className="md:!w-[10px] md:!h-[10px]" />
+                        <ChevronDown size={20} className="rotate-180 md:!w-[10px] md:!h-[10px]" />
                       </button>
                     </div>
                     <button
@@ -637,6 +637,12 @@ const App: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsChatOpen(!isChatOpen)}
+              className="w-10 h-10 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:border-blue-300 transition-all"
+            >
+              <MessageCircle size={18} />
+            </button>
             <button
               onClick={() => setIsDarkMode(!isDarkMode)}
               className="w-10 h-10 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:border-blue-300 transition-all"
