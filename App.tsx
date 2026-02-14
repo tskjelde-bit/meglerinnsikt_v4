@@ -369,18 +369,18 @@ const HomePage: React.FC<{
                 <button className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] hover:underline">Se alle</button>
               </div>
 
-              <div className="md:px-8 md:pb-8 flex flex-col gap-6 md:gap-10">
+              <div className="md:px-8 md:pb-8 flex flex-col gap-3 md:gap-10">
                 {/* Featured Article with image */}
                 {displayPosts.length > 0 && (
                   <div className="group cursor-pointer shrink-0" onClick={() => handlePostClick(displayPosts[0])}>
-                    <div className={`relative aspect-[16/10] rounded-xl overflow-hidden mb-4 md:mb-5 shadow-lg ${isDarkMode ? 'border border-white/5' : 'border border-slate-100'}`}>
+                    <div className={`relative aspect-[16/10] rounded-xl overflow-hidden mb-2 md:mb-5 shadow-lg ${isDarkMode ? 'border border-white/5' : 'border border-slate-100'}`}>
                       <img src={displayPosts[0].image} alt={displayPosts[0].title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                       <div className="absolute top-4 right-4 bg-blue-600 text-white text-[9px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest shadow-xl">{displayPosts[0].category}</div>
                     </div>
                     <div className={`text-[10px] font-black uppercase mb-2 tracking-widest flex items-center gap-2 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
                       <span>{displayPosts[0].date}</span> <span className={isDarkMode ? 'text-slate-700' : 'text-slate-300'}>&bull;</span> <span>{displayPosts[0].category}</span>
                     </div>
-                    <h4 className={`text-[18px] font-black leading-tight uppercase tracking-tight group-hover:text-blue-400 transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                    <h4 className={`text-[15px] md:text-[18px] font-black leading-tight uppercase tracking-tight group-hover:text-blue-400 transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
                       {displayPosts[0].title}
                     </h4>
                   </div>
