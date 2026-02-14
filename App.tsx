@@ -267,7 +267,7 @@ const HomePage: React.FC<{
                     })().map((stat, i) => (
                       <div
                         key={i}
-                        className={`flex flex-col items-center justify-center p-2 gap-1 md:flex-row md:gap-4 md:py-5 md:px-4
+                        className={`flex flex-col items-center justify-center py-4 px-2 gap-1 md:flex-row md:gap-4 md:py-5 md:px-4
                           ${stat.hideOnMobile ? 'hidden md:flex' : ''}
                           ${i !== 0 ? `border-l ${isDarkMode ? 'border-white/5' : 'border-slate-100'}` : ''}
                         `}
@@ -276,12 +276,12 @@ const HomePage: React.FC<{
                           {stat.icon}
                         </div>
                         <div className="flex flex-col items-center md:items-start">
-                          <div className={`text-[15px] md:text-[24px] lg:text-[28px] font-black leading-tight ${stat.iconColor}`}>
-                            <span className={`md:hidden`}>{stat.mobileValue}</span>
+                          <div className="text-[15px] md:text-[24px] lg:text-[28px] font-black leading-tight">
+                            <span className="md:hidden text-white">{stat.mobileValue}</span>
                             <span className={`hidden md:inline ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{stat.value}</span>
                           </div>
-                          <div className={`text-[10px] md:text-[9px] font-black uppercase tracking-widest leading-none mt-0.5 ${stat.iconColor}`}>
-                            <span className="md:hidden">{stat.mobileLabel}</span>
+                          <div className="text-[10px] md:text-[9px] font-black uppercase tracking-widest leading-none mt-0.5">
+                            <span className="md:hidden text-white/60">{stat.mobileLabel}</span>
                             <span className={`hidden md:inline ${isDarkMode ? 'text-white' : 'text-slate-400'}`}>{stat.label}</span>
                           </div>
                         </div>
