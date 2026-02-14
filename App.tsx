@@ -186,8 +186,8 @@ const HomePage: React.FC<{
                     ))}
                   </div>
 
-                  {/* Expanded district analysis - desktop/tablet */}
-                  <div className={`hidden md:block overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected && isAnalysisOpen ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                  {/* Expanded district analysis */}
+                  <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected && isAnalysisOpen ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'}`}>
                     <div className={`border-t ${isDarkMode ? 'border-white/10' : 'border-slate-200'}`}>
                       {/* Toggle close */}
                       <div className="flex justify-center pt-2">
@@ -201,8 +201,8 @@ const HomePage: React.FC<{
                         </button>
                       </div>
 
-                      <div className="grid grid-cols-3 gap-4 p-5 pt-2">
-                        {/* Kvadratmeterpris */}
+                      {/* Desktop: 3-column grid with boxes */}
+                      <div className="hidden md:grid grid-cols-3 gap-4 p-5 pt-2">
                         <div className={`col-span-1 rounded-xl p-4 ${isDarkMode ? 'bg-white/5' : 'bg-slate-100/80'}`}>
                           <div className="flex items-center gap-2 mb-2">
                             <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
@@ -222,7 +222,6 @@ const HomePage: React.FC<{
                           </p>
                         </div>
 
-                        {/* Prisutvikling */}
                         <div className={`col-span-1 rounded-xl p-4 ${isDarkMode ? 'bg-white/5' : 'bg-slate-100/80'}`}>
                           <div className="flex items-center gap-2 mb-2">
                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
@@ -242,7 +241,6 @@ const HomePage: React.FC<{
                           </p>
                         </div>
 
-                        {/* Likviditet */}
                         <div className={`col-span-1 rounded-xl p-4 ${isDarkMode ? 'bg-white/5' : 'bg-slate-100/80'}`}>
                           <div className="flex items-center gap-2 mb-2">
                             <div className="w-1.5 h-1.5 rounded-full bg-amber-500"></div>
@@ -262,13 +260,80 @@ const HomePage: React.FC<{
                           </p>
                         </div>
                       </div>
+
+                      {/* Mobile: vertical list with divider lines */}
+                      <div className="md:hidden flex flex-col px-4 py-3">
+                        {/* Kvadratmeterpris */}
+                        <div className="py-2.5">
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                            <span className={`text-[9px] font-black uppercase tracking-widest ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                              Kvadratmeterpris
+                            </span>
+                          </div>
+                          <p className={`text-[12px] font-medium leading-relaxed ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
+                            {(() => {
+                              const osloSnitt = OSLO_DISTRICTS[0].pricePerSqm;
+                              const diff = selectedDistrict.pricePerSqm - osloSnitt;
+                              if (selectedDistrict.id === 'oslo') return `Oslo-snittet ligger på ${osloSnitt.toLocaleString('nb-NO')} kr/m².`;
+                              if (diff > 0) return `${diff.toLocaleString('nb-NO')} kr/m² over Oslo-snittet (${osloSnitt.toLocaleString('nb-NO')} kr/m²).`;
+                              if (diff < 0) return `${Math.abs(diff).toLocaleString('nb-NO')} kr/m² under Oslo-snittet (${osloSnitt.toLocaleString('nb-NO')} kr/m²).`;
+                              return `I takt med Oslo-snittet på ${osloSnitt.toLocaleString('nb-NO')} kr/m².`;
+                            })()}
+                          </p>
+                        </div>
+
+                        <div className={`border-t ${isDarkMode ? 'border-white/10' : 'border-slate-200'}`}></div>
+
+                        {/* Prisutvikling */}
+                        <div className="py-2.5">
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                            <span className={`text-[9px] font-black uppercase tracking-widest ${isDarkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                              Prisutvikling
+                            </span>
+                          </div>
+                          <p className={`text-[12px] font-medium leading-relaxed ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
+                            {(() => {
+                              const osloSnitt = OSLO_DISTRICTS[0].priceChange;
+                              const diff = +(selectedDistrict.priceChange - osloSnitt).toFixed(1);
+                              if (selectedDistrict.id === 'oslo') return `Oslo-snittet ligger på +${osloSnitt}% prisvekst siste 12 mnd.`;
+                              if (diff > 0) return `+${diff} prosentpoeng over Oslo-snittet (${osloSnitt}%).`;
+                              if (diff < 0) return `${diff} prosentpoeng under Oslo-snittet (${osloSnitt}%).`;
+                              return `I takt med Oslo-snittet på +${osloSnitt}% prisvekst.`;
+                            })()}
+                          </p>
+                        </div>
+
+                        <div className={`border-t ${isDarkMode ? 'border-white/10' : 'border-slate-200'}`}></div>
+
+                        {/* Omløpshastighet */}
+                        <div className="py-2.5">
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className="w-1.5 h-1.5 rounded-full bg-amber-500"></div>
+                            <span className={`text-[9px] font-black uppercase tracking-widest ${isDarkMode ? 'text-amber-400' : 'text-amber-600'}`}>
+                              Omløpshastighet
+                            </span>
+                          </div>
+                          <p className={`text-[12px] font-medium leading-relaxed ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
+                            {(() => {
+                              const osloSnitt = OSLO_DISTRICTS[0].avgDaysOnMarket;
+                              const diff = selectedDistrict.avgDaysOnMarket - osloSnitt;
+                              if (selectedDistrict.id === 'oslo') return `Oslo-snittet ligger på ${osloSnitt} dager omløpstid.`;
+                              if (diff < 0) return `${Math.abs(diff)} dager raskere enn Oslo-snittet (${osloSnitt} dager).`;
+                              if (diff > 0) return `${diff} dager tregere enn Oslo-snittet (${osloSnitt} dager).`;
+                              return `I takt med Oslo-snittet på ${osloSnitt} dager omløpstid.`;
+                            })()}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
                   {/* Toggle open button + CTA */}
                   <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
-                    {/* Open analysis button - desktop only, hidden when analysis is open */}
-                    <div className={`hidden md:block overflow-hidden transition-all duration-300 ${isAnalysisOpen ? 'max-h-0 opacity-0' : 'max-h-10 opacity-100'}`}>
+                    {/* Open analysis button - hidden when analysis is open */}
+                    <div className={`overflow-hidden transition-all duration-300 ${isAnalysisOpen ? 'max-h-0 opacity-0' : 'max-h-10 opacity-100'}`}>
                       <button
                         onClick={() => setIsAnalysisOpen(true)}
                         className={`w-full flex items-center justify-center gap-1 py-2 text-[9px] font-black uppercase tracking-widest transition-colors ${
