@@ -235,14 +235,14 @@ const HomePage: React.FC<{
                 }`}>
                   <div className="grid grid-cols-3 md:grid-cols-4">
                     {[
-                      { icon: <TrendingUp size={14} className="md:w-7 md:h-7" />, label: "PRISENDRING", mobileLabel: "PRIS", value: `+${selectedDistrict.priceChange}%`, color: 'blue', hideOnMobile: false },
-                      { icon: <Clock size={14} className="md:w-7 md:h-7" />, label: "OMLØP", mobileLabel: "OMLØP", value: `${selectedDistrict.avgDaysOnMarket}`, color: 'blue', hideOnMobile: false },
+                      { icon: <TrendingUp size={14} className="md:w-7 md:h-7" />, label: "PRISENDRING", mobileLabel: "PRISENDRING", value: `+${selectedDistrict.priceChange}%`, color: 'blue', hideOnMobile: false },
+                      { icon: <Clock size={14} className="md:w-7 md:h-7" />, label: "SALGSTID", mobileLabel: "SALGSTID", value: `${selectedDistrict.avgDaysOnMarket}`, color: 'blue', hideOnMobile: false },
                       { icon: <Building2 size={14} className="md:w-7 md:h-7" />, label: "MEDIANPRIS", mobileLabel: "MEDIAN", value: `${(selectedDistrict.medianPrice / 1000000).toFixed(1)}M`, color: 'blue', hideOnMobile: true },
                       { icon: <Coins size={14} className="md:w-7 md:h-7" />, label: "KR/M²", mobileLabel: "KR/M²", value: `${Math.round(selectedDistrict.pricePerSqm / 1000)}k`, color: 'blue', hideOnMobile: false }
                     ].map((stat, i) => (
                       <div
                         key={i}
-                        className={`flex items-center p-2 gap-1.5 md:gap-4 md:justify-center md:py-5 md:px-4
+                        className={`flex items-center justify-center p-2 gap-1.5 md:gap-4 md:py-5 md:px-4
                           ${stat.hideOnMobile ? 'hidden md:flex' : ''}
                           ${i !== 0 ? `border-l ${isDarkMode ? 'border-white/5' : 'border-slate-100'}` : ''}
                         `}
