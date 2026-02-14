@@ -360,19 +360,20 @@ const HomePage: React.FC<{
 
           {/* SIDEBAR COLUMN */}
           <div className="lg:col-span-4 flex flex-col md:px-0">
-            <div className={`rounded-2xl flex flex-col shadow-xl h-full transition-colors duration-300 ${
-              isDarkMode ? 'bg-[#1e293b] border border-white/5' : 'bg-white border border-slate-200'
+            {/* Desktop: rounded box */}
+            <div className={`md:rounded-2xl flex flex-col md:shadow-xl h-full transition-colors duration-300 ${
+              isDarkMode ? 'md:bg-[#1e293b] md:border md:border-white/5' : 'md:bg-white md:border md:border-slate-200'
             }`}>
-              <div className="flex justify-between items-center p-8 pb-6 shrink-0">
+              <div className="flex justify-between items-center md:p-8 md:pb-6 pt-6 pb-4 shrink-0">
                 <h3 className={`text-[14px] font-black uppercase tracking-wider ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Siste innlegg</h3>
                 <button className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] hover:underline">Se alle</button>
               </div>
 
-              <div className="px-8 pb-8 flex flex-col gap-10">
-                {/* Featured Sidebar Article */}
+              <div className="md:px-8 md:pb-8 flex flex-col gap-6 md:gap-10">
+                {/* Featured Article with image */}
                 {displayPosts.length > 0 && (
                   <div className="group cursor-pointer shrink-0" onClick={() => handlePostClick(displayPosts[0])}>
-                    <div className={`relative aspect-[16/10] rounded-xl overflow-hidden mb-5 shadow-lg ${isDarkMode ? 'border border-white/5' : 'border border-slate-100'}`}>
+                    <div className={`relative aspect-[16/10] rounded-xl overflow-hidden mb-4 md:mb-5 shadow-lg ${isDarkMode ? 'border border-white/5' : 'border border-slate-100'}`}>
                       <img src={displayPosts[0].image} alt={displayPosts[0].title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                       <div className="absolute top-4 right-4 bg-blue-600 text-white text-[9px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest shadow-xl">{displayPosts[0].category}</div>
                     </div>
@@ -385,18 +386,30 @@ const HomePage: React.FC<{
                   </div>
                 )}
 
-                {/* List Articles */}
-                <div className="space-y-6 shrink-0">
-                  {displayPosts.slice(1, 2).map((post) => (
-                    <div key={post.id} className={`flex gap-5 group cursor-pointer pt-6 ${isDarkMode ? 'border-t border-white/5' : 'border-t border-slate-100'}`} onClick={() => handlePostClick(post)}>
-                      <div className={`w-16 h-16 rounded-xl overflow-hidden shrink-0 ${isDarkMode ? 'border border-white/5' : 'border border-slate-100'}`}>
-                        <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                {/* List Articles - mobile: no image, full-width text; desktop: with thumbnail */}
+                <div className="space-y-5 md:space-y-6 shrink-0">
+                  {displayPosts.slice(1, 3).map((post) => (
+                    <div key={post.id} className={`group cursor-pointer pt-5 md:pt-6 ${isDarkMode ? 'border-t border-white/10 md:border-white/5' : 'border-t border-slate-200 md:border-slate-100'}`} onClick={() => handlePostClick(post)}>
+                      {/* Desktop: row with thumbnail */}
+                      <div className="hidden md:flex gap-5">
+                        <div className={`w-16 h-16 rounded-xl overflow-hidden shrink-0 ${isDarkMode ? 'border border-white/5' : 'border border-slate-100'}`}>
+                          <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                        </div>
+                        <div>
+                          <div className={`text-[9px] font-black uppercase mb-1 tracking-widest flex items-center gap-1.5 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                            <span>{post.date}</span> <span className={isDarkMode ? 'text-slate-700' : 'text-slate-300'}>&bull;</span> <span>{post.category}</span>
+                          </div>
+                          <h5 className={`text-[13px] font-black uppercase group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                            {post.title}
+                          </h5>
+                        </div>
                       </div>
-                      <div>
-                        <div className={`text-[9px] font-black uppercase mb-1 tracking-widest flex items-center gap-1.5 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                      {/* Mobile: text only, same size as featured */}
+                      <div className="md:hidden">
+                        <div className={`text-[10px] font-black uppercase mb-2 tracking-widest flex items-center gap-2 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
                           <span>{post.date}</span> <span className={isDarkMode ? 'text-slate-700' : 'text-slate-300'}>&bull;</span> <span>{post.category}</span>
                         </div>
-                        <h5 className={`text-[13px] font-black uppercase group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                        <h5 className={`text-[18px] font-black leading-tight uppercase tracking-tight group-hover:text-blue-400 transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
                           {post.title}
                         </h5>
                       </div>
@@ -405,7 +418,7 @@ const HomePage: React.FC<{
                 </div>
 
                 {/* Premium Box */}
-                <div className={`mt-4 p-6 rounded-2xl relative overflow-hidden group shadow-2xl shrink-0 transition-colors duration-300 ${
+                <div className={`mt-4 p-6 rounded-2xl relative overflow-hidden group shadow-2xl shrink-0 transition-colors duration-300 hidden md:block ${
                   isDarkMode ? 'bg-[#0f172a] border border-blue-500/20' : 'bg-blue-50 border border-blue-100'
                 }`}>
                   <div className="relative z-10">
