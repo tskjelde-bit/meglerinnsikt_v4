@@ -41,32 +41,70 @@ const HomePage: React.FC<{
     return 'i';
   };
 
-  const getMarketInterpretation = (district: DistrictInfo): string => {
+  const getMarketData = (district: DistrictInfo) => {
     const oslo = OSLO_DISTRICTS[0];
-    if (district.id === 'oslo') return 'Markedet følger Oslo-snittet både på pris og tempo.';
+    if (district.id === 'oslo') return { interpretation: 'Markedet følger Oslo-snittet både på pris og tempo.', trigger: false, cta: 'standard' as const };
     const priceDiff = district.priceChange - oslo.priceChange;
     const daysDiff = district.avgDaysOnMarket - oslo.avgDaysOnMarket;
-    const priceLevel = priceDiff > 0.3 ? 'higher' : priceDiff < -0.3 ? 'lower' : 'similar';
-    const speedLevel = daysDiff < -1 ? 'faster' : daysDiff > 1 ? 'slower' : 'similar';
+
+    // Styrkegrad prisvekst
+    const priceLevel = priceDiff > 0.7 ? 'strong_pos' : priceDiff > 0.3 ? 'mod_pos' : priceDiff >= -0.3 ? 'neutral' : priceDiff >= -0.7 ? 'mod_neg' : 'strong_neg';
+    // Styrkegrad omsetningstid
+    const speedLevel = daysDiff < -6 ? 'strong_fast' : daysDiff < -3 ? 'mod_fast' : daysDiff <= 2 ? 'neutral' : daysDiff <= 6 ? 'mod_slow' : 'strong_slow';
 
     const matrix: Record<string, Record<string, string>> = {
-      higher: {
-        faster: 'Sterkere prisvekst og raskere salg enn Oslo-snittet akkurat nå.',
-        similar: 'Høyere prisvekst enn snittet – stabil etterspørsel.',
-        slower: 'Prisene stiger mer enn snittet, men salget tar noe lengre tid.',
+      strong_pos: {
+        strong_fast: 'Svært sterk etterspørsel og tydelig høyere prisvekst enn snittet.',
+        mod_fast: 'Høy prisvekst og rask omsetning sammenlignet med Oslo.',
+        neutral: 'Prisene stiger tydelig mer enn snittet.',
       },
-      similar: {
-        faster: 'Boliger selges raskere enn snittet, med stabil prisutvikling.',
-        similar: 'Markedet følger Oslo-snittet både på pris og tempo.',
-        slower: 'Salget tar lengre tid enn snittet, men prisnivået holder seg stabilt.',
+      mod_pos: {
+        mod_fast: 'Noe sterkere prisvekst og raskere salg enn snittet.',
+        neutral: 'Prisveksten ligger over Oslo-snittet.',
       },
-      lower: {
-        faster: 'Rask omsetning, men svakere prisvekst enn Oslo-snittet.',
-        similar: 'Lavere prisvekst enn snittet, med normal omsetningstid.',
-        slower: 'Svakere prisutvikling og tregere salg enn Oslo-snittet.',
+      neutral: {
+        mod_fast: 'Boliger selges raskere enn snittet, med stabil prisutvikling.',
+        neutral: 'Markedet følger Oslo-snittet både på pris og tempo.',
+        mod_slow: 'Salget tar noe lengre tid enn snittet.',
+      },
+      mod_neg: {
+        mod_fast: 'Rask omsetning, men svakere prisvekst enn snittet.',
+        neutral: 'Prisveksten ligger noe under Oslo-snittet.',
+        mod_slow: 'Svakere prisutvikling og tregere salg enn snittet.',
+      },
+      strong_neg: {
+        strong_slow: 'Tydelig svakere marked enn Oslo-snittet akkurat nå.',
       },
     };
-    return matrix[priceLevel][speedLevel];
+
+    // Fallback-regel
+    let interpretation: string;
+    if (matrix[priceLevel]?.[speedLevel]) {
+      interpretation = matrix[priceLevel][speedLevel];
+    } else if (priceDiff > 0 && daysDiff < 0) {
+      interpretation = 'Høy prisvekst og rask omsetning sammenlignet med Oslo.';
+    } else if (priceDiff < 0 && daysDiff > 0) {
+      interpretation = 'Svakere prisutvikling og tregere salg enn snittet.';
+    } else {
+      interpretation = 'Markedet følger Oslo-snittet både på pris og tempo.';
+    }
+
+    // Selger-trigger: price_diff > +0.7 og days_diff < -3
+    const trigger = priceDiff > 0.7 && daysDiff < -3;
+
+    // CTA-logikk
+    let cta: 'strong_seller' | 'mod_seller' | 'buyer' | 'standard';
+    if (priceDiff > 0.7 && daysDiff < -3) {
+      cta = 'strong_seller';
+    } else if (priceLevel === 'mod_pos' || priceLevel === 'strong_pos') {
+      cta = 'mod_seller';
+    } else if ((priceLevel === 'mod_neg' || priceLevel === 'strong_neg') && (speedLevel === 'mod_slow' || speedLevel === 'strong_slow')) {
+      cta = 'buyer';
+    } else {
+      cta = 'standard';
+    }
+
+    return { interpretation, trigger, cta };
   };
 
   const [selectedDistrict, setSelectedDistrict] = useState<DistrictInfo>(OSLO_DISTRICTS[0]);
@@ -244,8 +282,13 @@ const HomePage: React.FC<{
                       {/* Tolkningslinje */}
                       <div className="px-5 pb-2">
                         <p className={`text-[13px] md:text-[14px] font-bold italic text-center ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
-                          {getMarketInterpretation(selectedDistrict)}
+                          {getMarketData(selectedDistrict).interpretation}
                         </p>
+                        {getMarketData(selectedDistrict).trigger && (
+                          <p className={`text-[11px] md:text-[12px] font-bold text-center mt-1 ${isDarkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                            Dette er et gunstig tidspunkt å vurdere salg.
+                          </p>
+                        )}
                       </div>
 
                       {/* Desktop: 3-column grid with boxes */}
@@ -395,7 +438,14 @@ const HomePage: React.FC<{
                       onClick={() => setIsChatOpen(true)}
                       className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-3 md:py-4 rounded-b-lg md:rounded-b-xl transition-all uppercase tracking-widest text-[10px] md:text-[11px]"
                     >
-                      Få verdivurdering {getPreposition(selectedDistrict.name)} {selectedDistrict.name.replace(' (Totalt)', '')} <ArrowRight size={16} />
+                      {(() => {
+                        const { cta } = getMarketData(selectedDistrict);
+                        const name = selectedDistrict.name.replace(' (Totalt)', '');
+                        if (cta === 'strong_seller') return 'Få gratis verdivurdering nå';
+                        if (cta === 'mod_seller') return 'Sjekk hva boligen din kan være verdt';
+                        if (cta === 'buyer') return 'Snakk med meg om markedet her';
+                        return `Få verdivurdering ${getPreposition(selectedDistrict.name)} ${name}`;
+                      })()} <ArrowRight size={16} />
                     </button>
                   </div>
                 </div>
