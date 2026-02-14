@@ -451,7 +451,7 @@ const HomePage: React.FC<{
                     </div>
                     <button
                       onClick={() => setIsChatOpen(true)}
-                      className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-3 md:py-4 md:rounded-b-xl transition-all uppercase tracking-widest text-[12px] md:text-[11px]"
+                      className="w-full flex items-center justify-center gap-2 text-white font-black py-3 md:py-4 md:rounded-b-xl uppercase tracking-widest text-[12px] md:text-[11px] animate-[cta-glow_3s_ease-in-out_infinite]"
                     >
                       <span className="animate-[pulse-scale_2s_ease-in-out_infinite]">{(() => {
                         const { cta } = getMarketData(selectedDistrict);
