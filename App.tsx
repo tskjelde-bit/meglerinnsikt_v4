@@ -233,15 +233,16 @@ const HomePage: React.FC<{
                       ? 'bg-white backdrop-blur-md shadow-2xl border border-slate-200'
                       : 'bg-white/95 backdrop-blur-md shadow-2xl border border-slate-200 md:bg-white/70 md:border-slate-100'
                 }`}>
-                  {/* Mobile: chevron at top */}
-                  <div className={`md:hidden overflow-hidden transition-all duration-300 ${isDistrictSelected && !isAnalysisOpen ? 'max-h-10 opacity-100' : 'max-h-0 opacity-0'}`}>
+                  {/* Chevron at top */}
+                  <div className={`overflow-hidden transition-all duration-300 ${isDistrictSelected && !isAnalysisOpen ? 'max-h-10 opacity-100' : 'max-h-0 opacity-0'}`}>
                     <button
                       onClick={() => setIsAnalysisOpen(true)}
-                      className={`w-full flex items-center justify-center py-1 transition-colors ${
+                      className={`w-full flex items-center justify-center gap-1 py-1 md:py-2 transition-colors ${
                         isDarkMode ? 'text-slate-400 hover:text-white' : 'text-slate-400 hover:text-slate-700'
                       }`}
                     >
-                      <ChevronDown size={20} className="rotate-180" />
+                      <span className="hidden md:inline text-[9px] font-black uppercase tracking-widest">Se analyse</span>
+                      <ChevronDown size={20} className="rotate-180 md:!w-[10px] md:!h-[10px]" />
                     </button>
                   </div>
                   <div className="grid grid-cols-3 md:grid-cols-4">
@@ -448,18 +449,6 @@ const HomePage: React.FC<{
 
                   {/* Toggle open button + CTA */}
                   <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
-                    {/* Open analysis button - desktop only (mobile version is at top) */}
-                    <div className={`hidden md:block overflow-hidden transition-all duration-300 ${isAnalysisOpen ? 'max-h-0 opacity-0' : 'max-h-10 opacity-100'}`}>
-                      <button
-                        onClick={() => setIsAnalysisOpen(true)}
-                        className={`w-full flex items-center justify-center gap-1 py-2 transition-colors ${
-                          isDarkMode ? 'text-slate-400 hover:text-white border-t border-white/5' : 'text-slate-400 hover:text-slate-700 border-t border-slate-100'
-                        }`}
-                      >
-                        <span className="text-[9px] font-black uppercase tracking-widest">Se analyse</span>
-                        <ChevronDown size={10} className="rotate-180" />
-                      </button>
-                    </div>
                     <button
                       onClick={() => setIsChatOpen(true)}
                       className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-3 md:py-4 md:rounded-b-xl transition-all uppercase tracking-widest text-[12px] md:text-[11px]"
