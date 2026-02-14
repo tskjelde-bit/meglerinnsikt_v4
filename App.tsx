@@ -14,8 +14,8 @@ import {
   Building2, Menu, X, ChevronDown, Calendar, Download,
   Plus, Minus, Layers, Target, Zap, Coins,
   ChevronRight, Compass, TrendingUp, TrendingDown, Clock,
-  LineChart, ArrowRight, LayoutGrid, Users, Phone,
-  MessageSquareMore, Sun, Moon, MessageCircle
+  LineChart, ArrowRight,
+  MessageSquareMore, Sun, Moon, MessageCircle, Handshake
 } from 'lucide-react';
 
 const LOGO_URL = "https://cdn.prod.website-files.com/691779eac33d8a85e5cce47f/692a5a3fb0a7a66a7673d639_Azure-stacked-c.png";
@@ -463,31 +463,31 @@ const HomePage: React.FC<{
             <div className="grid md:grid-cols-3 gap-12 text-left">
               <div className="flex flex-col items-center md:items-start text-center md:text-left">
                 <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-8">
-                  <LayoutGrid size={28} />
+                  <LineChart size={28} />
                 </div>
-                <h3 className="text-[18px] font-black text-slate-950 uppercase tracking-tight mb-4">Sanntidsanalyse</h3>
+                <h3 className="text-[18px] font-black text-slate-950 uppercase tracking-tight mb-4">Markedskontroll i sanntid</h3>
                 <p className="text-slate-500 font-medium leading-relaxed max-w-sm">
-                  Jeg overvåker markedet 24/7 og gir deg oppdaterte tall på alt fra omløpshastighet til prisutvikling i ditt nabolag.
+                  Jeg analyserer tilbud, etterspørsel, tempo og prispress i ditt nærområde. Du tar beslutninger basert på faktiske bevegelser – ikke overskrifter.
                 </p>
               </div>
 
               <div className="flex flex-col items-center md:items-start text-center md:text-left">
                 <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-8">
-                  <Users size={28} />
+                  <Target size={28} />
                 </div>
-                <h3 className="text-[18px] font-black text-slate-950 uppercase tracking-tight mb-4">AI-rådgivning</h3>
+                <h3 className="text-[18px] font-black text-slate-950 uppercase tracking-tight mb-4">Strategisk prissetting</h3>
                 <p className="text-slate-500 font-medium leading-relaxed max-w-sm">
-                  Lumina AI hjelper deg med å forstå de komplekse faktorene som påvirker verdien av din bolig og det lokale markedet.
+                  Riktig pris handler om timing, konkurransebilde og kjøperpsykologi. Jeg optimaliserer for maksimal interesse og sterkest mulig budrunde.
                 </p>
               </div>
 
               <div className="flex flex-col items-center md:items-start text-center md:text-left">
                 <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-8">
-                  <Phone size={28} />
+                  <Handshake size={28} />
                 </div>
-                <h3 className="text-[18px] font-black text-slate-950 uppercase tracking-tight mb-4">Personlig oppfølging</h3>
+                <h3 className="text-[18px] font-black text-slate-950 uppercase tracking-tight mb-4">Aktiv gjennomføring</h3>
                 <p className="text-slate-500 font-medium leading-relaxed max-w-sm">
-                  Kombiner digital presisjon med menneskelig ekspertise. Jeg står klar når du trenger det mest.
+                  Fra lansering til budrunde styrer jeg eksponering, dialog og tempo for å sikre best mulig utfall – enten du kjøper eller selger.
                 </p>
               </div>
             </div>
