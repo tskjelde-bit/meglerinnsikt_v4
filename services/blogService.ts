@@ -1,6 +1,9 @@
 import { BlogPostFull } from '../types';
 
 const STORAGE_KEY = 'meglerinnsikt_blog_posts';
+const GITHUB_TOKEN_KEY = 'meglerinnsikt_github_token';
+const GITHUB_REPO = 'tskjelde-bit/meglerinnsikt_v4';
+const GITHUB_FILE_PATH = 'public/blog/posts.json';
 
 export const blogService = {
   // Fetch production posts from public/blog/posts.json
@@ -123,29 +126,76 @@ export const blogService = {
     URL.revokeObjectURL(url);
   },
 
-  // Publish posts: write directly to public/blog/posts.json via dev server API
+  // Get/set GitHub token from localStorage
+  getGitHubToken(): string | null {
+    return localStorage.getItem(GITHUB_TOKEN_KEY);
+  },
+
+  setGitHubToken(token: string): void {
+    localStorage.setItem(GITHUB_TOKEN_KEY, token);
+  },
+
+  removeGitHubToken(): void {
+    localStorage.removeItem(GITHUB_TOKEN_KEY);
+  },
+
+  // Publish posts: commit posts.json directly to GitHub via API
   async publishPosts(): Promise<{ success: boolean; message: string }> {
+    const token = this.getGitHubToken();
+    if (!token) {
+      return { success: false, message: 'TOKEN_REQUIRED' };
+    }
+
     const posts = this.getLocalPosts();
+    const content = JSON.stringify(posts, null, 2);
+    // GitHub API requires base64 encoded content
+    const base64Content = btoa(unescape(encodeURIComponent(content)));
+
     try {
-      // In dev mode, always use the origin (localhost) to hit the Vite dev server
-      const origin = window.location.origin;
-      const basePath = import.meta.env.BASE_URL || '/';
-      const url = `${origin}${basePath}api/save-posts`;
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(posts)
-      });
-      if (!res.ok) {
-        return { success: false, message: `Server svarte med ${res.status}. Kun tilgjengelig under npm run dev.` };
+      // First, get the current file's SHA (required for updates)
+      const getRes = await fetch(
+        `https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`,
+        { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' } }
+      );
+
+      let sha: string | undefined;
+      if (getRes.ok) {
+        const fileData = await getRes.json();
+        sha = fileData.sha;
+      } else if (getRes.status !== 404) {
+        return { success: false, message: `GitHub feil: ${getRes.status} ${getRes.statusText}` };
       }
-      const data = await res.json();
-      if (data.success) {
-        return { success: true, message: `${data.count} innlegg lagret til posts.json` };
+
+      // Then, create/update the file
+      const putRes = await fetch(
+        `https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: `Oppdater blogginnlegg (${posts.filter(p => p.published).length} publiserte)`,
+            content: base64Content,
+            ...(sha ? { sha } : {})
+          })
+        }
+      );
+
+      if (putRes.ok) {
+        return { success: true, message: `${posts.length} innlegg pushet til GitHub!` };
       }
-      return { success: false, message: data.error || 'Ukjent feil' };
+
+      if (putRes.status === 401) {
+        this.removeGitHubToken();
+        return { success: false, message: 'Ugyldig token. Prøv igjen.' };
+      }
+
+      return { success: false, message: `GitHub feil: ${putRes.status} ${putRes.statusText}` };
     } catch (err: any) {
-      return { success: false, message: `Kunne ikke nå dev-serveren: ${err.message}` };
+      return { success: false, message: `Nettverksfeil: ${err.message}` };
     }
   }
 };

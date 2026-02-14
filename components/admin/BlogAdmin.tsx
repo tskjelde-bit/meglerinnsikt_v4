@@ -4,7 +4,7 @@ import { blogService } from '../../services/blogService';
 import BlogEditor from './BlogEditor';
 import {
   X, Plus, Pencil, Trash2, Eye, EyeOff, Download, Upload,
-  FileJson, RefreshCw, Search, Calendar, Rocket, CheckCircle2, AlertCircle, Loader2
+  FileJson, RefreshCw, Search, Calendar, Rocket, CheckCircle2, AlertCircle, Loader2, Key
 } from 'lucide-react';
 
 interface BlogAdminProps {
@@ -18,6 +18,9 @@ const BlogAdmin: React.FC<BlogAdminProps> = ({ posts, onPostsChange, onClose }) 
   const [editingPost, setEditingPost] = useState<BlogPostFull | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [publishStatus, setPublishStatus] = useState<{ type: 'idle' | 'loading' | 'success' | 'error'; message?: string }>({ type: 'idle' });
+  const [showTokenInput, setShowTokenInput] = useState(false);
+  const [tokenValue, setTokenValue] = useState('');
+  const [hasToken, setHasToken] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -29,6 +32,7 @@ const BlogAdmin: React.FC<BlogAdminProps> = ({ posts, onPostsChange, onClose }) 
       blogService.saveLocalPosts(posts);
       setLocalPosts(posts);
     }
+    setHasToken(!!blogService.getGitHubToken());
   }, [posts]);
 
   const handleSavePost = (post: BlogPostFull) => {
@@ -89,14 +93,27 @@ const BlogAdmin: React.FC<BlogAdminProps> = ({ posts, onPostsChange, onClose }) 
     }
   };
 
+  const handleSaveToken = () => {
+    if (tokenValue.trim()) {
+      blogService.setGitHubToken(tokenValue.trim());
+      setHasToken(true);
+      setShowTokenInput(false);
+      setTokenValue('');
+      // Auto-publish after setting token
+      handlePublish();
+    }
+  };
+
   const handlePublish = async () => {
     setPublishStatus({ type: 'loading' });
     const result = await blogService.publishPosts();
     if (result.success) {
       setPublishStatus({ type: 'success', message: result.message });
-      // Also refresh the live view
       onPostsChange(localPosts.filter(p => p.published));
-      setTimeout(() => setPublishStatus({ type: 'idle' }), 3000);
+      setTimeout(() => setPublishStatus({ type: 'idle' }), 4000);
+    } else if (result.message === 'TOKEN_REQUIRED') {
+      setPublishStatus({ type: 'idle' });
+      setShowTokenInput(true);
     } else {
       setPublishStatus({ type: 'error', message: result.message });
       setTimeout(() => setPublishStatus({ type: 'idle' }), 5000);
@@ -147,14 +164,14 @@ const BlogAdmin: React.FC<BlogAdminProps> = ({ posts, onPostsChange, onClose }) 
             className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
           >
             <Upload size={14} />
-            Importer JSON
+            Importer
           </button>
           <button
             onClick={handleExport}
             className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-xl transition-colors"
           >
             <Download size={14} />
-            Eksporter JSON
+            Eksporter
           </button>
           <button
             onClick={handlePublish}
@@ -168,13 +185,13 @@ const BlogAdmin: React.FC<BlogAdminProps> = ({ posts, onPostsChange, onClose }) 
             }`}
           >
             {publishStatus.type === 'loading' ? (
-              <><Loader2 size={14} className="animate-spin" /> Lagrer...</>
+              <><Loader2 size={14} className="animate-spin" /> Pusher til GitHub...</>
             ) : publishStatus.type === 'success' ? (
               <><CheckCircle2 size={14} /> {publishStatus.message}</>
             ) : publishStatus.type === 'error' ? (
               <><AlertCircle size={14} /> {publishStatus.message || 'Feil!'}</>
             ) : (
-              <><Rocket size={14} /> Publiser</>
+              <><Rocket size={14} /> Publiser til GitHub</>
             )}
           </button>
           <button
@@ -199,6 +216,50 @@ const BlogAdmin: React.FC<BlogAdminProps> = ({ posts, onPostsChange, onClose }) 
           onChange={handleFileImport}
         />
       </header>
+
+      {/* Token Input Modal */}
+      {showTokenInput && (
+        <div className="absolute inset-0 z-50 bg-black/50 flex items-center justify-center" onClick={() => setShowTokenInput(false)}>
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full mx-4" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
+                <Key size={20} className="text-emerald-600" />
+              </div>
+              <div>
+                <h3 className="font-black text-slate-900 text-lg">GitHub Token</h3>
+                <p className="text-xs text-slate-500">Trengs for å pushe endringer direkte til GitHub</p>
+              </div>
+            </div>
+            <p className="text-sm text-slate-600 mb-4">
+              Opprett en <a href="https://github.com/settings/tokens/new?scopes=repo&description=Meglerinnsikt%20CMS" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-bold hover:underline">Personal Access Token</a> med <code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-bold">repo</code>-tilgang. Token lagres kun i din nettleser.
+            </p>
+            <input
+              type="password"
+              value={tokenValue}
+              onChange={e => setTokenValue(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSaveToken()}
+              placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+              className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-mono mb-4 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+              autoFocus
+            />
+            <div className="flex gap-3">
+              <button
+                onClick={handleSaveToken}
+                disabled={!tokenValue.trim()}
+                className="flex-1 bg-emerald-600 text-white font-black text-xs uppercase tracking-wider py-3 rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-50"
+              >
+                Lagre og publiser
+              </button>
+              <button
+                onClick={() => setShowTokenInput(false)}
+                className="px-6 bg-slate-100 text-slate-600 font-bold text-xs uppercase tracking-wider py-3 rounded-xl hover:bg-slate-200 transition-colors"
+              >
+                Avbryt
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Search */}
       <div className="px-6 py-4 bg-white border-b border-slate-100">
@@ -299,8 +360,18 @@ const BlogAdmin: React.FC<BlogAdminProps> = ({ posts, onPostsChange, onClose }) 
       </div>
 
       {/* Footer hint */}
-      <div className="px-6 py-3 bg-white border-t border-slate-200 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-        Ctrl+Shift+A for å lukke • Endringer lagres i nettleseren • Trykk «Publiser» for å oppdatere posts.json
+      <div className="px-6 py-3 bg-white border-t border-slate-200 flex items-center justify-between">
+        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+          Ctrl+Shift+A for å lukke • Trykk «Publiser» for å pushe til GitHub
+        </span>
+        {hasToken && (
+          <button
+            onClick={() => { blogService.removeGitHubToken(); setHasToken(false); }}
+            className="text-[10px] font-bold text-slate-400 hover:text-red-500 uppercase tracking-widest transition-colors"
+          >
+            Fjern GitHub token
+          </button>
+        )}
       </div>
     </div>
   );
