@@ -495,9 +495,12 @@ const HomePage: React.FC<{
 
           {/* Blog Grid Section */}
           <div className="mb-8">
-            <h2 className="text-[32px] md:text-[42px] font-black text-slate-950 uppercase tracking-tighter mb-12">
-              Utvalgte innlegg
-            </h2>
+            <div className="text-center mb-16">
+              <h2 className="text-[32px] md:text-[42px] font-black text-slate-950 uppercase tracking-tighter mb-4">
+                Utvalgte innlegg
+              </h2>
+              <div className="w-24 h-1.5 bg-blue-600 mx-auto rounded-full"></div>
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
               {displayPosts.map((post) => (
