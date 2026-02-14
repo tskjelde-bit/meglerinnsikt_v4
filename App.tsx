@@ -132,7 +132,10 @@ const HomePage: React.FC<{
               <span className="hidden md:inline">Eiendomsinnsikt </span><span className="md:hidden"><span className="font-semibold text-[22px] normal-case">Boligmarkedet {getPreposition(selectedDistrict.name)}</span><br/><span className="text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')} nå</span></span><span className="hidden md:inline text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')}</span>
             </h2>
             <p className={`md:hidden text-[12px] font-black uppercase tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-slate-400'}`}>
-              <span className="text-blue-500">Selger</span> eller <span className="text-blue-500">kjøpers</span> marked akkurat nå?
+              {isDistrictSelected
+                ? <span className="text-blue-400 italic normal-case">{getMarketData(selectedDistrict).interpretation}</span>
+                : <><span className="text-blue-500">Selger</span> eller <span className="text-blue-500">kjøpers</span> marked akkurat nå?</>
+              }
             </p>
             <p className={`hidden md:block font-medium text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
               Avansert dataanalyse for det norske eiendomsmarkedet
@@ -293,13 +296,13 @@ const HomePage: React.FC<{
                   <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected && isAnalysisOpen ? 'max-h-[650px] opacity-100' : 'max-h-0 opacity-0'}`}>
                     <div className={`border-t ${isDarkMode ? 'border-white/10' : 'border-slate-200'}`}>
 
-                      {/* Tolkningslinje */}
-                      <div className="px-5 pb-2">
-                        <p className={`text-[13px] md:text-[14px] font-bold italic text-center ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                      {/* Tolkningslinje - desktop only (mobile shows in subheading) */}
+                      <div className="hidden md:block px-5 pb-2">
+                        <p className={`text-[14px] font-bold italic text-center ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
                           {getMarketData(selectedDistrict).interpretation}
                         </p>
                         {getMarketData(selectedDistrict).trigger && (
-                          <p className={`text-[11px] md:text-[12px] font-bold text-center mt-1 ${isDarkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                          <p className={`text-[12px] font-bold text-center mt-1 ${isDarkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
                             Dette er et gunstig tidspunkt å vurdere salg.
                           </p>
                         )}
