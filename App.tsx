@@ -13,7 +13,8 @@ import {
   Building2, Menu, X, ChevronDown, Calendar, Download,
   Plus, Minus, Layers, Target, Zap, Coins,
   ChevronRight, Compass, TrendingUp, TrendingDown, Clock,
-  LineChart, ArrowRight, LayoutGrid, Users, Phone
+  LineChart, ArrowRight, LayoutGrid, Users, Phone,
+  Diamond, MessageSquareMore
 } from 'lucide-react';
 
 const LOGO_URL = "https://cdn.prod.website-files.com/691779eac33d8a85e5cce47f/692a5a3fb0a7a66a7673d639_Azure-stacked-c.png";
@@ -38,40 +39,37 @@ const HomePage: React.FC<{
 
   return (
     <>
-      <main className="max-w-[1700px] mx-auto w-full px-6 lg:px-14 py-8">
-
-        {/* Dashboard Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
-          <div className="space-y-1">
+      {/* DASHBOARD SECTION (DARK) */}
+      <section className="max-w-[1700px] mx-auto w-full py-8 md:py-12">
+        <div className="px-6 md:px-14 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
+          <div className="space-y-3">
             <div className="flex items-center gap-1.5 text-[10px] font-black text-slate-500 uppercase tracking-widest">
               <span>Hjem</span> <ChevronRight size={10} className="text-slate-700" /> <span className="text-slate-300">Eiendomsinnsikt</span>
             </div>
-            <h2 className="text-[28px] lg:text-[34px] font-black text-white leading-tight tracking-tight uppercase">
-              Sanntids Eiendomsinnsikt
+            <h2 className="text-[28px] md:text-[32px] lg:text-[40px] font-black text-white leading-tight tracking-tight uppercase">
+              Eiendomsinnsikt <span className="text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')}</span>
             </h2>
             <p className="text-slate-400 font-medium text-sm">
               Avansert dataanalyse for det norske eiendomsmarkedet
             </p>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0 mb-1">
-            <button className="flex items-center gap-2 bg-[#1a2333] border border-white/5 text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase tracking-wider hover:bg-[#252f44] transition-all">
-              <Calendar size={14} className="text-slate-500" />
+          <div className="hidden md:flex items-center gap-3 shrink-0">
+            <button className="flex items-center gap-2 bg-[#1a2333] border border-white/5 text-white px-5 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-[#252f44] transition-all">
+              <Calendar size={14} className="text-slate-400" />
               Siste 30 dager
             </button>
-            <button className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-xl font-bold text-[10px] uppercase tracking-wider hover:bg-blue-700 shadow-lg shadow-blue-900/20 transition-all">
+            <button className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-900/10 transition-all">
               <Download size={14} />
               Eksporter data
             </button>
           </div>
         </div>
 
-        {/* Grid Layout - Sidebar and Map match in height naturally */}
-        <div className="grid lg:grid-cols-12 gap-8 items-stretch mb-24">
-
-          {/* Left Column: Integrated Map & Stats Visualization */}
-          <div className="lg:col-span-8 relative rounded-[40px] overflow-hidden border border-white/5 shadow-2xl bg-[#1a2333]/20 min-h-[500px]">
-            {/* Map Layer - Fills container height dictated by sidebar */}
+        {/* GRID */}
+        <div className="grid lg:grid-cols-12 gap-10 items-stretch mb-12 px-6 md:px-14">
+          {/* MAP COLUMN */}
+          <div className="lg:col-span-8 relative rounded-2xl overflow-hidden border border-white/5 shadow-2xl bg-[#1a2333]/20 h-[420px] md:h-[600px] lg:h-auto flex flex-col">
             <div className="absolute inset-0 z-0 bg-white">
               <MapComponent
                 properties={[]}
@@ -83,33 +81,33 @@ const HomePage: React.FC<{
               />
             </div>
 
-            {/* Top Overlay: Utforsk Oslo */}
-            <div className="absolute top-6 left-6 z-[500] w-64 pointer-events-auto">
-              <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
+            {/* DISTRICT DROPDOWN */}
+            <div className="absolute top-2.5 left-1/2 -translate-x-1/2 md:top-8 md:left-8 md:translate-x-0 z-[500] w-[130px] md:w-72 pointer-events-auto">
+              <div className="bg-white/95 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-2xl overflow-hidden border border-slate-100">
                 <button
                   onClick={() => setIsDistrictListOpen(!isDistrictListOpen)}
-                  className="w-full flex items-center justify-between p-3.5 hover:bg-slate-50 transition-colors text-left"
+                  className="w-full flex items-center justify-between p-1.5 md:p-4 hover:bg-slate-50 transition-colors text-left"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center text-slate-400 border border-slate-100">
-                      <Compass size={16} className="transform -rotate-45" />
+                  <div className="flex items-center gap-2 md:gap-3">
+                    <div className="w-6 h-6 md:w-10 md:h-10 bg-slate-50 rounded-lg md:rounded-xl flex items-center justify-center text-slate-400 border border-slate-100">
+                      <Compass size={12} className="transform -rotate-45" />
                     </div>
                     <div>
-                      <div className="text-[11px] font-black text-slate-900 uppercase tracking-tight leading-none mb-0.5">Utforsk Oslo</div>
-                      <div className="text-[8px] font-bold text-slate-400 uppercase tracking-widest leading-none">Klikk på en bydel i kartet</div>
+                      <div className="text-[10px] md:text-[12px] font-black text-slate-900 uppercase tracking-tight leading-none md:mb-1">Utforsk Oslo</div>
+                      <div className="hidden md:block text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Klikk på en bydel</div>
                     </div>
                   </div>
-                  <ChevronDown size={14} className={`text-slate-300 transition-transform ${isDistrictListOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown size={12} className={`text-slate-300 transition-transform ${isDistrictListOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {isDistrictListOpen && (
-                  <div className="max-h-[300px] overflow-y-auto py-1 border-t border-slate-50 custom-scrollbar">
+                  <div className="max-h-[200px] md:max-h-[300px] overflow-y-auto py-1 border-t border-slate-50 custom-scrollbar">
                     {OSLO_DISTRICTS.map((district) => (
                       <button
                         key={district.id}
                         onClick={() => { setSelectedDistrict(district); setIsDistrictListOpen(false); }}
-                        className="w-full flex items-center justify-between px-5 py-2.5 text-left hover:bg-blue-50 transition-colors group"
+                        className="w-full flex items-center justify-between px-4 py-2 md:px-6 md:py-3 text-left hover:bg-blue-50 transition-colors group"
                       >
-                        <span className={`text-[10px] font-black uppercase tracking-tight ${selectedDistrict.id === district.id ? 'text-blue-600' : 'text-slate-600'}`}>
+                        <span className={`text-[10px] md:text-[11px] font-black uppercase tracking-tight ${selectedDistrict.id === district.id ? 'text-blue-600' : 'text-slate-600'}`}>
                           {district.name}
                         </span>
                       </button>
@@ -119,82 +117,94 @@ const HomePage: React.FC<{
               </div>
             </div>
 
-            {/* Map Controls */}
-            <div className="absolute bottom-[160px] right-6 z-[500] flex flex-col gap-2 pointer-events-auto">
-              <button className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white hover:bg-blue-600 transition-colors shadow-lg"><Plus size={18}/></button>
-              <button className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white hover:bg-blue-600 transition-colors shadow-lg"><Minus size={18}/></button>
-              <button className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white hover:bg-blue-600 transition-colors shadow-lg mt-2"><Layers size={18}/></button>
-              <button onClick={() => setSelectedDistrict(OSLO_DISTRICTS[0])} className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white hover:bg-blue-600 transition-colors shadow-lg"><Target size={18}/></button>
+            {/* MAP CONTROLS - CIRCULAR */}
+            <div className="absolute top-1/2 -translate-y-1/2 right-4 z-[500] flex flex-col gap-2 pointer-events-auto">
+              <button className="w-8 h-8 md:w-10 md:h-10 bg-[#0b1120] rounded-full flex items-center justify-center text-white border border-white/5 hover:bg-blue-600 transition-all"><Plus size={14} /></button>
+              <button className="w-8 h-8 md:w-10 md:h-10 bg-[#0b1120] rounded-full flex items-center justify-center text-white border border-white/5 hover:bg-blue-600 transition-all"><Minus size={14} /></button>
+              <button className="w-8 h-8 md:w-10 md:h-10 bg-[#0b1120] rounded-full flex items-center justify-center text-white border border-white/5 hover:bg-blue-600 transition-all mt-1 md:mt-2"><Layers size={14} /></button>
+              <button onClick={() => setSelectedDistrict(OSLO_DISTRICTS[0])} className="w-8 h-8 md:w-10 md:h-10 bg-[#0b1120] rounded-full flex items-center justify-center text-white border border-white/5 hover:bg-blue-600 transition-all"><Target size={14} /></button>
             </div>
 
-            {/* Bottom Overlay: Stats Cards - Positioned absolutely at bottom of map container */}
-            <div className="absolute bottom-6 left-6 right-6 z-[500] pointer-events-none">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pointer-events-auto">
-                <div className="bg-[#1a2333]/90 backdrop-blur-md border border-white/10 p-5 rounded-[24px] flex items-center gap-4 shadow-2xl">
-                  <div className="w-10 h-10 bg-blue-600/20 rounded-xl flex items-center justify-center text-blue-500 shrink-0"><Coins size={18} /></div>
-                  <div>
-                    <div className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mb-0.5 text-nowrap">Pris per m²</div>
-                    <div className="text-[16px] font-black text-white text-nowrap">{selectedDistrict.pricePerSqm.toLocaleString()} kr</div>
-                  </div>
+            {/* CONSOLIDATED INSIGHT BOX */}
+            <div className="absolute bottom-3 left-3 right-3 md:bottom-6 md:left-6 md:right-6 z-[500] pointer-events-none">
+              <div className="bg-[#242c3d]/95 backdrop-blur-md border border-white/10 rounded-xl md:rounded-[20px] shadow-2xl pointer-events-auto overflow-hidden flex flex-row items-stretch min-h-[90px] md:min-h-[110px]">
+                <div className="grid grid-cols-2 md:flex md:flex-row flex-grow items-center">
+                  {[
+                    { icon: <Coins size={14} />, label: "PRIS PR M²", value: `${selectedDistrict.pricePerSqm.toLocaleString()} kr`, color: 'blue' },
+                    { icon: <Clock size={14} />, label: "OMSETNING", value: `${selectedDistrict.avgDaysOnMarket} dgr`, color: 'orange' },
+                    { icon: <Building2 size={14} />, label: "MEDIAN", value: `${(selectedDistrict.medianPrice / 1000000).toFixed(1)}M kr`, color: 'emerald' },
+                    { icon: <LineChart size={14} />, label: "VEKST 12M", value: `+${selectedDistrict.priceChange}%`, color: 'purple' }
+                  ].map((stat, i) => (
+                    <div
+                      key={i}
+                      className={`flex items-center p-3 md:px-6 md:py-0 gap-3 md:gap-4 relative h-full md:flex-1
+                        ${i < 2 ? 'max-md:border-b border-white/5' : ''}
+                        ${i % 2 === 0 ? 'max-md:border-r border-white/5' : ''}
+                        ${i !== 0 ? 'md:border-l border-white/5' : ''}
+                      `}
+                    >
+                      <div className={`flex w-7 h-7 md:w-10 md:h-10 bg-slate-800/60 rounded-lg md:rounded-xl items-center justify-center text-${stat.color}-500 shrink-0`}>
+                        {stat.icon}
+                      </div>
+                      <div className="flex flex-col text-left">
+                        <div className="text-[12px] md:text-[18px] lg:text-[20px] font-black text-white leading-tight">
+                          {stat.value}
+                        </div>
+                        <div className="text-[8px] md:text-[9px] font-black text-slate-500 uppercase tracking-widest leading-none mt-0.5">
+                          {stat.label}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className="bg-[#1a2333]/90 backdrop-blur-md border border-white/10 p-5 rounded-[24px] flex items-center gap-4 shadow-2xl">
-                  <div className="w-10 h-10 bg-orange-600/20 rounded-xl flex items-center justify-center text-orange-500 shrink-0"><Clock size={18} /></div>
-                  <div>
-                    <div className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mb-0.5 text-nowrap">Omsetningstid</div>
-                    <div className="text-[16px] font-black text-white text-nowrap">{selectedDistrict.avgDaysOnMarket} dager</div>
+
+                <button className="w-[70px] md:w-[130px] flex items-center justify-center hover:bg-white/5 transition-all group shrink-0 border-l border-white/5 relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-50 pointer-events-none"></div>
+                  <div className="relative">
+                    <MessageSquareMore size={36} className="text-white md:w-14 md:h-14 group-hover:scale-110 transition-transform stroke-[1.2]" />
                   </div>
-                </div>
-                <div className="bg-[#1a2333]/90 backdrop-blur-md border border-white/10 p-5 rounded-[24px] flex items-center gap-4 shadow-2xl">
-                  <div className="w-10 h-10 bg-emerald-600/20 rounded-xl flex items-center justify-center text-emerald-500 shrink-0"><Building2 size={18} /></div>
-                  <div>
-                    <div className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mb-0.5 text-nowrap">Medianpris</div>
-                    <div className="text-[16px] font-black text-white text-nowrap">{(selectedDistrict.medianPrice / 1000000).toFixed(1)}M kr</div>
-                  </div>
-                </div>
-                <div className="bg-[#1a2333]/90 backdrop-blur-md border border-white/10 p-5 rounded-[24px] flex items-center gap-4 shadow-2xl">
-                  <div className="w-10 h-10 bg-purple-600/20 rounded-xl flex items-center justify-center text-purple-500 shrink-0"><LineChart size={18} /></div>
-                  <div>
-                    <div className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mb-0.5 text-nowrap">Prisvekst 12 mnd</div>
-                    <div className="text-[16px] font-black text-white text-nowrap">+{selectedDistrict.priceChange}%</div>
-                  </div>
-                </div>
+                </button>
               </div>
             </div>
           </div>
 
-          {/* Right Column: Sidebar - Defines height of the row */}
-          <div className="lg:col-span-4 flex flex-col">
-            <div className="bg-[#1a2333]/40 border border-white/5 rounded-[40px] flex flex-col shadow-xl h-full">
-              <div className="flex justify-between items-center px-8 pt-8 pb-5">
-                <h3 className="text-[13px] font-black text-white uppercase tracking-tight">Siste innlegg</h3>
-                <button className="text-[9px] font-bold text-blue-500 uppercase tracking-widest hover:underline">Se alle</button>
+          {/* SIDEBAR COLUMN */}
+          <div className="lg:col-span-4 flex flex-col md:px-0">
+            <div className="bg-[#1a2333]/40 border border-white/5 rounded-2xl flex flex-col shadow-xl h-full">
+              <div className="flex justify-between items-center p-8 pb-6 shrink-0">
+                <h3 className="text-[14px] font-black text-white uppercase tracking-wider">Siste innlegg</h3>
+                <button className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] hover:underline">Se alle</button>
               </div>
 
-              <div className="px-8 pb-8 space-y-7">
+              <div className="px-8 pb-8 flex flex-col gap-10">
                 {/* Featured Sidebar Article */}
                 {displayPosts.length > 0 && (
-                  <div className="group cursor-pointer" onClick={() => handlePostClick(displayPosts[0])}>
-                    <div className="relative aspect-[16/9] rounded-2xl overflow-hidden mb-3 shadow-lg border border-white/5">
-                      <img src={displayPosts[0].image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      <div className="absolute top-3 right-3 bg-blue-600 text-white text-[8px] font-black px-2 py-1 rounded uppercase tracking-widest">{displayPosts[0].category}</div>
+                  <div className="group cursor-pointer shrink-0" onClick={() => handlePostClick(displayPosts[0])}>
+                    <div className="relative aspect-[16/10] rounded-xl overflow-hidden mb-5 shadow-lg border border-white/5">
+                      <img src={displayPosts[0].image} alt={displayPosts[0].title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                      <div className="absolute top-4 right-4 bg-blue-600 text-white text-[9px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest shadow-xl">{displayPosts[0].category}</div>
                     </div>
-                    <div className="text-[8px] font-bold text-slate-500 uppercase mb-1.5 tracking-tight">{displayPosts[0].date} • {displayPosts[0].category}</div>
-                    <h4 className="text-[15px] font-black text-white leading-tight uppercase tracking-tight group-hover:text-blue-400 transition-colors">
+                    <div className="text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest flex items-center gap-2">
+                      <span>{displayPosts[0].date}</span> <span className="text-slate-700">&bull;</span> <span>{displayPosts[0].category}</span>
+                    </div>
+                    <h4 className="text-[18px] font-black text-white leading-tight uppercase tracking-tight group-hover:text-blue-400 transition-colors">
                       {displayPosts[0].title}
                     </h4>
                   </div>
                 )}
 
                 {/* List Articles */}
-                <div className="space-y-5">
-                  {displayPosts.slice(1, 3).map((post) => (
-                    <div key={post.id} className="flex gap-4 group cursor-pointer border-t border-white/5 pt-5" onClick={() => handlePostClick(post)}>
-                      <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-white/5">
-                        <img src={post.image} className="w-full h-full object-cover" />
+                <div className="space-y-6 shrink-0">
+                  {displayPosts.slice(1, 2).map((post) => (
+                    <div key={post.id} className="flex gap-5 group cursor-pointer border-t border-white/5 pt-6" onClick={() => handlePostClick(post)}>
+                      <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 border border-white/5">
+                        <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
                       </div>
                       <div>
-                        <div className="text-[7px] font-bold text-slate-500 uppercase mb-0.5 tracking-tight">{post.date} • {post.category}</div>
-                        <h5 className="text-[12px] font-black text-white uppercase group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug">
+                        <div className="text-[9px] font-black text-slate-500 uppercase mb-1 tracking-widest flex items-center gap-1.5">
+                          <span>{post.date}</span> <span className="text-slate-700">&bull;</span> <span>{post.category}</span>
+                        </div>
+                        <h5 className="text-[13px] font-black text-white uppercase group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug tracking-tight">
                           {post.title}
                         </h5>
                       </div>
@@ -203,24 +213,25 @@ const HomePage: React.FC<{
                 </div>
 
                 {/* Premium Box */}
-                <div className="mt-4 bg-blue-600/10 border border-blue-500/20 p-5 rounded-[24px] relative overflow-hidden">
-                  <div className="flex items-center gap-2 mb-2 relative z-10">
-                    <Zap size={12} className="text-blue-500 fill-current" />
-                    <h6 className="text-[9px] font-black text-blue-400 uppercase tracking-tight">Premium Innsikt</h6>
+                <div className="mt-4 bg-[#0f172a] border border-blue-500/20 p-6 rounded-2xl relative overflow-hidden group shadow-2xl shrink-0">
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-2 mb-3 text-blue-500">
+                      <Zap size={14} fill="currentColor" />
+                      <h5 className="text-[10px] font-black uppercase tracking-[0.25em]">Premium Innsikt</h5>
+                    </div>
+                    <p className="text-slate-400 text-[12px] font-medium leading-relaxed mb-4">
+                      Få tilgang til dypere data og historiske trender med vår Pro-pakke.
+                    </p>
+                    <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-xl transition-all uppercase tracking-widest text-[10px] shadow-xl shadow-blue-600/20 active:scale-[0.98]">
+                      Oppgrader nå
+                    </button>
                   </div>
-                  <p className="text-slate-400 text-[9px] font-medium mb-4 leading-relaxed relative z-10">
-                    Få tilgang til dypere data og historiske trender med vår Pro-pakke.
-                  </p>
-                  <button className="w-full bg-blue-600 text-white font-black py-2.5 rounded-xl text-[8px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg relative z-10">
-                    Oppgrader nå
-                  </button>
-                  <Zap size={50} className="absolute -bottom-3 -right-3 opacity-5 text-blue-500 transform rotate-12" />
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </main>
+      </section>
 
       {/* 3. White Section Wrapper: Features & Blog Grid */}
       <section className="bg-white py-24 px-6 lg:px-14">
@@ -322,53 +333,18 @@ const HomePage: React.FC<{
         </div>
       </section>
 
-      {/* 5. Enhanced Footer with Matching Blue Background */}
-      <footer className="bg-[#0b1120] py-16 px-6 lg:px-14 border-t border-white/5">
-        <div className="max-w-[1700px] mx-auto">
-          {/* Top Footer Section */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-16">
-            <div className="max-w-md">
-              <p className="text-white text-[16px] md:text-[18px] font-medium leading-relaxed mb-10">
-                Motta min månedlige oppdatering på boligmarkedet i Oslo. Faglig og ærlig om fortid, nåtid og fremtid.
-              </p>
-
-              {/* Inline Signup */}
-              <div className="flex items-end gap-6 border-b border-white/20 pb-2 group focus-within:border-white transition-colors">
-                <input
-                  type="text"
-                  value={newsletterName}
-                  onChange={(e) => setNewsletterName(e.target.value)}
-                  placeholder="Ditt navn"
-                  className="bg-transparent border-none outline-none text-white text-[15px] placeholder:text-white/40 font-medium py-1 w-48"
-                />
-                <button className="text-white text-[15px] font-bold whitespace-nowrap hover:opacity-70 transition-opacity uppercase tracking-widest">
-                  meld meg på!
-                </button>
-              </div>
-            </div>
-
-            {/* Footer Logo Area */}
-            <div className="shrink-0 flex flex-col items-center md:items-end">
-              <img
-                src={LOGO_URL}
-                alt="Meglerinnsikt Logo"
-                className="h-24 w-auto object-contain brightness-0 invert"
-              />
-            </div>
+      {/* FOOTER */}
+      <footer className="bg-white py-16 px-6 md:px-14 border-t border-slate-100">
+        <div className="max-w-[1700px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="flex items-center gap-2 text-slate-400">
+            <Diamond size={24} className="text-blue-600" />
+            <span className="text-xl font-black tracking-tighter text-slate-900">Lumina</span>
           </div>
-
-          <hr className="border-white/5 mb-10" />
-
-          {/* Bottom Footer Section */}
-          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-            <div className="flex gap-10">
-              <a href="#" className="text-white text-[13px] font-bold hover:text-blue-400 transition-colors uppercase tracking-widest">Kundeomtaler</a>
-              <a href="#" className="text-white text-[13px] font-bold hover:text-blue-400 transition-colors uppercase tracking-widest">Instagram</a>
-            </div>
-
-            <button className="px-10 py-3 rounded-full border border-white/20 text-white text-[13px] font-bold hover:bg-white hover:text-[#0b1120] transition-all uppercase tracking-widest">
-              Kontakt meg
-            </button>
+          <p className="text-slate-500 text-[13px] font-medium uppercase tracking-widest">&copy; 2026 MEGLERINNSIKT AS &bull; ALL RIGHTS RESERVED</p>
+          <div className="flex gap-10">
+            <a href="#" className="text-[11px] font-black text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-[0.2em]">Kundeomtaler</a>
+            <a href="#" className="text-[11px] font-black text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-[0.2em]">Instagram</a>
+            <a href="#" className="text-[11px] font-black text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-[0.2em]">Twitter</a>
           </div>
         </div>
       </footer>

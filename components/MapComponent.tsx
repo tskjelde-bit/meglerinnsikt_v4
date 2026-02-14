@@ -212,7 +212,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
     const map = L.map(containerRef.current, {
       zoomControl: false,
       attributionControl: false,
-    }).setView([59.913, 10.78], 11);
+    }).setView([59.92, 10.76], 12);
 
     // Tile layer for water/land context – visible enough to show fjord & surroundings
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
