@@ -66,7 +66,7 @@ const HomePage: React.FC<{
               <span className="hidden md:inline">Eiendomsinnsikt </span><span className="md:hidden">Boligprisene {getPreposition(selectedDistrict.name)} </span><span className="text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')}</span><span className="md:hidden"> nå</span>
             </h2>
             <p className={`md:hidden text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-400' : 'text-slate-400'}`}>
-              Er det smart å selge her nå?
+              Er det kjøper ellers selgers marked her nå?
             </p>
             <p className={`hidden md:block font-medium text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
               Avansert dataanalyse for det norske eiendomsmarkedet
