@@ -268,13 +268,13 @@ const HomePage: React.FC<{
                       const sqmDiff = selectedDistrict.pricePerSqm - oslo.pricePerSqm;
                       const getColor = (diff: number, invert = false) => {
                         const d = invert ? -diff : diff;
-                        if (d > 0.3 || (!invert && d > 1) || (invert && diff < -1)) return 'text-emerald-400';
-                        if (d < -0.3 || (!invert && d < -1) || (invert && diff > 1)) return 'text-red-400';
-                        return 'text-amber-400';
+                        if (d > 0.3 || (!invert && d > 1) || (invert && diff < -1)) return 'text-[#0BAEE0]';
+                        if (d < -0.3 || (!invert && d < -1) || (invert && diff > 1)) return 'text-[#F9547C]';
+                        return 'text-[#FFE328]';
                       };
-                      const priceColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (priceDiff > 0.3 ? 'text-emerald-400' : priceDiff < -0.3 ? 'text-red-400' : 'text-amber-400');
-                      const daysColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (daysDiff < -1 ? 'text-emerald-400' : daysDiff > 1 ? 'text-red-400' : 'text-amber-400');
-                      const sqmColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (sqmDiff > 0 ? 'text-emerald-400' : sqmDiff < 0 ? 'text-red-400' : 'text-amber-400');
+                      const priceColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (priceDiff > 0.3 ? 'text-[#0BAEE0]' : priceDiff < -0.3 ? 'text-[#F9547C]' : 'text-[#FFE328]');
+                      const daysColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (daysDiff < -1 ? 'text-[#0BAEE0]' : daysDiff > 1 ? 'text-[#F9547C]' : 'text-[#FFE328]');
+                      const sqmColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (sqmDiff > 0 ? 'text-[#0BAEE0]' : sqmDiff < 0 ? 'text-[#F9547C]' : 'text-[#FFE328]');
                       return [
                         { icon: <TrendingUp size={18} className="md:w-7 md:h-7" />, label: "PRISENDRING", mobileLabel: "Prisendring", value: `+${selectedDistrict.priceChange}%`, mobileValue: `+${selectedDistrict.priceChange}%`, iconColor: priceColor, hideOnMobile: false },
                         { icon: <Clock size={18} className="md:w-7 md:h-7" />, label: "SALGSTID", mobileLabel: "Salgstid", value: `${selectedDistrict.avgDaysOnMarket}`, mobileValue: `${selectedDistrict.avgDaysOnMarket} dager`, iconColor: daysColor, hideOnMobile: false },
@@ -316,7 +316,7 @@ const HomePage: React.FC<{
                           {getMarketData(selectedDistrict).interpretation}
                         </p>
                         {getMarketData(selectedDistrict).trigger && (
-                          <p className={`text-[12px] font-bold text-center mt-1 ${isDarkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                          <p className={`text-[12px] font-bold text-center mt-1 ${isDarkMode ? 'text-[#0BAEE0]' : 'text-[#0BAEE0]'}`}>
                             Dette er et gunstig tidspunkt å vurdere salg.
                           </p>
                         )}
@@ -345,8 +345,8 @@ const HomePage: React.FC<{
 
                         <div className={`col-span-1 rounded-xl p-4 ${isDarkMode ? 'bg-white/5' : 'bg-slate-100/80'}`}>
                           <div className="flex items-center gap-2 mb-2">
-                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-                            <span className={`text-[11px] font-black uppercase tracking-widest ${isDarkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#0BAEE0]"></div>
+                            <span className={`text-[11px] font-black uppercase tracking-widest ${isDarkMode ? 'text-[#0BAEE0]' : 'text-[#0BAEE0]'}`}>
                               Prisutvikling
                             </span>
                           </div>
@@ -364,8 +364,8 @@ const HomePage: React.FC<{
 
                         <div className={`col-span-1 rounded-xl p-4 ${isDarkMode ? 'bg-white/5' : 'bg-slate-100/80'}`}>
                           <div className="flex items-center gap-2 mb-2">
-                            <div className="w-1.5 h-1.5 rounded-full bg-amber-500"></div>
-                            <span className={`text-[11px] font-black uppercase tracking-widest ${isDarkMode ? 'text-amber-400' : 'text-amber-600'}`}>
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#FFE328]"></div>
+                            <span className={`text-[11px] font-black uppercase tracking-widest ${isDarkMode ? 'text-[#FFE328]' : 'text-[#FFE328]'}`}>
                               Omløpshastighet
                             </span>
                           </div>
@@ -409,8 +409,8 @@ const HomePage: React.FC<{
                         {/* Prisutvikling */}
                         <div className="py-2.5">
                           <div className="flex items-center gap-2 mb-1">
-                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-                            <span className={`text-[9px] font-black uppercase tracking-widest ${isDarkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#0BAEE0]"></div>
+                            <span className={`text-[9px] font-black uppercase tracking-widest ${isDarkMode ? 'text-[#0BAEE0]' : 'text-[#0BAEE0]'}`}>
                               Prisutvikling
                             </span>
                           </div>
@@ -431,8 +431,8 @@ const HomePage: React.FC<{
                         {/* Omløpshastighet */}
                         <div className="py-2.5">
                           <div className="flex items-center gap-2 mb-1">
-                            <div className="w-1.5 h-1.5 rounded-full bg-amber-500"></div>
-                            <span className={`text-[9px] font-black uppercase tracking-widest ${isDarkMode ? 'text-amber-400' : 'text-amber-600'}`}>
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#FFE328]"></div>
+                            <span className={`text-[9px] font-black uppercase tracking-widest ${isDarkMode ? 'text-[#FFE328]' : 'text-[#FFE328]'}`}>
                               Omløpshastighet
                             </span>
                           </div>
