@@ -53,7 +53,7 @@ const HomePage: React.FC<{
               <span>Hjem</span> <ChevronRight size={10} className={isDarkMode ? 'text-slate-700' : 'text-slate-300'} /> <span className={isDarkMode ? 'text-slate-300' : 'text-slate-600'}>Eiendomsinnsikt</span>
             </div>
             <h2 className={`text-[28px] md:text-[32px] lg:text-[40px] font-black leading-tight tracking-tight uppercase ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-              <span className="hidden md:inline">Eiendomsinnsikt </span><span className="text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')}</span>
+              <span className="hidden md:inline">Eiendomsinnsikt </span><span className="md:hidden">Innsikt </span><span className="text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')}</span>
             </h2>
             <p className={`hidden md:block font-medium text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
               Avansert dataanalyse for det norske eiendomsmarkedet
@@ -156,10 +156,10 @@ const HomePage: React.FC<{
                 }`}>
                   <div className="grid grid-cols-4">
                     {[
-                      { icon: <TrendingUp size={14} className="md:w-7 md:h-7" />, label: "PRISENDRING", value: `+${selectedDistrict.priceChange}%`, color: 'blue' },
-                      { icon: <Clock size={14} className="md:w-7 md:h-7" />, label: "OMLØP", value: `${selectedDistrict.avgDaysOnMarket}`, color: 'blue' },
-                      { icon: <Building2 size={14} className="md:w-7 md:h-7" />, label: "MEDIANPRIS", value: `${(selectedDistrict.medianPrice / 1000000).toFixed(1)}M`, color: 'blue' },
-                      { icon: <Coins size={14} className="md:w-7 md:h-7" />, label: "KR/M²", value: `${Math.round(selectedDistrict.pricePerSqm / 1000)}k`, color: 'blue' }
+                      { icon: <TrendingUp size={14} className="md:w-7 md:h-7" />, label: "PRISENDRING", mobileLabel: "PRIS", value: `+${selectedDistrict.priceChange}%`, color: 'blue' },
+                      { icon: <Clock size={14} className="md:w-7 md:h-7" />, label: "OMLØP", mobileLabel: "OMLØP", value: `${selectedDistrict.avgDaysOnMarket}`, color: 'blue' },
+                      { icon: <Building2 size={14} className="md:w-7 md:h-7" />, label: "MEDIANPRIS", mobileLabel: "MEDIAN", value: `${(selectedDistrict.medianPrice / 1000000).toFixed(1)}M`, color: 'blue' },
+                      { icon: <Coins size={14} className="md:w-7 md:h-7" />, label: "KR/M²", mobileLabel: "KR/M²", value: `${Math.round(selectedDistrict.pricePerSqm / 1000)}k`, color: 'blue' }
                     ].map((stat, i) => (
                       <div
                         key={i}
@@ -175,7 +175,8 @@ const HomePage: React.FC<{
                             {stat.value}
                           </div>
                           <div className={`text-[8px] md:text-[9px] font-black uppercase tracking-widest leading-none mt-0.5 ${isDarkMode ? 'text-white' : 'text-slate-400'}`}>
-                            {stat.label}
+                            <span className="md:hidden">{stat.mobileLabel}</span>
+                            <span className="hidden md:inline">{stat.label}</span>
                           </div>
                         </div>
                       </div>
