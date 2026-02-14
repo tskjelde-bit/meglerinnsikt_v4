@@ -14,7 +14,7 @@ import {
   Plus, Minus, Layers, Target, Zap, Coins,
   ChevronRight, Compass, TrendingUp, TrendingDown, Clock,
   LineChart, ArrowRight, LayoutGrid, Users, Phone,
-  Diamond, MessageSquareMore
+  Diamond, MessageSquareMore, Sun, Moon
 } from 'lucide-react';
 
 const LOGO_URL = "https://cdn.prod.website-files.com/691779eac33d8a85e5cce47f/692a5a3fb0a7a66a7673d639_Azure-stacked-c.png";
@@ -25,7 +25,9 @@ const HomePage: React.FC<{
   onPostsChange: (posts: BlogPostFull[]) => void;
   isAdminOpen: boolean;
   setIsAdminOpen: (open: boolean) => void;
-}> = ({ displayPosts, blogPosts, onPostsChange, isAdminOpen, setIsAdminOpen }) => {
+  isDarkMode: boolean;
+  setIsDarkMode: (dark: boolean) => void;
+}> = ({ displayPosts, blogPosts, onPostsChange, isAdminOpen, setIsAdminOpen, isDarkMode, setIsDarkMode }) => {
   const navigate = useNavigate();
   const [selectedDistrict, setSelectedDistrict] = useState<DistrictInfo>(OSLO_DISTRICTS[0]);
   const [isDistrictListOpen, setIsDistrictListOpen] = useState(false);
@@ -39,24 +41,40 @@ const HomePage: React.FC<{
 
   return (
     <>
-      {/* DASHBOARD SECTION (DARK) */}
-      <section className="max-w-[1700px] mx-auto w-full py-8 md:py-12">
+      {/* DASHBOARD SECTION */}
+      <section className={`max-w-[1700px] mx-auto w-full py-8 md:py-12 transition-colors duration-300 ${isDarkMode ? '' : ''}`}>
         <div className="px-3 md:px-14 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
           <div className="space-y-3">
-            <div className="flex items-center gap-1.5 text-[10px] font-black text-slate-500 uppercase tracking-widest">
-              <span>Hjem</span> <ChevronRight size={10} className="text-slate-700" /> <span className="text-slate-300">Eiendomsinnsikt</span>
+            <div className={`flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+              <span>Hjem</span> <ChevronRight size={10} className={isDarkMode ? 'text-slate-700' : 'text-slate-300'} /> <span className={isDarkMode ? 'text-slate-300' : 'text-slate-600'}>Eiendomsinnsikt</span>
             </div>
-            <h2 className="text-[28px] md:text-[32px] lg:text-[40px] font-black text-white leading-tight tracking-tight uppercase">
+            <h2 className={`text-[28px] md:text-[32px] lg:text-[40px] font-black leading-tight tracking-tight uppercase ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
               Eiendomsinnsikt <span className="text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')}</span>
             </h2>
-            <p className="text-slate-400 font-medium text-sm">
+            <p className={`font-medium text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
               Avansert dataanalyse for det norske eiendomsmarkedet
             </p>
           </div>
 
           <div className="hidden md:flex items-center gap-3 shrink-0">
-            <button className="flex items-center gap-2 bg-[#1a2333] border border-white/5 text-white px-5 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-[#252f44] transition-all">
-              <Calendar size={14} className="text-slate-400" />
+            {/* Dark/Light toggle */}
+            <button
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              className={`flex items-center gap-2 px-4 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all ${
+                isDarkMode
+                  ? 'bg-[#1a2333] border border-white/5 text-white hover:bg-[#252f44]'
+                  : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 shadow-sm'
+              }`}
+            >
+              {isDarkMode ? <Sun size={14} className="text-amber-400" /> : <Moon size={14} className="text-slate-500" />}
+              {isDarkMode ? 'Light' : 'Dark'}
+            </button>
+            <button className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all ${
+              isDarkMode
+                ? 'bg-[#1a2333] border border-white/5 text-white hover:bg-[#252f44]'
+                : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 shadow-sm'
+            }`}>
+              <Calendar size={14} className={isDarkMode ? 'text-slate-400' : 'text-slate-400'} />
               Siste 30 dager
             </button>
             <button className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-900/10 transition-all">
@@ -69,7 +87,9 @@ const HomePage: React.FC<{
         {/* GRID */}
         <div className="grid lg:grid-cols-12 gap-6 md:gap-10 items-stretch mb-12 px-3 md:px-14">
           {/* MAP COLUMN */}
-          <div className="lg:col-span-8 relative rounded-2xl overflow-hidden border border-white/5 shadow-2xl bg-[#1a2333]/20 h-[420px] md:h-[600px] lg:h-auto flex flex-col">
+          <div className={`lg:col-span-8 relative rounded-2xl overflow-hidden shadow-2xl h-[420px] md:h-[600px] lg:h-auto flex flex-col transition-colors duration-300 ${
+            isDarkMode ? 'border border-white/5 bg-[#1a2333]/20' : 'border border-slate-200 bg-white'
+          }`}>
             <div className="absolute inset-0 z-0 bg-white">
               <MapComponent
                 properties={[]}
@@ -119,15 +139,23 @@ const HomePage: React.FC<{
 
             {/* MAP CONTROLS - CIRCULAR */}
             <div className="absolute top-1/2 -translate-y-1/2 right-4 z-[500] flex flex-col gap-2 pointer-events-auto">
-              <button className="w-8 h-8 md:w-10 md:h-10 bg-[#0b1120] rounded-full flex items-center justify-center text-white border border-white/5 hover:bg-blue-600 transition-all"><Plus size={14} /></button>
-              <button className="w-8 h-8 md:w-10 md:h-10 bg-[#0b1120] rounded-full flex items-center justify-center text-white border border-white/5 hover:bg-blue-600 transition-all"><Minus size={14} /></button>
-              <button className="w-8 h-8 md:w-10 md:h-10 bg-[#0b1120] rounded-full flex items-center justify-center text-white border border-white/5 hover:bg-blue-600 transition-all mt-1 md:mt-2"><Layers size={14} /></button>
-              <button onClick={() => setSelectedDistrict(OSLO_DISTRICTS[0])} className="w-8 h-8 md:w-10 md:h-10 bg-[#0b1120] rounded-full flex items-center justify-center text-white border border-white/5 hover:bg-blue-600 transition-all"><Target size={14} /></button>
+              {[
+                { icon: <Plus size={14} />, onClick: undefined, extraClass: '' },
+                { icon: <Minus size={14} />, onClick: undefined, extraClass: '' },
+                { icon: <Layers size={14} />, onClick: undefined, extraClass: 'mt-1 md:mt-2' },
+                { icon: <Target size={14} />, onClick: () => setSelectedDistrict(OSLO_DISTRICTS[0]), extraClass: '' },
+              ].map((ctrl, i) => (
+                <button key={i} onClick={ctrl.onClick} className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all ${ctrl.extraClass} ${
+                  isDarkMode ? 'bg-[#0b1120] text-white border border-white/5' : 'bg-white text-slate-700 border border-slate-200 shadow-sm'
+                }`}>{ctrl.icon}</button>
+              ))}
             </div>
 
             {/* CONSOLIDATED INSIGHT BOX */}
             <div className="absolute bottom-3 left-3 right-3 md:bottom-6 md:left-6 md:right-6 z-[500] pointer-events-none">
-              <div className="bg-[#242c3d]/95 backdrop-blur-md border border-white/10 rounded-xl md:rounded-[20px] shadow-2xl pointer-events-auto overflow-hidden flex flex-row items-stretch min-h-[90px] md:min-h-[110px]">
+              <div className={`backdrop-blur-md rounded-xl md:rounded-[20px] shadow-2xl pointer-events-auto overflow-hidden flex flex-row items-stretch min-h-[90px] md:min-h-[110px] transition-colors duration-300 ${
+                isDarkMode ? 'bg-[#242c3d]/95 border border-white/10' : 'bg-white/95 border border-slate-200'
+              }`}>
                 <div className="grid grid-cols-2 md:flex md:flex-row flex-grow items-center">
                   {[
                     { icon: <Coins size={14} />, label: "PRIS PR M²", value: `${selectedDistrict.pricePerSqm.toLocaleString()} kr`, color: 'blue' },
@@ -138,19 +166,21 @@ const HomePage: React.FC<{
                     <div
                       key={i}
                       className={`flex items-center p-3 md:px-6 md:py-0 gap-3 md:gap-4 relative h-full md:flex-1
-                        ${i < 2 ? 'max-md:border-b border-white/5' : ''}
-                        ${i % 2 === 0 ? 'max-md:border-r border-white/5' : ''}
-                        ${i !== 0 ? 'md:border-l border-white/5' : ''}
+                        ${i < 2 ? `max-md:border-b ${isDarkMode ? 'border-white/5' : 'border-slate-100'}` : ''}
+                        ${i % 2 === 0 ? `max-md:border-r ${isDarkMode ? 'border-white/5' : 'border-slate-100'}` : ''}
+                        ${i !== 0 ? `md:border-l ${isDarkMode ? 'border-white/5' : 'border-slate-100'}` : ''}
                       `}
                     >
-                      <div className={`flex w-7 h-7 md:w-10 md:h-10 bg-slate-800/60 rounded-lg md:rounded-xl items-center justify-center text-${stat.color}-500 shrink-0`}>
+                      <div className={`flex w-7 h-7 md:w-10 md:h-10 rounded-lg md:rounded-xl items-center justify-center text-${stat.color}-500 shrink-0 ${
+                        isDarkMode ? 'bg-slate-800/60' : 'bg-slate-100'
+                      }`}>
                         {stat.icon}
                       </div>
                       <div className="flex flex-col text-left">
-                        <div className="text-[12px] md:text-[18px] lg:text-[20px] font-black text-white leading-tight">
+                        <div className={`text-[12px] md:text-[18px] lg:text-[20px] font-black leading-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
                           {stat.value}
                         </div>
-                        <div className="text-[8px] md:text-[9px] font-black text-slate-500 uppercase tracking-widest leading-none mt-0.5">
+                        <div className={`text-[8px] md:text-[9px] font-black uppercase tracking-widest leading-none mt-0.5 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
                           {stat.label}
                         </div>
                       </div>
@@ -158,10 +188,12 @@ const HomePage: React.FC<{
                   ))}
                 </div>
 
-                <button className="w-[70px] md:w-[130px] flex items-center justify-center hover:bg-white/5 transition-all group shrink-0 border-l border-white/5 relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-50 pointer-events-none"></div>
+                <button className={`w-[70px] md:w-[130px] flex items-center justify-center transition-all group shrink-0 relative ${
+                  isDarkMode ? 'hover:bg-white/5 border-l border-white/5' : 'hover:bg-slate-50 border-l border-slate-100'
+                }`}>
+                  <div className={`absolute inset-0 bg-gradient-to-br opacity-50 pointer-events-none ${isDarkMode ? 'from-white/5 to-transparent' : 'from-slate-50 to-transparent'}`}></div>
                   <div className="relative">
-                    <MessageSquareMore size={36} className="text-white md:w-14 md:h-14 group-hover:scale-110 transition-transform stroke-[1.2]" />
+                    <MessageSquareMore size={36} className={`md:w-14 md:h-14 group-hover:scale-110 transition-transform stroke-[1.2] ${isDarkMode ? 'text-white' : 'text-slate-700'}`} />
                   </div>
                 </button>
               </div>
@@ -170,9 +202,11 @@ const HomePage: React.FC<{
 
           {/* SIDEBAR COLUMN */}
           <div className="lg:col-span-4 flex flex-col md:px-0">
-            <div className="bg-[#1a2333]/40 border border-white/5 rounded-2xl flex flex-col shadow-xl h-full">
+            <div className={`rounded-2xl flex flex-col shadow-xl h-full transition-colors duration-300 ${
+              isDarkMode ? 'bg-[#1a2333]/40 border border-white/5' : 'bg-white border border-slate-200'
+            }`}>
               <div className="flex justify-between items-center p-8 pb-6 shrink-0">
-                <h3 className="text-[14px] font-black text-white uppercase tracking-wider">Siste innlegg</h3>
+                <h3 className={`text-[14px] font-black uppercase tracking-wider ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Siste innlegg</h3>
                 <button className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] hover:underline">Se alle</button>
               </div>
 
@@ -180,14 +214,14 @@ const HomePage: React.FC<{
                 {/* Featured Sidebar Article */}
                 {displayPosts.length > 0 && (
                   <div className="group cursor-pointer shrink-0" onClick={() => handlePostClick(displayPosts[0])}>
-                    <div className="relative aspect-[16/10] rounded-xl overflow-hidden mb-5 shadow-lg border border-white/5">
+                    <div className={`relative aspect-[16/10] rounded-xl overflow-hidden mb-5 shadow-lg ${isDarkMode ? 'border border-white/5' : 'border border-slate-100'}`}>
                       <img src={displayPosts[0].image} alt={displayPosts[0].title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                       <div className="absolute top-4 right-4 bg-blue-600 text-white text-[9px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest shadow-xl">{displayPosts[0].category}</div>
                     </div>
-                    <div className="text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest flex items-center gap-2">
-                      <span>{displayPosts[0].date}</span> <span className="text-slate-700">&bull;</span> <span>{displayPosts[0].category}</span>
+                    <div className={`text-[10px] font-black uppercase mb-2 tracking-widest flex items-center gap-2 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                      <span>{displayPosts[0].date}</span> <span className={isDarkMode ? 'text-slate-700' : 'text-slate-300'}>&bull;</span> <span>{displayPosts[0].category}</span>
                     </div>
-                    <h4 className="text-[18px] font-black text-white leading-tight uppercase tracking-tight group-hover:text-blue-400 transition-colors">
+                    <h4 className={`text-[18px] font-black leading-tight uppercase tracking-tight group-hover:text-blue-400 transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
                       {displayPosts[0].title}
                     </h4>
                   </div>
@@ -196,15 +230,15 @@ const HomePage: React.FC<{
                 {/* List Articles */}
                 <div className="space-y-6 shrink-0">
                   {displayPosts.slice(1, 2).map((post) => (
-                    <div key={post.id} className="flex gap-5 group cursor-pointer border-t border-white/5 pt-6" onClick={() => handlePostClick(post)}>
-                      <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 border border-white/5">
+                    <div key={post.id} className={`flex gap-5 group cursor-pointer pt-6 ${isDarkMode ? 'border-t border-white/5' : 'border-t border-slate-100'}`} onClick={() => handlePostClick(post)}>
+                      <div className={`w-16 h-16 rounded-xl overflow-hidden shrink-0 ${isDarkMode ? 'border border-white/5' : 'border border-slate-100'}`}>
                         <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
                       </div>
                       <div>
-                        <div className="text-[9px] font-black text-slate-500 uppercase mb-1 tracking-widest flex items-center gap-1.5">
-                          <span>{post.date}</span> <span className="text-slate-700">&bull;</span> <span>{post.category}</span>
+                        <div className={`text-[9px] font-black uppercase mb-1 tracking-widest flex items-center gap-1.5 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                          <span>{post.date}</span> <span className={isDarkMode ? 'text-slate-700' : 'text-slate-300'}>&bull;</span> <span>{post.category}</span>
                         </div>
-                        <h5 className="text-[13px] font-black text-white uppercase group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug tracking-tight">
+                        <h5 className={`text-[13px] font-black uppercase group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
                           {post.title}
                         </h5>
                       </div>
@@ -213,13 +247,15 @@ const HomePage: React.FC<{
                 </div>
 
                 {/* Premium Box */}
-                <div className="mt-4 bg-[#0f172a] border border-blue-500/20 p-6 rounded-2xl relative overflow-hidden group shadow-2xl shrink-0">
+                <div className={`mt-4 p-6 rounded-2xl relative overflow-hidden group shadow-2xl shrink-0 transition-colors duration-300 ${
+                  isDarkMode ? 'bg-[#0f172a] border border-blue-500/20' : 'bg-blue-50 border border-blue-100'
+                }`}>
                   <div className="relative z-10">
                     <div className="flex items-center gap-2 mb-3 text-blue-500">
                       <Zap size={14} fill="currentColor" />
                       <h5 className="text-[10px] font-black uppercase tracking-[0.25em]">Premium Innsikt</h5>
                     </div>
-                    <p className="text-slate-400 text-[12px] font-medium leading-relaxed mb-4">
+                    <p className={`text-[12px] font-medium leading-relaxed mb-4 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
                       Få tilgang til dypere data og historiske trender med vår Pro-pakke.
                     </p>
                     <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-xl transition-all uppercase tracking-widest text-[10px] shadow-xl shadow-blue-600/20 active:scale-[0.98]">
@@ -313,7 +349,7 @@ const HomePage: React.FC<{
       </section>
 
       {/* 4. Dark Section Wrapper: CTA */}
-      <section className="bg-[#0b1120] py-32 border-t border-white/5">
+      <section className={`py-32 transition-colors duration-300 ${isDarkMode ? 'bg-[#0b1120] border-t border-white/5' : 'bg-slate-900 border-t border-slate-200'}`}>
         <div className="max-w-[1700px] mx-auto px-3 md:px-14 text-center">
           <h2 className="text-[42px] md:text-[64px] font-black text-white leading-tight uppercase tracking-tighter mb-6">
             Klar for å <br/> <span className="text-blue-500">ta neste steg?</span>
@@ -366,6 +402,7 @@ const App: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [blogPosts, setBlogPosts] = useState<BlogPostFull[]>([]);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
 
   const navRef = useRef<HTMLElement>(null);
   const navigate = useNavigate();
@@ -415,7 +452,7 @@ const App: React.FC = () => {
   const isBlogPostPage = location.pathname.startsWith('/blog/');
 
   return (
-    <div className={`flex flex-col bg-[#0b1120] min-h-screen text-white font-sans overflow-x-hidden ${isBlogPostPage ? '' : ''}`}>
+    <div className={`flex flex-col min-h-screen font-sans overflow-x-hidden transition-colors duration-300 ${isDarkMode ? 'bg-[#0b1120] text-white' : 'bg-slate-50 text-slate-900'} ${isBlogPostPage ? '' : ''}`}>
       {/* 1. Global Header - only show on home page, blog post pages have their own */}
       {!isBlogPostPage && (
         <header className="h-16 md:h-20 bg-white flex items-center justify-between px-3 lg:px-14 z-[1000] sticky top-0 shrink-0 shadow-sm">
@@ -460,6 +497,8 @@ const App: React.FC = () => {
               onPostsChange={(posts) => setBlogPosts(posts)}
               isAdminOpen={isAdminOpen}
               setIsAdminOpen={setIsAdminOpen}
+              isDarkMode={isDarkMode}
+              setIsDarkMode={setIsDarkMode}
             />
           ) : (
             <div className="flex-1 flex items-center justify-center p-20 text-slate-500 font-black uppercase tracking-widest text-xs">Siden er under utvikling</div>
