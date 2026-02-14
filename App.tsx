@@ -500,18 +500,18 @@ const HomePage: React.FC<{
       <section className={`py-32 transition-colors duration-300 ${isDarkMode ? 'bg-[#0b1120] border-t border-white/5' : 'bg-slate-900 border-t border-slate-200'}`}>
         <div className="max-w-[1700px] mx-auto px-3 md:px-14 text-center">
           <h2 className="text-[42px] md:text-[64px] font-black text-white leading-tight uppercase tracking-tighter mb-6">
-            Klar for å <br/> <span className="text-blue-500">ta neste steg?</span>
+            Hva er boligen din <br/> <span className="text-blue-500">verdt akkurat nå?</span>
           </h2>
           <p className="text-slate-400 text-lg md:text-xl font-medium max-w-2xl mx-auto mb-12">
-            Enten du skal selge nå eller bare er nysgjerrig på verdien, gir jeg deg de verktøyene du trenger.
+            Få en gratis og uforpliktende verdivurdering basert på ferske salgsdata fra ditt nærområde. Tar under ett minutt.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button className="bg-blue-600 text-white px-10 py-5 rounded-[20px] font-black text-[13px] uppercase tracking-widest hover:bg-blue-700 shadow-xl shadow-blue-900/40 transition-all">
-              Vurder min bolig
+              Få gratis verdivurdering
             </button>
             <button className="bg-[#1a2333] text-white px-10 py-5 rounded-[20px] font-black text-[13px] uppercase tracking-widest hover:bg-[#252f44] border border-white/5 transition-all">
-              Snakk med en rådgiver
+              Book en rask prat
             </button>
           </div>
         </div>
