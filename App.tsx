@@ -453,14 +453,14 @@ const HomePage: React.FC<{
                       onClick={() => setIsChatOpen(true)}
                       className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-3 md:py-4 md:rounded-b-xl transition-all uppercase tracking-widest text-[10px] md:text-[11px]"
                     >
-                      {(() => {
+                      <span className="animate-[pulse-scale_2s_ease-in-out_infinite]">{(() => {
                         const { cta } = getMarketData(selectedDistrict);
                         const name = selectedDistrict.name.replace(' (Totalt)', '');
                         if (cta === 'strong_seller') return 'Få gratis verdivurdering nå';
                         if (cta === 'mod_seller') return 'Sjekk hva boligen din kan være verdt';
                         if (cta === 'buyer') return 'Snakk med meg om markedet her';
                         return `Få verdivurdering ${getPreposition(selectedDistrict.name)} ${name}`;
-                      })()} <ArrowRight size={16} />
+                      })()}</span> <ArrowRight size={16} />
                     </button>
                   </div>
                 </div>
