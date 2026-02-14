@@ -54,14 +54,18 @@ const TelegramChatWidget: React.FC<TelegramChatWidgetProps> = ({ isDarkMode, isO
     }]);
 
     try {
-      const res = await fetch('/meglerinnsikt_v4/api/send-telegram', {
+      const botToken = '8585294019:AAFhZnuxfdNScfNVWXTQYzwjNXFxeEax6mk';
+      const chatId = '6961882916';
+      const text = `💬 Ny melding fra Meglerinnsikt\n\n👤 Navn: ${name || 'Ikke oppgitt'}\n📱 Telefon: ${phone || 'Ikke oppgitt'}\n\n${message}`;
+
+      const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone, message })
+        body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML' })
       });
 
       const data = await res.json();
-      if (data.success) {
+      if (data.ok) {
         setStatus('success');
         setMessages(prev => [...prev, {
           role: 'model',
