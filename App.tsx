@@ -234,8 +234,8 @@ const HomePage: React.FC<{
       </section>
 
       {/* 3. White Section Wrapper: Features & Blog Grid */}
-      <section className="bg-white py-24 px-6 lg:px-14">
-        <div className="max-w-[1700px] mx-auto">
+      <section className="bg-white py-24">
+        <div className="max-w-[1700px] mx-auto px-6 md:px-14">
 
           {/* Features Section */}
           <div className="text-center mb-24">
@@ -313,8 +313,8 @@ const HomePage: React.FC<{
       </section>
 
       {/* 4. Dark Section Wrapper: CTA */}
-      <section className="bg-[#0b1120] py-32 px-6 lg:px-14 border-t border-white/5">
-        <div className="max-w-[1700px] mx-auto text-center">
+      <section className="bg-[#0b1120] py-32 border-t border-white/5">
+        <div className="max-w-[1700px] mx-auto px-6 md:px-14 text-center">
           <h2 className="text-[42px] md:text-[64px] font-black text-white leading-tight uppercase tracking-tighter mb-6">
             Klar for å <br/> <span className="text-blue-500">ta neste steg?</span>
           </h2>
@@ -334,8 +334,8 @@ const HomePage: React.FC<{
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-white py-16 px-6 md:px-14 border-t border-slate-100">
-        <div className="max-w-[1700px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+      <footer className="bg-white py-16 border-t border-slate-100">
+        <div className="max-w-[1700px] mx-auto px-6 md:px-14 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-2 text-slate-400">
             <Diamond size={24} className="text-blue-600" />
             <span className="text-xl font-black tracking-tighter text-slate-900">Lumina</span>
