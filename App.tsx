@@ -146,7 +146,7 @@ const HomePage: React.FC<{
                 <div className={`rounded-xl md:rounded-[20px] overflow-hidden transition-colors duration-300 ${
                   isDarkMode ? 'bg-[#242c3d]/95 backdrop-blur-md shadow-2xl border border-white/10 md:bg-[#242c3d]/70 md:border-white/5' : 'bg-white/95 backdrop-blur-md shadow-2xl border border-slate-200 md:bg-white/70 md:border-slate-100'
                 }`}>
-                  <div className="grid grid-cols-2 md:grid-cols-4">
+                  <div className="grid grid-cols-4">
                     {[
                       { icon: <TrendingUp size={14} className="md:w-7 md:h-7" />, label: "PRISENDRING", value: `+${selectedDistrict.priceChange}%`, color: 'blue' },
                       { icon: <Clock size={14} className="md:w-7 md:h-7" />, label: "OMLØP", value: `${selectedDistrict.avgDaysOnMarket}`, color: 'blue' },
@@ -155,10 +155,8 @@ const HomePage: React.FC<{
                     ].map((stat, i) => (
                       <div
                         key={i}
-                        className={`flex items-center p-3 gap-3 md:flex-row md:items-center md:justify-center md:gap-4 md:py-5 md:px-4
-                          ${i < 2 ? `max-md:border-b ${isDarkMode ? 'border-white/5' : 'border-slate-100'}` : ''}
-                          ${i % 2 === 0 ? `max-md:border-r ${isDarkMode ? 'border-white/5' : 'border-slate-100'}` : ''}
-                          ${i !== 0 ? `md:border-l ${isDarkMode ? 'border-white/5' : 'border-slate-100'}` : ''}
+                        className={`flex items-center p-2 gap-1.5 md:gap-4 md:justify-center md:py-5 md:px-4
+                          ${i !== 0 ? `border-l ${isDarkMode ? 'border-white/5' : 'border-slate-100'}` : ''}
                         `}
                       >
                         <div className={isDarkMode ? 'text-blue-400' : 'text-blue-500'}>
