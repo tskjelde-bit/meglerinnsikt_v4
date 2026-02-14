@@ -32,6 +32,7 @@ const HomePage: React.FC<{
   const [selectedDistrict, setSelectedDistrict] = useState<DistrictInfo>(OSLO_DISTRICTS[0]);
   const [isDistrictListOpen, setIsDistrictListOpen] = useState(false);
   const [newsletterName, setNewsletterName] = useState('');
+  const [isDistrictSelected, setIsDistrictSelected] = useState(false);
 
   const handlePostClick = (post: BlogPost | BlogPostFull) => {
     if ('slug' in post && (post as BlogPostFull).slug) {
@@ -57,18 +58,6 @@ const HomePage: React.FC<{
           </div>
 
           <div className="hidden md:flex items-center gap-3 shrink-0">
-            {/* Dark/Light toggle */}
-            <button
-              onClick={() => setIsDarkMode(!isDarkMode)}
-              className={`flex items-center gap-2 px-4 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all ${
-                isDarkMode
-                  ? 'bg-[#1a2333] border border-white/5 text-white hover:bg-[#252f44]'
-                  : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 shadow-sm'
-              }`}
-            >
-              {isDarkMode ? <Sun size={14} className="text-amber-400" /> : <Moon size={14} className="text-slate-500" />}
-              {isDarkMode ? 'Light' : 'Dark'}
-            </button>
             <button className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all ${
               isDarkMode
                 ? 'bg-[#1a2333] border border-white/5 text-white hover:bg-[#252f44]'
@@ -97,7 +86,7 @@ const HomePage: React.FC<{
                 selectedProperty={null}
                 selectedDistrict={selectedDistrict}
                 onPropertySelect={() => {}}
-                onDistrictSelect={(d) => setSelectedDistrict(d)}
+                onDistrictSelect={(d) => { setSelectedDistrict(d); setIsDistrictSelected(true); }}
               />
             </div>
 
@@ -124,7 +113,7 @@ const HomePage: React.FC<{
                     {OSLO_DISTRICTS.map((district) => (
                       <button
                         key={district.id}
-                        onClick={() => { setSelectedDistrict(district); setIsDistrictListOpen(false); }}
+                        onClick={() => { setSelectedDistrict(district); setIsDistrictListOpen(false); setIsDistrictSelected(true); }}
                         className="w-full flex items-center justify-between px-4 py-2 md:px-6 md:py-3 text-left hover:bg-blue-50 transition-colors group"
                       >
                         <span className={`text-[10px] md:text-[11px] font-black uppercase tracking-tight ${selectedDistrict.id === district.id ? 'text-blue-600' : 'text-slate-600'}`}>
@@ -143,7 +132,7 @@ const HomePage: React.FC<{
                 { icon: <Plus size={14} />, onClick: undefined, extraClass: '' },
                 { icon: <Minus size={14} />, onClick: undefined, extraClass: '' },
                 { icon: <Layers size={14} />, onClick: undefined, extraClass: 'mt-1 md:mt-2' },
-                { icon: <Target size={14} />, onClick: () => setSelectedDistrict(OSLO_DISTRICTS[0]), extraClass: '' },
+                { icon: <Target size={14} />, onClick: () => { setSelectedDistrict(OSLO_DISTRICTS[0]); setIsDistrictSelected(false); }, extraClass: '' },
               ].map((ctrl, i) => (
                 <button key={i} onClick={ctrl.onClick} className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all ${ctrl.extraClass} ${
                   isDarkMode ? 'bg-[#0b1120] text-white border border-white/5' : 'bg-white text-slate-700 border border-slate-200 shadow-sm'
@@ -153,49 +142,46 @@ const HomePage: React.FC<{
 
             {/* CONSOLIDATED INSIGHT BOX */}
             <div className="absolute bottom-3 left-3 right-3 md:bottom-6 md:left-6 md:right-6 z-[500] pointer-events-none">
-              <div className={`backdrop-blur-md rounded-xl md:rounded-[20px] shadow-2xl pointer-events-auto overflow-hidden flex flex-row items-stretch min-h-[90px] md:min-h-[110px] transition-colors duration-300 ${
-                isDarkMode ? 'bg-[#242c3d]/95 border border-white/10' : 'bg-white/95 border border-slate-200'
-              }`}>
-                <div className="grid grid-cols-2 md:flex md:flex-row flex-grow items-center">
-                  {[
-                    { icon: <Coins size={14} />, label: "PRIS PR M²", value: `${selectedDistrict.pricePerSqm.toLocaleString()} kr`, color: 'blue' },
-                    { icon: <Clock size={14} />, label: "OMSETNING", value: `${selectedDistrict.avgDaysOnMarket} dgr`, color: 'orange' },
-                    { icon: <Building2 size={14} />, label: "MEDIAN", value: `${(selectedDistrict.medianPrice / 1000000).toFixed(1)}M kr`, color: 'emerald' },
-                    { icon: <LineChart size={14} />, label: "VEKST 12M", value: `+${selectedDistrict.priceChange}%`, color: 'purple' }
-                  ].map((stat, i) => (
-                    <div
-                      key={i}
-                      className={`flex items-center p-3 md:px-6 md:py-0 gap-3 md:gap-4 relative h-full md:flex-1
-                        ${i < 2 ? `max-md:border-b ${isDarkMode ? 'border-white/5' : 'border-slate-100'}` : ''}
-                        ${i % 2 === 0 ? `max-md:border-r ${isDarkMode ? 'border-white/5' : 'border-slate-100'}` : ''}
-                        ${i !== 0 ? `md:border-l ${isDarkMode ? 'border-white/5' : 'border-slate-100'}` : ''}
-                      `}
-                    >
-                      <div className={`flex w-7 h-7 md:w-10 md:h-10 rounded-lg md:rounded-xl items-center justify-center text-${stat.color}-500 shrink-0 ${
-                        isDarkMode ? 'bg-slate-800/60' : 'bg-slate-100'
-                      }`}>
-                        {stat.icon}
-                      </div>
-                      <div className="flex flex-col text-left">
-                        <div className={`text-[12px] md:text-[18px] lg:text-[20px] font-black leading-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-                          {stat.value}
+              <div className="pointer-events-auto flex flex-col gap-3">
+                <div className={`rounded-xl md:rounded-[20px] overflow-hidden transition-colors duration-300 ${
+                  isDarkMode ? 'bg-[#242c3d]/95 backdrop-blur-md shadow-2xl border border-white/10 md:bg-[#242c3d]/70 md:border-white/5' : 'bg-white/95 backdrop-blur-md shadow-2xl border border-slate-200 md:bg-white/70 md:border-slate-100'
+                }`}>
+                  <div className="grid grid-cols-2 md:grid-cols-4">
+                    {[
+                      { icon: <TrendingUp size={14} className="md:w-7 md:h-7" />, label: "PRISENDRING", value: `+${selectedDistrict.priceChange}%`, color: 'blue' },
+                      { icon: <Clock size={14} className="md:w-7 md:h-7" />, label: "OMLØP", value: `${selectedDistrict.avgDaysOnMarket}`, color: 'blue' },
+                      { icon: <Building2 size={14} className="md:w-7 md:h-7" />, label: "MEDIANPRIS", value: `${(selectedDistrict.medianPrice / 1000000).toFixed(1)}M`, color: 'blue' },
+                      { icon: <Coins size={14} className="md:w-7 md:h-7" />, label: "KR/M²", value: `${Math.round(selectedDistrict.pricePerSqm / 1000)}k`, color: 'blue' }
+                    ].map((stat, i) => (
+                      <div
+                        key={i}
+                        className={`flex items-center p-3 gap-3 md:flex-row md:items-center md:justify-center md:gap-4 md:py-5 md:px-4
+                          ${i < 2 ? `max-md:border-b ${isDarkMode ? 'border-white/5' : 'border-slate-100'}` : ''}
+                          ${i % 2 === 0 ? `max-md:border-r ${isDarkMode ? 'border-white/5' : 'border-slate-100'}` : ''}
+                          ${i !== 0 ? `md:border-l ${isDarkMode ? 'border-white/5' : 'border-slate-100'}` : ''}
+                        `}
+                      >
+                        <div className={isDarkMode ? 'text-blue-400' : 'text-blue-500'}>
+                          {stat.icon}
                         </div>
-                        <div className={`text-[8px] md:text-[9px] font-black uppercase tracking-widest leading-none mt-0.5 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
-                          {stat.label}
+                        <div className="flex flex-col">
+                          <div className={`text-[12px] md:text-[24px] lg:text-[28px] font-black leading-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                            {stat.value}
+                          </div>
+                          <div className={`text-[8px] md:text-[9px] font-black uppercase tracking-widest leading-none mt-0.5 ${isDarkMode ? 'text-white' : 'text-slate-400'}`}>
+                            {stat.label}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
 
-                <button className={`w-[70px] md:w-[130px] flex items-center justify-center transition-all group shrink-0 relative ${
-                  isDarkMode ? 'hover:bg-white/5 border-l border-white/5' : 'hover:bg-slate-50 border-l border-slate-100'
-                }`}>
-                  <div className={`absolute inset-0 bg-gradient-to-br opacity-50 pointer-events-none ${isDarkMode ? 'from-white/5 to-transparent' : 'from-slate-50 to-transparent'}`}></div>
-                  <div className="relative">
-                    <MessageSquareMore size={36} className={`md:w-14 md:h-14 group-hover:scale-110 transition-transform stroke-[1.2] ${isDarkMode ? 'text-white' : 'text-slate-700'}`} />
-                  </div>
-                </button>
+                <div className={`hidden md:block overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected ? 'max-h-20 opacity-100 mt-3' : 'max-h-0 opacity-0 mt-0'}`}>
+                  <button className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl transition-all uppercase tracking-widest text-[11px] shadow-xl shadow-blue-600/20">
+                    Hva betyr dette for min bolig? <ArrowRight size={16} />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -203,7 +189,7 @@ const HomePage: React.FC<{
           {/* SIDEBAR COLUMN */}
           <div className="lg:col-span-4 flex flex-col md:px-0">
             <div className={`rounded-2xl flex flex-col shadow-xl h-full transition-colors duration-300 ${
-              isDarkMode ? 'bg-[#1a2333]/40 border border-white/5' : 'bg-white border border-slate-200'
+              isDarkMode ? 'bg-[#1e293b] border border-white/5' : 'bg-white border border-slate-200'
             }`}>
               <div className="flex justify-between items-center p-8 pb-6 shrink-0">
                 <h3 className={`text-[14px] font-black uppercase tracking-wider ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Siste innlegg</h3>
