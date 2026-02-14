@@ -243,7 +243,7 @@ const HomePage: React.FC<{
 
                       {/* Tolkningslinje */}
                       <div className="px-5 pb-2">
-                        <p className={`text-[11px] md:text-[12px] font-bold text-center ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>
+                        <p className={`text-[13px] md:text-[14px] font-bold italic text-center ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
                           {getMarketInterpretation(selectedDistrict)}
                         </p>
                       </div>
