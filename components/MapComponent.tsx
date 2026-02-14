@@ -204,7 +204,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
     // Tile layer – muted blue-grey tones for water/land context
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png', {
       maxZoom: 19,
-      opacity: 0.85,
+      opacity: 1,
     }).addTo(map);
 
     mapRef.current = map;
