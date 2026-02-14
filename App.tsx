@@ -268,13 +268,13 @@ const HomePage: React.FC<{
                       const sqmDiff = selectedDistrict.pricePerSqm - oslo.pricePerSqm;
                       const getColor = (diff: number, invert = false) => {
                         const d = invert ? -diff : diff;
-                        if (d > 0.3 || (!invert && d > 1) || (invert && diff < -1)) return 'text-[#0C6B37]';
+                        if (d > 0.3 || (!invert && d > 1) || (invert && diff < -1)) return 'text-[#03d392]';
                         if (d < -0.3 || (!invert && d < -1) || (invert && diff > 1)) return 'text-[#BC2023]';
                         return 'text-[#F8B324]';
                       };
-                      const priceColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (priceDiff > 0.3 ? 'text-[#0C6B37]' : priceDiff < -0.3 ? 'text-[#BC2023]' : 'text-[#F8B324]');
-                      const daysColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (daysDiff < -1 ? 'text-[#0C6B37]' : daysDiff > 1 ? 'text-[#BC2023]' : 'text-[#F8B324]');
-                      const sqmColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (sqmDiff > 0 ? 'text-[#0C6B37]' : sqmDiff < 0 ? 'text-[#BC2023]' : 'text-[#F8B324]');
+                      const priceColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (priceDiff > 0.3 ? 'text-[#03d392]' : priceDiff < -0.3 ? 'text-[#BC2023]' : 'text-[#F8B324]');
+                      const daysColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (daysDiff < -1 ? 'text-[#03d392]' : daysDiff > 1 ? 'text-[#BC2023]' : 'text-[#F8B324]');
+                      const sqmColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (sqmDiff > 0 ? 'text-[#03d392]' : sqmDiff < 0 ? 'text-[#BC2023]' : 'text-[#F8B324]');
                       return [
                         { icon: <TrendingUp size={18} className="md:w-7 md:h-7" />, label: "PRISENDRING", mobileLabel: "Prisendring", value: `+${selectedDistrict.priceChange}%`, mobileValue: `+${selectedDistrict.priceChange}%`, iconColor: priceColor, hideOnMobile: false },
                         { icon: <Clock size={18} className="md:w-7 md:h-7" />, label: "SALGSTID", mobileLabel: "Salgstid", value: `${selectedDistrict.avgDaysOnMarket}`, mobileValue: `${selectedDistrict.avgDaysOnMarket} dager`, iconColor: daysColor, hideOnMobile: false },
@@ -316,7 +316,7 @@ const HomePage: React.FC<{
                           {getMarketData(selectedDistrict).interpretation}
                         </p>
                         {getMarketData(selectedDistrict).trigger && (
-                          <p className={`text-[12px] font-bold text-center mt-1 ${isDarkMode ? 'text-[#0C6B37]' : 'text-[#0C6B37]'}`}>
+                          <p className={`text-[12px] font-bold text-center mt-1 ${isDarkMode ? 'text-[#03d392]' : 'text-[#03d392]'}`}>
                             Dette er et gunstig tidspunkt å vurdere salg.
                           </p>
                         )}
@@ -345,8 +345,8 @@ const HomePage: React.FC<{
 
                         <div className={`col-span-1 rounded-xl p-4 ${isDarkMode ? 'bg-white/5' : 'bg-slate-100/80'}`}>
                           <div className="flex items-center gap-2 mb-2">
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#0C6B37]"></div>
-                            <span className={`text-[11px] font-black uppercase tracking-widest ${isDarkMode ? 'text-[#0C6B37]' : 'text-[#0C6B37]'}`}>
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#03d392]"></div>
+                            <span className={`text-[11px] font-black uppercase tracking-widest ${isDarkMode ? 'text-[#03d392]' : 'text-[#03d392]'}`}>
                               Prisutvikling
                             </span>
                           </div>
@@ -409,8 +409,8 @@ const HomePage: React.FC<{
                         {/* Prisutvikling */}
                         <div className="py-2.5">
                           <div className="flex items-center gap-2 mb-1">
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#0C6B37]"></div>
-                            <span className={`text-[9px] font-black uppercase tracking-widest ${isDarkMode ? 'text-[#0C6B37]' : 'text-[#0C6B37]'}`}>
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#03d392]"></div>
+                            <span className={`text-[9px] font-black uppercase tracking-widest ${isDarkMode ? 'text-[#03d392]' : 'text-[#03d392]'}`}>
                               Prisutvikling
                             </span>
                           </div>
