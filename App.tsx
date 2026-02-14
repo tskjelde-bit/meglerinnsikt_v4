@@ -33,8 +33,7 @@ const HomePage: React.FC<{
   setIsAdminOpen: (open: boolean) => void;
   isDarkMode: boolean;
   setIsDarkMode: (dark: boolean) => void;
-  setIsChatOpen: (open: boolean) => void;
-}> = ({ displayPosts, blogPosts, onPostsChange, isAdminOpen, setIsAdminOpen, isDarkMode, setIsDarkMode, setIsChatOpen }) => {
+}> = ({ displayPosts, blogPosts, onPostsChange, isAdminOpen, setIsAdminOpen, isDarkMode, setIsDarkMode }) => {
   const navigate = useNavigate();
 
   const getPreposition = (name: string): string => {
@@ -838,7 +837,6 @@ const App: React.FC = () => {
               setIsAdminOpen={setIsAdminOpen}
               isDarkMode={isDarkMode}
               setIsDarkMode={setIsDarkMode}
-              setIsChatOpen={setIsChatOpen}
             />
           ) : (
             <div className="flex-1 flex items-center justify-center p-20 text-slate-500 font-black uppercase tracking-widest text-xs">Siden er under utvikling</div>
