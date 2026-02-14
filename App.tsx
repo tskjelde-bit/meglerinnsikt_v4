@@ -145,7 +145,7 @@ const HomePage: React.FC<{
             <h2 className={`text-[20px] md:text-[32px] lg:text-[40px] font-black leading-tight tracking-tight uppercase ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
               <span className="hidden md:inline">Eiendomsinnsikt </span><span className="md:hidden"><span className="text-[18px]">Boligmarkedet {getPreposition(selectedDistrict.name)} </span><span className="text-[18px] text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')}</span></span><span className="hidden md:inline text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')}</span>
             </h2>
-            <p className={`md:hidden text-[12px] font-black uppercase tracking-wider text-white`}>
+            <p className={`md:hidden text-[12px] font-black uppercase tracking-wider text-white/70`}>
               {isDistrictSelected
                 ? <span>{getMarketData(selectedDistrict).interpretation}</span>
                 : <><span className="text-blue-500">Selger</span> eller <span className="text-blue-500">kjøpers</span> marked akkurat nå?</>
