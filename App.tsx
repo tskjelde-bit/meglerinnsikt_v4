@@ -436,7 +436,7 @@ const HomePage: React.FC<{
                     </div>
                     <button
                       onClick={() => setIsChatOpen(true)}
-                      className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-3 md:py-4 rounded-b-lg md:rounded-b-xl transition-all uppercase tracking-widest text-[10px] md:text-[11px]"
+                      className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-3 md:py-4 md:rounded-b-xl transition-all uppercase tracking-widest text-[10px] md:text-[11px]"
                     >
                       {(() => {
                         const { cta } = getMarketData(selectedDistrict);
