@@ -5,14 +5,14 @@ import L from 'leaflet';
 
 // Choropleth color scale based on priceChange (%)
 const CHOROPLETH_SCALE: [number, string][] = [
-  [0, '#DBEAFE'],
-  [2, '#BFDBFE'],
-  [3, '#93C5FD'],
-  [4, '#60A5FA'],
-  [5, '#3B82F6'],
-  [6, '#2563EB'],
+  [0, '#93C5FD'],
+  [2, '#60A5FA'],
+  [3, '#3B82F6'],
+  [4, '#2563EB'],
+  [5, '#1D4ED8'],
+  [6, '#1E40AF'],
 ];
-const CHOROPLETH_MAX = '#1D4ED8';
+const CHOROPLETH_MAX = '#1E3A8A';
 const SELECTED_COLOR = '#2D4B5F';
 const DEFAULT_COLOR = '#F1F5F9';
 
@@ -95,7 +95,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
 
         return {
           fillColor,
-          fillOpacity: 0.55,
+          fillOpacity: 0.4,
           weight: 1.5,
           color: '#FFFFFF',
           opacity: 0.8,
@@ -114,7 +114,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
             if (!sel || district.name !== sel.name) {
               target.setStyle({
                 fillColor: getHoverColor(district.priceChange),
-                fillOpacity: 0.7,
+                fillOpacity: 0.55,
               });
               target.bringToFront();
             }
