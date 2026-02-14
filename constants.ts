@@ -274,4 +274,4 @@ export const MOCK_BLOG_POSTS: BlogPost[] = [
   }
 ];
 
-export const APP_NAME = "Innsikt";
+export const APP_NAME = "Meglerinnsikt";
