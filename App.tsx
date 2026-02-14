@@ -157,16 +157,17 @@ const HomePage: React.FC<{
                       ? 'bg-white backdrop-blur-md shadow-2xl border border-slate-200'
                       : 'bg-white/95 backdrop-blur-md shadow-2xl border border-slate-200 md:bg-white/70 md:border-slate-100'
                 }`}>
-                  <div className="grid grid-cols-4">
+                  <div className="grid grid-cols-3 md:grid-cols-4">
                     {[
-                      { icon: <TrendingUp size={14} className="md:w-7 md:h-7" />, label: "PRISENDRING", mobileLabel: "PRIS", value: `+${selectedDistrict.priceChange}%`, color: 'blue' },
-                      { icon: <Clock size={14} className="md:w-7 md:h-7" />, label: "OMLØP", mobileLabel: "OMLØP", value: `${selectedDistrict.avgDaysOnMarket}`, color: 'blue' },
-                      { icon: <Building2 size={14} className="md:w-7 md:h-7" />, label: "MEDIANPRIS", mobileLabel: "MEDIAN", value: `${(selectedDistrict.medianPrice / 1000000).toFixed(1)}M`, color: 'blue' },
-                      { icon: <Coins size={14} className="md:w-7 md:h-7" />, label: "KR/M²", mobileLabel: "KR/M²", value: `${Math.round(selectedDistrict.pricePerSqm / 1000)}k`, color: 'blue' }
+                      { icon: <TrendingUp size={14} className="md:w-7 md:h-7" />, label: "PRISENDRING", mobileLabel: "PRIS", value: `+${selectedDistrict.priceChange}%`, color: 'blue', hideOnMobile: false },
+                      { icon: <Clock size={14} className="md:w-7 md:h-7" />, label: "OMLØP", mobileLabel: "OMLØP", value: `${selectedDistrict.avgDaysOnMarket}`, color: 'blue', hideOnMobile: false },
+                      { icon: <Building2 size={14} className="md:w-7 md:h-7" />, label: "MEDIANPRIS", mobileLabel: "MEDIAN", value: `${(selectedDistrict.medianPrice / 1000000).toFixed(1)}M`, color: 'blue', hideOnMobile: true },
+                      { icon: <Coins size={14} className="md:w-7 md:h-7" />, label: "KR/M²", mobileLabel: "KR/M²", value: `${Math.round(selectedDistrict.pricePerSqm / 1000)}k`, color: 'blue', hideOnMobile: false }
                     ].map((stat, i) => (
                       <div
                         key={i}
                         className={`flex items-center p-2 gap-1.5 md:gap-4 md:justify-center md:py-5 md:px-4
+                          ${stat.hideOnMobile ? 'hidden md:flex' : ''}
                           ${i !== 0 ? `border-l ${isDarkMode ? 'border-white/5' : 'border-slate-100'}` : ''}
                         `}
                       >
@@ -190,14 +191,15 @@ const HomePage: React.FC<{
                   <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected && isAnalysisOpen ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'}`}>
                     <div className={`border-t ${isDarkMode ? 'border-white/10' : 'border-slate-200'}`}>
                       {/* Toggle close */}
-                      <div className="flex justify-center pt-2">
+                      <div className="flex justify-center pt-1 md:pt-2">
                         <button
                           onClick={() => setIsAnalysisOpen(false)}
-                          className={`flex items-center gap-1 px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest transition-colors ${
+                          className={`flex items-center gap-1 px-4 py-1 rounded-full transition-colors ${
                             isDarkMode ? 'text-slate-400 hover:text-white' : 'text-slate-400 hover:text-slate-700'
                           }`}
                         >
-                          Lukk <ChevronDown size={10} className="rotate-180" />
+                          <span className="hidden md:inline text-[9px] font-black uppercase tracking-widest">Lukk</span>
+                          <ChevronDown size={16} className="rotate-180 md:!w-[10px] md:!h-[10px]" />
                         </button>
                       </div>
 
@@ -336,11 +338,12 @@ const HomePage: React.FC<{
                     <div className={`overflow-hidden transition-all duration-300 ${isAnalysisOpen ? 'max-h-0 opacity-0' : 'max-h-10 opacity-100'}`}>
                       <button
                         onClick={() => setIsAnalysisOpen(true)}
-                        className={`w-full flex items-center justify-center gap-1 py-2 text-[9px] font-black uppercase tracking-widest transition-colors ${
+                        className={`w-full flex items-center justify-center gap-1 py-1 md:py-2 transition-colors ${
                           isDarkMode ? 'text-slate-400 hover:text-white border-t border-white/5' : 'text-slate-400 hover:text-slate-700 border-t border-slate-100'
                         }`}
                       >
-                        Se analyse <ChevronDown size={10} />
+                        <span className="hidden md:inline text-[9px] font-black uppercase tracking-widest">Se analyse</span>
+                        <ChevronDown size={16} className="md:!w-[10px] md:!h-[10px]" />
                       </button>
                     </div>
                     <button
