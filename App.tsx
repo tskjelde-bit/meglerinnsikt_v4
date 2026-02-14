@@ -392,9 +392,9 @@ const HomePage: React.FC<{
                       <div className={`text-[9px] font-black uppercase mb-1 tracking-widest flex items-center gap-1.5 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
                         <span>{post.date}</span> <span className={isDarkMode ? 'text-slate-700' : 'text-slate-300'}>&bull;</span> <span>{post.category}</span>
                       </div>
-                      <h5 className={`text-[15px] font-black leading-tight uppercase tracking-tight group-hover:text-blue-400 transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                      <h4 className={`text-[15px] font-black leading-tight uppercase tracking-tight group-hover:text-blue-400 transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
                         {post.title}
-                      </h5>
+                      </h4>
                     </div>
                   ))}
                 </div>
@@ -420,32 +420,32 @@ const HomePage: React.FC<{
             </div>
           </div>
         </div>
+      </section>
 
-        {/* MOBILE BLOG SECTION - completely separate, no height constraints */}
-        <div className="lg:hidden px-3 mt-6">
-          <div className="flex justify-between items-center pb-4">
-            <h3 className={`text-[14px] font-black uppercase tracking-wider ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Siste innlegg</h3>
-            <button className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] hover:underline">Se alle</button>
-          </div>
+      {/* MOBILE BLOG SECTION - completely outside the dashboard section, no height constraints */}
+      <section className={`lg:hidden max-w-[1700px] mx-auto w-full px-3 py-8 transition-colors duration-300`}>
+        <div className="flex justify-between items-center pb-4">
+          <h3 className={`text-[14px] font-black uppercase tracking-wider ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Siste innlegg</h3>
+          <button className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] hover:underline">Se alle</button>
+        </div>
 
-          <div className="space-y-4">
-            {displayPosts.slice(0, 3).map((post, index) => (
-              <div key={post.id} className={`group cursor-pointer ${index > 0 ? (isDarkMode ? 'border-t border-white/10 pt-4' : 'border-t border-slate-200 pt-4') : ''}`} onClick={() => handlePostClick(post)}>
-                {index === 0 && (
-                  <div className={`relative aspect-[16/10] rounded-xl overflow-hidden mb-3 shadow-lg ${isDarkMode ? 'border border-white/5' : 'border border-slate-100'}`}>
-                    <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                    <div className="absolute top-3 right-3 bg-blue-600 text-white text-[9px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest shadow-xl">{post.category}</div>
-                  </div>
-                )}
-                <div className={`text-[10px] font-black uppercase mb-1 tracking-widest flex items-center gap-2 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
-                  <span>{post.date}</span> <span className={isDarkMode ? 'text-slate-700' : 'text-slate-300'}>&bull;</span> <span>{post.category}</span>
+        <div className="space-y-4">
+          {displayPosts.slice(0, 3).map((post, index) => (
+            <div key={post.id} className={`group cursor-pointer ${index > 0 ? (isDarkMode ? 'border-t border-white/10 pt-4' : 'border-t border-slate-200 pt-4') : ''}`} onClick={() => handlePostClick(post)}>
+              {index === 0 && (
+                <div className={`relative aspect-[16/10] rounded-xl overflow-hidden mb-3 shadow-lg ${isDarkMode ? 'border border-white/5' : 'border border-slate-100'}`}>
+                  <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <div className="absolute top-3 right-3 bg-blue-600 text-white text-[9px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest shadow-xl">{post.category}</div>
                 </div>
-                <h4 className={`text-[15px] font-black leading-tight uppercase tracking-tight group-hover:text-blue-400 transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-                  {post.title}
-                </h4>
+              )}
+              <div className={`text-[10px] font-black uppercase mb-1.5 tracking-widest flex items-center gap-2 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                <span>{post.date}</span> <span className={isDarkMode ? 'text-slate-700' : 'text-slate-300'}>&bull;</span> <span>{post.category}</span>
               </div>
-            ))}
-          </div>
+              <h4 className={`text-[20px] font-black leading-tight uppercase tracking-tight group-hover:text-blue-400 transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                {post.title}
+              </h4>
+            </div>
+          ))}
         </div>
       </section>
 
