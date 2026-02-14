@@ -15,7 +15,7 @@ import {
   Plus, Minus, Layers, Target, Zap, Coins,
   ChevronRight, Compass, TrendingUp, TrendingDown, Clock,
   LineChart, ArrowRight, LayoutGrid, Users, Phone,
-  Diamond, MessageSquareMore, Sun, Moon, MessageCircle
+  MessageSquareMore, Sun, Moon, MessageCircle
 } from 'lucide-react';
 
 const LOGO_URL = "https://cdn.prod.website-files.com/691779eac33d8a85e5cce47f/692a5a3fb0a7a66a7673d639_Azure-stacked-c.png";
@@ -553,17 +553,32 @@ const HomePage: React.FC<{
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-white py-16 border-t border-slate-100">
-        <div className="max-w-[1700px] mx-auto px-3 md:px-14 flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex items-center gap-2 text-slate-400">
-            <Diamond size={24} className="text-blue-600" />
-            <span className="text-xl font-black tracking-tighter text-slate-900">Lumina</span>
+      <footer className="bg-white py-12 md:py-16 border-t border-slate-100">
+        <div className="max-w-[1700px] mx-auto px-3 md:px-14">
+          {/* Top row: Logo + Links */}
+          <div className="flex flex-col md:flex-row justify-between items-center gap-8 md:gap-12 mb-8 md:mb-12">
+            <img
+              src={LOGO_URL}
+              alt="Meglerinnsikt Logo"
+              className="h-10 md:h-12 w-auto object-contain"
+            />
+            <div className="flex flex-wrap justify-center gap-6 md:gap-10">
+              <a href="#" className="text-[11px] font-black text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-[0.2em]">Forsiden</a>
+              <a href="#" className="text-[11px] font-black text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-[0.2em]">Innsikt</a>
+              <a href="#" className="text-[11px] font-black text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-[0.2em]">Blog</a>
+              <a href="#" className="text-[11px] font-black text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-[0.2em]">Kundeomtaler</a>
+            </div>
           </div>
-          <p className="text-slate-500 text-[13px] font-medium uppercase tracking-widest">&copy; 2026 MEGLERINNSIKT AS &bull; ALL RIGHTS RESERVED</p>
-          <div className="flex gap-10">
-            <a href="#" className="text-[11px] font-black text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-[0.2em]">Kundeomtaler</a>
-            <a href="#" className="text-[11px] font-black text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-[0.2em]">Instagram</a>
-            <a href="#" className="text-[11px] font-black text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-[0.2em]">Twitter</a>
+          {/* Divider */}
+          <div className="border-t border-slate-100 pt-8">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+              <p className="text-slate-400 text-[11px] font-medium uppercase tracking-widest">&copy; 2026 Meglerinnsikt AS &bull; Alle rettigheter reservert</p>
+              <div className="flex gap-6 md:gap-10">
+                <a href="#" className="text-[11px] font-black text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-[0.2em]">Instagram</a>
+                <a href="#" className="text-[11px] font-black text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-[0.2em]">Facebook</a>
+                <a href="#" className="text-[11px] font-black text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-[0.2em]">LinkedIn</a>
+              </div>
+            </div>
           </div>
         </div>
       </footer>
