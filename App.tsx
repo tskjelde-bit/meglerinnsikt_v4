@@ -156,10 +156,10 @@ const HomePage: React.FC<{
         </div>
 
         {/* GRID */}
-        <div className="grid lg:grid-cols-12 gap-6 lg:gap-8 lg:items-stretch mb-0 md:mb-12 px-3 md:px-14">
+        <div className="grid lg:grid-cols-12 gap-6 lg:gap-8 lg:items-stretch mb-0 md:mb-12 md:px-14">
           {/* MAP COLUMN */}
-          <div className={`lg:col-span-8 relative rounded-2xl overflow-hidden shadow-2xl h-[calc(100dvh-180px)] md:h-[450px] lg:h-auto flex flex-col transition-colors duration-300 ${
-            isDarkMode ? 'border border-white/5 bg-[#1a2333]/20' : 'border border-slate-200 bg-white'
+          <div className={`lg:col-span-8 relative rounded-none md:rounded-2xl overflow-hidden shadow-2xl h-[calc(100dvh-180px)] md:h-[450px] lg:h-auto flex flex-col transition-colors duration-300 ${
+            isDarkMode ? 'md:border md:border-white/5 bg-[#1a2333]/20' : 'md:border md:border-slate-200 bg-white'
           }`}>
             <div className="absolute inset-0 z-0 bg-white">
               <MapComponent
@@ -222,9 +222,9 @@ const HomePage: React.FC<{
             </div>
 
             {/* CONSOLIDATED INSIGHT BOX */}
-            <div className="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 z-[500] pointer-events-none">
+            <div className="absolute bottom-0 left-0 right-0 md:bottom-4 md:left-4 md:right-4 z-[500] pointer-events-none">
               <div className="pointer-events-auto flex flex-col gap-3">
-                <div className={`rounded-lg md:rounded-xl overflow-hidden transition-all duration-300 ${
+                <div className={`rounded-none md:rounded-xl overflow-hidden transition-all duration-300 ${
                   isDarkMode
                     ? isAnalysisOpen && isDistrictSelected
                       ? 'bg-[#242c3d] backdrop-blur-md shadow-2xl border border-white/10'
