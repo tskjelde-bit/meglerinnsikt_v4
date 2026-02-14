@@ -41,6 +41,34 @@ const HomePage: React.FC<{
     return 'i';
   };
 
+  const getMarketInterpretation = (district: DistrictInfo): string => {
+    const oslo = OSLO_DISTRICTS[0];
+    if (district.id === 'oslo') return 'Markedet følger Oslo-snittet både på pris og tempo.';
+    const priceDiff = district.priceChange - oslo.priceChange;
+    const daysDiff = district.avgDaysOnMarket - oslo.avgDaysOnMarket;
+    const priceLevel = priceDiff > 0.3 ? 'higher' : priceDiff < -0.3 ? 'lower' : 'similar';
+    const speedLevel = daysDiff < -1 ? 'faster' : daysDiff > 1 ? 'slower' : 'similar';
+
+    const matrix: Record<string, Record<string, string>> = {
+      higher: {
+        faster: 'Sterkt selgermarked – Sterkere prisvekst og raskere salg enn Oslo-snittet akkurat nå.',
+        similar: 'Moderat selgermarked – Høyere prisvekst enn snittet, med stabil etterspørsel.',
+        slower: 'Ubalansert – Prisene stiger mer enn snittet, men salget tar noe lengre tid.',
+      },
+      similar: {
+        faster: 'Aktivt marked – Boliger selges raskere enn snittet, med stabil prisutvikling.',
+        similar: 'Nøytralt marked – Markedet følger Oslo-snittet både på pris og tempo.',
+        slower: 'Avventende marked – Salget tar lengre tid enn snittet, men prisnivået holder seg stabilt.',
+      },
+      lower: {
+        faster: 'Prispress – Rask omsetning, men svakere prisvekst enn Oslo-snittet.',
+        similar: 'Svakt kjøpermarked – Lavere prisvekst enn snittet, med normal omsetningstid.',
+        slower: 'Kjøpermarked – Svakere prisutvikling og tregere salg enn Oslo-snittet.',
+      },
+    };
+    return matrix[priceLevel][speedLevel];
+  };
+
   const [selectedDistrict, setSelectedDistrict] = useState<DistrictInfo>(OSLO_DISTRICTS[0]);
   const [isDistrictListOpen, setIsDistrictListOpen] = useState(false);
   const [newsletterName, setNewsletterName] = useState('');
@@ -198,7 +226,7 @@ const HomePage: React.FC<{
                   </div>
 
                   {/* Expanded district analysis */}
-                  <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected && isAnalysisOpen ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                  <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected && isAnalysisOpen ? 'max-h-[650px] opacity-100' : 'max-h-0 opacity-0'}`}>
                     <div className={`border-t ${isDarkMode ? 'border-white/10' : 'border-slate-200'}`}>
                       {/* Toggle close */}
                       <div className="flex justify-center pt-1 md:pt-2">
@@ -211,6 +239,13 @@ const HomePage: React.FC<{
                           <span className="hidden md:inline text-[9px] font-black uppercase tracking-widest">Lukk</span>
                           <ChevronDown size={20} className="md:!w-[10px] md:!h-[10px]" />
                         </button>
+                      </div>
+
+                      {/* Tolkningslinje */}
+                      <div className="px-5 pb-2">
+                        <p className={`text-[11px] md:text-[12px] font-bold text-center ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>
+                          {getMarketInterpretation(selectedDistrict)}
+                        </p>
                       </div>
 
                       {/* Desktop: 3-column grid with boxes */}
