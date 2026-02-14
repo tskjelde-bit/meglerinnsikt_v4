@@ -501,7 +501,7 @@ const HomePage: React.FC<{
         <div className="max-w-[1700px] mx-auto px-3 md:px-14 text-center">
           <h2 className="text-[42px] md:text-[64px] font-black text-white leading-tight uppercase tracking-tighter mb-6">
             <span className="md:hidden">Boligprisene i <br/> <span className="text-blue-500">St. Hanshaugen nå</span></span>
-            <span className="hidden md:inline">Hva er boligen din <br/> <span className="text-blue-500">verdt akkurat nå?</span></span>
+            <span className="hidden md:inline">Boligprisene i <br/> <span className="text-blue-500">St. Hanshaugen nå</span></span>
           </h2>
           <p className="text-slate-400 text-lg md:text-xl font-medium max-w-2xl mx-auto mb-12">
             <span className="md:hidden">Er det smart å selge her nå?</span>
