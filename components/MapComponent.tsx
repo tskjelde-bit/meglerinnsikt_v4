@@ -95,8 +95,8 @@ const MapComponent: React.FC<MapComponentProps> = ({
 
         return {
           fillColor,
-          fillOpacity: 0.85,
-          weight: 1.5,
+          fillOpacity: 0.9,
+          weight: 2.5,
           color: '#FFFFFF',
           opacity: 1,
         };
@@ -136,6 +136,21 @@ const MapComponent: React.FC<MapComponentProps> = ({
     }).addTo(map);
 
     geoJsonLayerRef.current = layer;
+
+    // Add an outer border/outline around all of Oslo for contrast
+    if (!map.hasOwnProperty('_osloOutline')) {
+      const outline = L.geoJSON(geoJsonData, {
+        style: () => ({
+          fillColor: 'transparent',
+          fillOpacity: 0,
+          weight: 4,
+          color: '#94A3B8',
+          opacity: 0.6,
+        }),
+        interactive: false,
+      }).addTo(map);
+      (map as any)._osloOutline = outline;
+    }
   }, [findDistrictByName]);
 
   const renderLabels = useCallback(() => {
@@ -199,10 +214,10 @@ const MapComponent: React.FC<MapComponentProps> = ({
       attributionControl: false,
     }).setView([59.913, 10.78], 11);
 
-    // Very subtle tile layer for water/land context
+    // Tile layer for water/land context – visible enough to show fjord & surroundings
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
       maxZoom: 19,
-      opacity: 0.15,
+      opacity: 0.45,
     }).addTo(map);
 
     mapRef.current = map;
