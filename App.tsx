@@ -49,13 +49,13 @@ const HomePage: React.FC<{
       <section className={`max-w-[1700px] mx-auto w-full py-8 md:py-12 transition-colors duration-300 ${isDarkMode ? '' : ''}`}>
         <div className="px-3 md:px-14 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
           <div className="space-y-3">
-            <div className={`flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+            <div className={`hidden md:flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
               <span>Hjem</span> <ChevronRight size={10} className={isDarkMode ? 'text-slate-700' : 'text-slate-300'} /> <span className={isDarkMode ? 'text-slate-300' : 'text-slate-600'}>Eiendomsinnsikt</span>
             </div>
             <h2 className={`text-[28px] md:text-[32px] lg:text-[40px] font-black leading-tight tracking-tight uppercase ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-              Eiendomsinnsikt <span className="text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')}</span>
+              <span className="hidden md:inline">Eiendomsinnsikt </span><span className="text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')}</span>
             </h2>
-            <p className={`font-medium text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+            <p className={`hidden md:block font-medium text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
               Avansert dataanalyse for det norske eiendomsmarkedet
             </p>
           </div>
