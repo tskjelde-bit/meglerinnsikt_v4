@@ -11,9 +11,11 @@ interface TelegramChatWidgetProps {
 
 const TelegramChatWidget: React.FC<TelegramChatWidgetProps> = ({ isDarkMode, isOpen, setIsOpen }) => {
   const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
+  const [emailError, setEmailError] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'model',
@@ -42,8 +44,15 @@ const TelegramChatWidget: React.FC<TelegramChatWidgetProps> = ({ isDarkMode, isO
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
+  const validateEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+
   const handleSend = async () => {
     if (!message.trim()) return;
+    if (!email.trim() || !validateEmail(email)) {
+      setEmailError(true);
+      return;
+    }
+    setEmailError(false);
     setStatus('sending');
 
     // Add user message to chat
@@ -56,7 +65,7 @@ const TelegramChatWidget: React.FC<TelegramChatWidgetProps> = ({ isDarkMode, isO
     try {
       const botToken = '8585294019:AAFhZnuxfdNScfNVWXTQYzwjNXFxeEax6mk';
       const chatId = '6961882916';
-      const text = `💬 Ny melding fra Meglerinnsikt\n\n👤 Navn: ${name || 'Ikke oppgitt'}\n📱 Telefon: ${phone || 'Ikke oppgitt'}\n\n${message}`;
+      const text = `💬 Ny melding fra Meglerinnsikt\n\n👤 Navn: ${name || 'Ikke oppgitt'}\n📧 E-post: ${email}\n📱 Telefon: ${phone || 'Ikke oppgitt'}\n\n${message}`;
 
       const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
         method: 'POST',
@@ -74,6 +83,7 @@ const TelegramChatWidget: React.FC<TelegramChatWidgetProps> = ({ isDarkMode, isO
         }]);
         setMessage('');
         setName('');
+        setEmail('');
         setPhone('');
         setTimeout(() => setStatus('idle'), 3000);
       } else {
@@ -111,33 +121,33 @@ const TelegramChatWidget: React.FC<TelegramChatWidgetProps> = ({ isDarkMode, isO
         isOpen
           ? 'opacity-100 translate-y-0 pointer-events-auto'
           : 'opacity-0 translate-y-4 pointer-events-none'
-      } inset-0 md:inset-auto md:bottom-24 md:right-6 md:w-[420px] md:h-[600px] md:max-h-[80vh]`}>
+      } inset-x-0 bottom-0 top-0 md:inset-auto md:bottom-24 md:right-6 md:w-[420px] md:h-[600px] md:max-h-[80vh]`}>
         <div className="w-full h-full flex flex-col md:rounded-2xl md:shadow-2xl overflow-hidden bg-white md:border md:border-slate-200">
           {/* Header */}
-          <div className="bg-[#0f172a] px-5 py-4 flex items-center justify-between shrink-0">
+          <div className="bg-[#0f172a] px-4 py-3 md:px-5 md:py-4 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3">
               <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
               <h3 className="text-white font-black text-sm tracking-wide">Send meg en melding!</h3>
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="text-white/60 hover:text-white transition-colors"
+              className="text-white/60 hover:text-white transition-colors p-1"
             >
-              <X size={20} />
+              <X size={22} />
             </button>
           </div>
 
           {/* Messages area */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50">
+          <div ref={scrollRef} className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4 bg-slate-50 min-h-0">
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`flex gap-2.5 max-w-[85%] ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                <div className={`flex gap-2 md:gap-2.5 max-w-[85%] ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
                   {m.role === 'model' && (
-                    <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0 mt-0.5">
-                      <Bot size={16} />
+                    <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+                      <Bot size={14} className="md:w-4 md:h-4" />
                     </div>
                   )}
-                  <div className={`px-4 py-3 text-[14px] leading-relaxed ${
+                  <div className={`px-3 py-2.5 md:px-4 md:py-3 text-[13px] md:text-[14px] leading-relaxed ${
                     m.role === 'user'
                       ? 'bg-blue-600 text-white rounded-2xl rounded-tr-sm shadow-sm'
                       : 'bg-white text-slate-700 rounded-2xl rounded-tl-sm border border-slate-200 shadow-sm'
@@ -152,23 +162,31 @@ const TelegramChatWidget: React.FC<TelegramChatWidgetProps> = ({ isDarkMode, isO
           </div>
 
           {/* Input area with form fields */}
-          <div className="p-4 bg-white border-t border-slate-100 shrink-0 space-y-2.5">
-            <div className="flex gap-2">
+          <div className="p-3 md:p-4 bg-white border-t border-slate-100 shrink-0 space-y-2">
+            <div className="grid grid-cols-2 gap-2">
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Ditt navn"
-                className="flex-1 px-3 py-2.5 bg-slate-100 border border-slate-200 rounded-lg text-sm text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Navn"
+                className="px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-[13px] text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <input
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="Telefon (valgfritt)"
-                className="flex-1 px-3 py-2.5 bg-slate-100 border border-slate-200 rounded-lg text-sm text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-[13px] text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => { setEmail(e.target.value); setEmailError(false); }}
+              placeholder="E-post *"
+              className={`w-full px-3 py-2 bg-slate-100 border rounded-lg text-[13px] text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${emailError ? 'border-red-400 ring-2 ring-red-200' : 'border-slate-200'}`}
+            />
+            {emailError && <p className="text-red-500 text-[11px] font-medium">Vennligst oppgi en gyldig e-postadresse</p>}
             <div className="relative flex items-center">
               <input
                 type="text"
@@ -176,14 +194,14 @@ const TelegramChatWidget: React.FC<TelegramChatWidgetProps> = ({ isDarkMode, isO
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 placeholder="Skriv din melding her..."
-                className="w-full pl-4 pr-14 py-3.5 bg-slate-100 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-slate-800 placeholder-slate-400 outline-none"
+                className="w-full pl-3 pr-12 py-3 bg-slate-100 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-[13px] text-slate-800 placeholder-slate-400 outline-none"
               />
               <button
                 onClick={handleSend}
                 disabled={!message.trim() || status === 'sending'}
-                className="absolute right-2 p-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-30 transition-colors"
+                className="absolute right-1.5 p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-30 transition-colors"
               >
-                <Send size={18} />
+                <Send size={16} />
               </button>
             </div>
 
