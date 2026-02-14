@@ -127,7 +127,8 @@ export const blogService = {
   async publishPosts(): Promise<{ success: boolean; message: string }> {
     const posts = this.getLocalPosts();
     try {
-      const res = await fetch('/api/save-posts', {
+      const basePath = import.meta.env.BASE_URL || '/';
+      const res = await fetch(`${basePath}api/save-posts`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(posts)

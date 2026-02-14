@@ -9,7 +9,8 @@ function savePostsPlugin(): Plugin {
   return {
     name: 'save-posts-api',
     configureServer(server) {
-      server.middlewares.use('/api/save-posts', (req, res) => {
+      // Handle both with and without base path
+      const handler = (req: any, res: any) => {
         if (req.method !== 'POST') {
           res.statusCode = 405;
           res.end(JSON.stringify({ error: 'Method not allowed' }));
@@ -31,7 +32,9 @@ function savePostsPlugin(): Plugin {
             res.end(JSON.stringify({ error: err.message }));
           }
         });
-      });
+      };
+      server.middlewares.use('/api/save-posts', handler);
+      server.middlewares.use('/meglerinnsikt_v4/api/save-posts', handler);
     }
   };
 }
