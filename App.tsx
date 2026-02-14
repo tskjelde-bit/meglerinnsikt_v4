@@ -55,7 +55,7 @@ const HomePage: React.FC<{
             <h2 className={`text-[28px] md:text-[32px] lg:text-[40px] font-black leading-tight tracking-tight uppercase ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
               <span className="hidden md:inline">Eiendomsinnsikt </span><span className="md:hidden">Innsikt </span><span className="text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')}</span>
             </h2>
-            <p className={`md:hidden text-[9px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+            <p className={`md:hidden text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-400' : 'text-slate-400'}`}>
               Se boligdata for hver bydel
             </p>
             <p className={`hidden md:block font-medium text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
