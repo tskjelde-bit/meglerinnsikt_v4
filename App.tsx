@@ -46,8 +46,8 @@ const HomePage: React.FC<{
   return (
     <>
       {/* DASHBOARD SECTION */}
-      <section className={`max-w-[1700px] mx-auto w-full pt-4 pb-0 md:py-12 transition-colors duration-300 ${isDarkMode ? '' : ''}`}>
-        <div className="px-3 md:px-14 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-2 md:mb-10">
+      <section className={`max-w-[1700px] mx-auto w-full pt-4 pb-0 md:py-8 transition-colors duration-300 ${isDarkMode ? '' : ''}`}>
+        <div className="px-3 md:px-14 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-2 md:mb-8">
           <div className="space-y-1 md:space-y-3">
             <div className={`hidden md:flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
               <span>Hjem</span> <ChevronRight size={10} className={isDarkMode ? 'text-slate-700' : 'text-slate-300'} /> <span className={isDarkMode ? 'text-slate-300' : 'text-slate-600'}>Eiendomsinnsikt</span>
@@ -80,9 +80,9 @@ const HomePage: React.FC<{
         </div>
 
         {/* GRID */}
-        <div className="grid lg:grid-cols-12 gap-6 md:gap-10 lg:items-stretch mb-0 md:mb-12 px-3 md:px-14">
+        <div className="grid lg:grid-cols-12 gap-6 lg:gap-8 lg:items-stretch mb-0 md:mb-12 px-3 md:px-14">
           {/* MAP COLUMN */}
-          <div className={`lg:col-span-8 relative rounded-2xl overflow-hidden shadow-2xl h-[calc(100dvh-152px)] md:h-[500px] lg:h-auto flex flex-col transition-colors duration-300 ${
+          <div className={`lg:col-span-8 relative rounded-2xl overflow-hidden shadow-2xl h-[calc(100dvh-152px)] md:h-[450px] lg:h-auto flex flex-col transition-colors duration-300 ${
             isDarkMode ? 'border border-white/5 bg-[#1a2333]/20' : 'border border-slate-200 bg-white'
           }`}>
             <div className="absolute inset-0 z-0 bg-white">
@@ -358,39 +358,38 @@ const HomePage: React.FC<{
             </div>
           </div>
 
-          {/* SIDEBAR COLUMN */}
-          <div className="lg:col-span-4 flex flex-col md:px-0">
-            {/* Desktop: rounded box */}
-            <div className={`md:rounded-2xl flex flex-col md:shadow-xl lg:h-full transition-colors duration-300 ${
-              isDarkMode ? 'md:bg-[#1e293b] md:border md:border-white/5' : 'md:bg-white md:border md:border-slate-200'
+          {/* SIDEBAR COLUMN - desktop only */}
+          <div className="lg:col-span-4 hidden lg:flex flex-col">
+            <div className={`rounded-2xl flex flex-col shadow-xl h-full transition-colors duration-300 ${
+              isDarkMode ? 'bg-[#1e293b] border border-white/5' : 'bg-white border border-slate-200'
             }`}>
-              <div className="flex justify-between items-center md:p-8 md:pb-6 pt-6 pb-4 shrink-0">
+              <div className="flex justify-between items-center p-8 pb-6 shrink-0">
                 <h3 className={`text-[14px] font-black uppercase tracking-wider ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Siste innlegg</h3>
                 <button className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] hover:underline">Se alle</button>
               </div>
 
-              <div className="md:px-8 md:pb-8 flex flex-col gap-3 md:gap-10">
+              <div className="px-8 pb-8 flex flex-col gap-6 overflow-hidden">
                 {/* Featured Article with image */}
                 {displayPosts.length > 0 && (
                   <div className="group cursor-pointer shrink-0" onClick={() => handlePostClick(displayPosts[0])}>
-                    <div className={`relative aspect-[16/10] rounded-xl overflow-hidden mb-2 md:mb-5 shadow-lg ${isDarkMode ? 'border border-white/5' : 'border border-slate-100'}`}>
+                    <div className={`relative aspect-[16/10] rounded-xl overflow-hidden mb-4 shadow-lg ${isDarkMode ? 'border border-white/5' : 'border border-slate-100'}`}>
                       <img src={displayPosts[0].image} alt={displayPosts[0].title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                       <div className="absolute top-4 right-4 bg-blue-600 text-white text-[9px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest shadow-xl">{displayPosts[0].category}</div>
                     </div>
-                    <div className={`text-[10px] font-black uppercase mb-2 tracking-widest flex items-center gap-2 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                    <div className={`text-[9px] font-black uppercase mb-1 tracking-widest flex items-center gap-1.5 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
                       <span>{displayPosts[0].date}</span> <span className={isDarkMode ? 'text-slate-700' : 'text-slate-300'}>&bull;</span> <span>{displayPosts[0].category}</span>
                     </div>
-                    <h4 className={`text-[15px] md:text-[18px] font-black leading-tight uppercase tracking-tight group-hover:text-blue-400 transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                    <h4 className={`text-[15px] font-black leading-tight uppercase tracking-tight group-hover:text-blue-400 transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
                       {displayPosts[0].title}
                     </h4>
                   </div>
                 )}
 
-                {/* List Articles - text only, no thumbnails */}
-                <div className="space-y-3 md:space-y-6 shrink-0">
+                {/* List Articles - text only */}
+                <div className="space-y-5 shrink-0">
                   {displayPosts.slice(1, 3).map((post) => (
-                    <div key={post.id} className={`group cursor-pointer pt-3 md:pt-6 ${isDarkMode ? 'border-t border-white/10 md:border-white/5' : 'border-t border-slate-200 md:border-slate-100'}`} onClick={() => handlePostClick(post)}>
-                      <div className={`text-[10px] md:text-[9px] font-black uppercase mb-1.5 md:mb-1 tracking-widest flex items-center gap-2 md:gap-1.5 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                    <div key={post.id} className={`group cursor-pointer pt-5 ${isDarkMode ? 'border-t border-white/5' : 'border-t border-slate-100'}`} onClick={() => handlePostClick(post)}>
+                      <div className={`text-[9px] font-black uppercase mb-1 tracking-widest flex items-center gap-1.5 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
                         <span>{post.date}</span> <span className={isDarkMode ? 'text-slate-700' : 'text-slate-300'}>&bull;</span> <span>{post.category}</span>
                       </div>
                       <h5 className={`text-[15px] font-black leading-tight uppercase tracking-tight group-hover:text-blue-400 transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
@@ -401,7 +400,7 @@ const HomePage: React.FC<{
                 </div>
 
                 {/* Premium Box */}
-                <div className={`mt-4 p-6 rounded-2xl relative overflow-hidden group shadow-2xl shrink-0 transition-colors duration-300 hidden md:block ${
+                <div className={`mt-2 p-6 rounded-2xl relative overflow-hidden group shadow-2xl shrink-0 transition-colors duration-300 ${
                   isDarkMode ? 'bg-[#0f172a] border border-blue-500/20' : 'bg-blue-50 border border-blue-100'
                 }`}>
                   <div className="relative z-10">
@@ -419,6 +418,33 @@ const HomePage: React.FC<{
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* MOBILE BLOG SECTION - completely separate, no height constraints */}
+        <div className="lg:hidden px-3 mt-6">
+          <div className="flex justify-between items-center pb-4">
+            <h3 className={`text-[14px] font-black uppercase tracking-wider ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Siste innlegg</h3>
+            <button className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] hover:underline">Se alle</button>
+          </div>
+
+          <div className="space-y-4">
+            {displayPosts.slice(0, 3).map((post, index) => (
+              <div key={post.id} className={`group cursor-pointer ${index > 0 ? (isDarkMode ? 'border-t border-white/10 pt-4' : 'border-t border-slate-200 pt-4') : ''}`} onClick={() => handlePostClick(post)}>
+                {index === 0 && (
+                  <div className={`relative aspect-[16/10] rounded-xl overflow-hidden mb-3 shadow-lg ${isDarkMode ? 'border border-white/5' : 'border border-slate-100'}`}>
+                    <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <div className="absolute top-3 right-3 bg-blue-600 text-white text-[9px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest shadow-xl">{post.category}</div>
+                  </div>
+                )}
+                <div className={`text-[10px] font-black uppercase mb-1 tracking-widest flex items-center gap-2 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                  <span>{post.date}</span> <span className={isDarkMode ? 'text-slate-700' : 'text-slate-300'}>&bull;</span> <span>{post.category}</span>
+                </div>
+                <h4 className={`text-[15px] font-black leading-tight uppercase tracking-tight group-hover:text-blue-400 transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                  {post.title}
+                </h4>
+              </div>
+            ))}
           </div>
         </div>
       </section>
