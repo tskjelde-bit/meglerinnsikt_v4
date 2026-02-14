@@ -478,6 +478,12 @@ const App: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              className="w-10 h-10 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:border-blue-300 transition-all"
+            >
+              {isDarkMode ? <Moon size={18} /> : <Sun size={18} className="text-amber-500" />}
+            </button>
             <button className="bg-slate-950 text-white px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-tight hover:bg-blue-600 transition-all">
               Selge bolig?
             </button>
