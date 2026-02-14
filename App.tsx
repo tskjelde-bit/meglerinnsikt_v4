@@ -259,10 +259,10 @@ const HomePage: React.FC<{
                       const daysColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (daysDiff < -1 ? 'text-emerald-400' : daysDiff > 1 ? 'text-red-400' : 'text-amber-400');
                       const sqmColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (sqmDiff > 0 ? 'text-emerald-400' : sqmDiff < 0 ? 'text-red-400' : 'text-amber-400');
                       return [
-                        { icon: <TrendingUp size={18} className="md:w-7 md:h-7" />, label: "PRISENDRING", mobileLabel: "PRISENDRING", value: `+${selectedDistrict.priceChange}%`, iconColor: priceColor, hideOnMobile: false },
-                        { icon: <Clock size={18} className="md:w-7 md:h-7" />, label: "SALGSTID", mobileLabel: "SALGSTID", value: `${selectedDistrict.avgDaysOnMarket}`, iconColor: daysColor, hideOnMobile: false },
-                        { icon: <Building2 size={18} className="md:w-7 md:h-7" />, label: "MEDIANPRIS", mobileLabel: "MEDIAN", value: `${(selectedDistrict.medianPrice / 1000000).toFixed(1)}M`, iconColor: 'text-blue-400', hideOnMobile: true },
-                        { icon: <Coins size={18} className="md:w-7 md:h-7" />, label: "KR/M²", mobileLabel: "KR/M²", value: `${Math.round(selectedDistrict.pricePerSqm / 1000)}k`, iconColor: sqmColor, hideOnMobile: false }
+                        { icon: <TrendingUp size={18} className="md:w-7 md:h-7" />, label: "PRISENDRING", mobileLabel: "Prisendring", value: `+${selectedDistrict.priceChange}%`, mobileValue: `+${selectedDistrict.priceChange}%`, iconColor: priceColor, hideOnMobile: false },
+                        { icon: <Clock size={18} className="md:w-7 md:h-7" />, label: "SALGSTID", mobileLabel: "Salgstid", value: `${selectedDistrict.avgDaysOnMarket}`, mobileValue: `${selectedDistrict.avgDaysOnMarket} dager`, iconColor: daysColor, hideOnMobile: false },
+                        { icon: <Building2 size={18} className="md:w-7 md:h-7" />, label: "MEDIANPRIS", mobileLabel: "MEDIAN", value: `${(selectedDistrict.medianPrice / 1000000).toFixed(1)}M`, mobileValue: `${(selectedDistrict.medianPrice / 1000000).toFixed(1)}M`, iconColor: 'text-blue-400', hideOnMobile: true },
+                        { icon: <Coins size={18} className="md:w-7 md:h-7" />, label: "KR/M²", mobileLabel: "per M2", value: `${Math.round(selectedDistrict.pricePerSqm / 1000)}k`, mobileValue: `${Math.round(selectedDistrict.pricePerSqm / 1000)} K`, iconColor: sqmColor, hideOnMobile: false }
                       ];
                     })().map((stat, i) => (
                       <div
@@ -277,7 +277,7 @@ const HomePage: React.FC<{
                         </div>
                         <div className="flex flex-col items-center md:items-start">
                           <div className={`text-[12px] md:text-[24px] lg:text-[28px] font-black leading-tight ${stat.iconColor}`}>
-                            <span className={`md:hidden`}>{stat.value}</span>
+                            <span className={`md:hidden`}>{stat.mobileValue}</span>
                             <span className={`hidden md:inline ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{stat.value}</span>
                           </div>
                           <div className={`text-[8px] md:text-[9px] font-black uppercase tracking-widest leading-none mt-0.5 ${stat.iconColor}`}>
