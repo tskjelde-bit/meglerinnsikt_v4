@@ -267,7 +267,7 @@ const HomePage: React.FC<{
                     })().map((stat, i) => (
                       <div
                         key={i}
-                        className={`flex flex-col items-center justify-center py-4 px-2 gap-1 md:flex-row md:gap-4 md:py-5 md:px-4
+                        className={`flex flex-col items-center justify-center pt-2 pb-4 px-2 gap-1 md:flex-row md:gap-4 md:py-5 md:px-4
                           ${stat.hideOnMobile ? 'hidden md:flex' : ''}
                           ${i !== 0 ? `border-l ${isDarkMode ? 'border-white/5' : 'border-slate-100'}` : ''}
                         `}
