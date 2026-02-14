@@ -233,16 +233,16 @@ const HomePage: React.FC<{
                       ? 'bg-white backdrop-blur-md shadow-2xl border border-slate-200'
                       : 'bg-white/95 backdrop-blur-md shadow-2xl border border-slate-200 md:bg-white/70 md:border-slate-100'
                 }`}>
-                  {/* Chevron at top */}
-                  <div className={`overflow-hidden transition-all duration-300 ${isDistrictSelected && !isAnalysisOpen ? 'max-h-10 opacity-100' : 'max-h-0 opacity-0'}`}>
+                  {/* Chevron at top - toggles open/close */}
+                  <div className={`overflow-hidden transition-all duration-300 ${isDistrictSelected ? 'max-h-10 opacity-100' : 'max-h-0 opacity-0'}`}>
                     <button
-                      onClick={() => setIsAnalysisOpen(true)}
+                      onClick={() => setIsAnalysisOpen(!isAnalysisOpen)}
                       className={`w-full flex items-center justify-center gap-1 py-1 md:py-2 transition-colors ${
                         isDarkMode ? 'text-slate-400 hover:text-white' : 'text-slate-400 hover:text-slate-700'
                       }`}
                     >
-                      <span className="hidden md:inline text-[9px] font-black uppercase tracking-widest">Se analyse</span>
-                      <ChevronDown size={20} className="rotate-180 md:!w-[10px] md:!h-[10px]" />
+                      <span className="hidden md:inline text-[9px] font-black uppercase tracking-widest">{isAnalysisOpen ? 'Lukk' : 'Se analyse'}</span>
+                      <ChevronDown size={20} className={`md:!w-[10px] md:!h-[10px] transition-transform ${isAnalysisOpen ? '' : 'rotate-180'}`} />
                     </button>
                   </div>
                   <div className="grid grid-cols-3 md:grid-cols-4">
@@ -293,18 +293,6 @@ const HomePage: React.FC<{
                   {/* Expanded district analysis */}
                   <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected && isAnalysisOpen ? 'max-h-[650px] opacity-100' : 'max-h-0 opacity-0'}`}>
                     <div className={`border-t ${isDarkMode ? 'border-white/10' : 'border-slate-200'}`}>
-                      {/* Toggle close */}
-                      <div className="flex justify-center pt-1 md:pt-2">
-                        <button
-                          onClick={() => setIsAnalysisOpen(false)}
-                          className={`flex items-center gap-1 px-4 py-1 rounded-full transition-colors ${
-                            isDarkMode ? 'text-slate-400 hover:text-white' : 'text-slate-400 hover:text-slate-700'
-                          }`}
-                        >
-                          <span className="hidden md:inline text-[9px] font-black uppercase tracking-widest">Lukk</span>
-                          <ChevronDown size={20} className="md:!w-[10px] md:!h-[10px]" />
-                        </button>
-                      </div>
 
                       {/* Tolkningslinje */}
                       <div className="px-5 pb-2">
