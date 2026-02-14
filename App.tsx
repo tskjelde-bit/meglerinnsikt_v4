@@ -460,8 +460,8 @@ const HomePage: React.FC<{
             </h2>
             <div className="w-24 h-1.5 bg-blue-600 mx-auto rounded-full mb-16"></div>
 
-            <div className="grid md:grid-cols-3 gap-12 text-left">
-              <div className="flex flex-col items-center md:items-start text-center md:text-left">
+            <div className="grid md:grid-cols-3 gap-12 text-center">
+              <div className="flex flex-col items-center">
                 <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-8">
                   <LineChart size={28} />
                 </div>
@@ -471,7 +471,7 @@ const HomePage: React.FC<{
                 </p>
               </div>
 
-              <div className="flex flex-col items-center md:items-start text-center md:text-left">
+              <div className="flex flex-col items-center">
                 <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-8">
                   <Target size={28} />
                 </div>
@@ -481,7 +481,7 @@ const HomePage: React.FC<{
                 </p>
               </div>
 
-              <div className="flex flex-col items-center md:items-start text-center md:text-left">
+              <div className="flex flex-col items-center">
                 <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-8">
                   <Handshake size={28} />
                 </div>
