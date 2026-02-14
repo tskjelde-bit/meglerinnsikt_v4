@@ -290,7 +290,7 @@ const HomePage: React.FC<{
                   onClick={() => handlePostClick(post)}
                   className="group cursor-pointer"
                 >
-                  <div className="aspect-[4/3] rounded-[32px] overflow-hidden mb-6 shadow-xl border border-slate-100">
+                  <div className="aspect-[4/3] rounded-xl md:rounded-2xl overflow-hidden mb-6 shadow-xl border border-slate-100">
                     <img
                       src={post.image}
                       alt={post.title}
