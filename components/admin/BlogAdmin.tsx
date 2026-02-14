@@ -172,7 +172,7 @@ const BlogAdmin: React.FC<BlogAdminProps> = ({ posts, onPostsChange, onClose }) 
             ) : publishStatus.type === 'success' ? (
               <><CheckCircle2 size={14} /> {publishStatus.message}</>
             ) : publishStatus.type === 'error' ? (
-              <><AlertCircle size={14} /> Feil!</>
+              <><AlertCircle size={14} /> {publishStatus.message || 'Feil!'}</>
             ) : (
               <><Rocket size={14} /> Publiser</>
             )}

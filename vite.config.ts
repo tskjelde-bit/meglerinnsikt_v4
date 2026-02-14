@@ -9,10 +9,15 @@ function savePostsPlugin(): Plugin {
   return {
     name: 'save-posts-api',
     configureServer(server) {
-      // Handle both with and without base path
-      const handler = (req: any, res: any) => {
+      server.middlewares.use((req: any, res: any, next: any) => {
+        // Match the API path regardless of base URL prefix
+        const url = req.url || '';
+        if (!url.endsWith('/api/save-posts') && url !== '/api/save-posts') {
+          return next();
+        }
         if (req.method !== 'POST') {
           res.statusCode = 405;
+          res.setHeader('Content-Type', 'application/json');
           res.end(JSON.stringify({ error: 'Method not allowed' }));
           return;
         }
@@ -29,12 +34,11 @@ function savePostsPlugin(): Plugin {
             res.end(JSON.stringify({ success: true, count: posts.length }));
           } catch (err: any) {
             res.statusCode = 500;
+            res.setHeader('Content-Type', 'application/json');
             res.end(JSON.stringify({ error: err.message }));
           }
         });
-      };
-      server.middlewares.use('/api/save-posts', handler);
-      server.middlewares.use('/meglerinnsikt_v4/api/save-posts', handler);
+      });
     }
   };
 }
