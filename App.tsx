@@ -112,6 +112,20 @@ const HomePage: React.FC<{
   const [newsletterName, setNewsletterName] = useState('');
   const [isDistrictSelected, setIsDistrictSelected] = useState(false);
   const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
+  const [mapHeight, setMapHeight] = useState('100dvh');
+  const headerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const updateMapHeight = () => {
+      if (headerRef.current && window.innerWidth < 768) {
+        const headerBottom = headerRef.current.getBoundingClientRect().bottom;
+        setMapHeight(`calc(100dvh - ${headerBottom}px)`);
+      }
+    };
+    updateMapHeight();
+    window.addEventListener('resize', updateMapHeight);
+    return () => window.removeEventListener('resize', updateMapHeight);
+  }, [selectedDistrict, isDistrictSelected]);
 
   const handlePostClick = (post: BlogPost | BlogPostFull) => {
     if ('slug' in post && (post as BlogPostFull).slug) {
@@ -123,7 +137,7 @@ const HomePage: React.FC<{
     <>
       {/* DASHBOARD SECTION */}
       <section className={`max-w-[1700px] mx-auto w-full pt-4 pb-0 md:py-8 transition-colors duration-300 ${isDarkMode ? '' : ''}`}>
-        <div className="px-3 md:px-14 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-2 md:mb-8">
+        <div ref={headerRef} className="px-3 md:px-14 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-2 md:mb-8">
           <div className="space-y-1 md:space-y-3">
             <div className={`hidden md:flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
               <span>Hjem</span> <ChevronRight size={10} className={isDarkMode ? 'text-slate-700' : 'text-slate-300'} /> <span className={isDarkMode ? 'text-slate-300' : 'text-slate-600'}>Eiendomsinnsikt</span>
@@ -161,7 +175,7 @@ const HomePage: React.FC<{
         {/* GRID */}
         <div className="grid lg:grid-cols-12 gap-6 lg:gap-8 lg:items-stretch mb-0 md:mb-12 md:px-14">
           {/* MAP COLUMN */}
-          <div className={`lg:col-span-8 relative rounded-none md:rounded-2xl overflow-hidden shadow-2xl h-[calc(100dvh-140px)] md:h-[450px] lg:h-auto flex flex-col transition-colors duration-300 ${
+          <div style={{ height: mapHeight }} className={`lg:col-span-8 relative rounded-none md:rounded-2xl overflow-hidden shadow-2xl md:!h-[450px] lg:!h-auto flex flex-col transition-colors duration-300 ${
             isDarkMode ? 'md:border md:border-white/5 bg-[#1a2333]/20' : 'md:border md:border-slate-200 bg-white'
           }`}>
             <div className="absolute inset-0 z-0 bg-white">
