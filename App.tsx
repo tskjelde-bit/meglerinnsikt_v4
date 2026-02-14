@@ -493,7 +493,33 @@ const HomePage: React.FC<{
             </div>
           </div>
 
-          {/* Blog Grid Section */}
+        </div>
+      </section>
+
+      {/* 4. Dark Section Wrapper: CTA */}
+      <section className={`py-32 transition-colors duration-300 ${isDarkMode ? 'bg-[#0b1120] border-t border-white/5' : 'bg-slate-900 border-t border-slate-200'}`}>
+        <div className="max-w-[1700px] mx-auto px-3 md:px-14 text-center">
+          <h2 className="text-[42px] md:text-[64px] font-black text-white leading-tight uppercase tracking-tighter mb-6">
+            Klar for å <br/> <span className="text-blue-500">ta neste steg?</span>
+          </h2>
+          <p className="text-slate-400 text-lg md:text-xl font-medium max-w-2xl mx-auto mb-12">
+            Enten du skal selge nå eller bare er nysgjerrig på verdien, gir jeg deg de verktøyene du trenger.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button className="bg-blue-600 text-white px-10 py-5 rounded-[20px] font-black text-[13px] uppercase tracking-widest hover:bg-blue-700 shadow-xl shadow-blue-900/40 transition-all">
+              Vurder min bolig
+            </button>
+            <button className="bg-[#1a2333] text-white px-10 py-5 rounded-[20px] font-black text-[13px] uppercase tracking-widest hover:bg-[#252f44] border border-white/5 transition-all">
+              Snakk med en rådgiver
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. Blog Grid Section */}
+      <section className="bg-white py-24">
+        <div className="max-w-[1700px] mx-auto px-3 md:px-14">
           <div className="mb-8">
             <div className="text-center mb-16">
               <h2 className="text-[32px] md:text-[42px] font-black text-slate-950 uppercase tracking-tighter mb-4">
@@ -527,27 +553,6 @@ const HomePage: React.FC<{
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. Dark Section Wrapper: CTA */}
-      <section className={`py-32 transition-colors duration-300 ${isDarkMode ? 'bg-[#0b1120] border-t border-white/5' : 'bg-slate-900 border-t border-slate-200'}`}>
-        <div className="max-w-[1700px] mx-auto px-3 md:px-14 text-center">
-          <h2 className="text-[42px] md:text-[64px] font-black text-white leading-tight uppercase tracking-tighter mb-6">
-            Klar for å <br/> <span className="text-blue-500">ta neste steg?</span>
-          </h2>
-          <p className="text-slate-400 text-lg md:text-xl font-medium max-w-2xl mx-auto mb-12">
-            Enten du skal selge nå eller bare er nysgjerrig på verdien, gir jeg deg de verktøyene du trenger.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-blue-600 text-white px-10 py-5 rounded-[20px] font-black text-[13px] uppercase tracking-widest hover:bg-blue-700 shadow-xl shadow-blue-900/40 transition-all">
-              Vurder min bolig
-            </button>
-            <button className="bg-[#1a2333] text-white px-10 py-5 rounded-[20px] font-black text-[13px] uppercase tracking-widest hover:bg-[#252f44] border border-white/5 transition-all">
-              Snakk med en rådgiver
-            </button>
           </div>
         </div>
       </section>
