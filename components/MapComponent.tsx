@@ -96,9 +96,9 @@ const MapComponent: React.FC<MapComponentProps> = ({
         return {
           fillColor,
           fillOpacity: 0.9,
-          weight: 2.5,
+          weight: 1.5,
           color: '#FFFFFF',
-          opacity: 1,
+          opacity: 0.8,
         };
       },
       onEachFeature: (feature, layer) => {
@@ -137,20 +137,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
 
     geoJsonLayerRef.current = layer;
 
-    // Add an outer border/outline around all of Oslo for contrast
-    if (!map.hasOwnProperty('_osloOutline')) {
-      const outline = L.geoJSON(geoJsonData, {
-        style: () => ({
-          fillColor: 'transparent',
-          fillOpacity: 0,
-          weight: 4,
-          color: '#94A3B8',
-          opacity: 0.6,
-        }),
-        interactive: false,
-      }).addTo(map);
-      (map as any)._osloOutline = outline;
-    }
+    // Outer border removed — clean look with thin white borders only
   }, [findDistrictByName]);
 
   const renderLabels = useCallback(() => {
