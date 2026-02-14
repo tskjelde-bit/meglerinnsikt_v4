@@ -201,10 +201,10 @@ const MapComponent: React.FC<MapComponentProps> = ({
       attributionControl: false,
     }).setView([59.92, 10.76], 12);
 
-    // Tile layer for water/land context – visible enough to show fjord & surroundings
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+    // Tile layer – muted blue-grey tones for water/land context
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/voyager_nolabels/{z}/{x}/{y}{r}.png', {
       maxZoom: 19,
-      opacity: 0.45,
+      opacity: 0.7,
     }).addTo(map);
 
     mapRef.current = map;
@@ -249,7 +249,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
     <div
       ref={containerRef}
       className="w-full h-full"
-      style={{ background: '#F8FAFC' }}
+      style={{ background: '#E2E8F0' }}
     />
   );
 };
