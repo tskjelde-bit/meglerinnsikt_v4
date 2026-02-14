@@ -82,7 +82,7 @@ const HomePage: React.FC<{
         {/* GRID */}
         <div className="grid lg:grid-cols-12 gap-6 md:gap-10 items-stretch mb-0 md:mb-12 px-3 md:px-14">
           {/* MAP COLUMN */}
-          <div className={`lg:col-span-8 relative rounded-2xl overflow-hidden shadow-2xl h-[calc(100dvh-140px)] md:h-[600px] lg:h-auto flex flex-col transition-colors duration-300 ${
+          <div className={`lg:col-span-8 relative rounded-2xl overflow-hidden shadow-2xl h-[calc(100dvh-152px)] md:h-[600px] lg:h-auto flex flex-col transition-colors duration-300 ${
             isDarkMode ? 'border border-white/5 bg-[#1a2333]/20' : 'border border-slate-200 bg-white'
           }`}>
             <div className="absolute inset-0 z-0 bg-white">
