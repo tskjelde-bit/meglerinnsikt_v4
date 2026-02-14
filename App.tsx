@@ -242,7 +242,7 @@ const HomePage: React.FC<{
                     ].map((stat, i) => (
                       <div
                         key={i}
-                        className={`flex items-center justify-center p-2 gap-1.5 md:gap-4 md:py-5 md:px-4
+                        className={`flex flex-col items-center justify-center p-2 gap-1 md:flex-row md:gap-4 md:py-5 md:px-4
                           ${stat.hideOnMobile ? 'hidden md:flex' : ''}
                           ${i !== 0 ? `border-l ${isDarkMode ? 'border-white/5' : 'border-slate-100'}` : ''}
                         `}
@@ -250,7 +250,7 @@ const HomePage: React.FC<{
                         <div className={isDarkMode ? 'text-blue-400' : 'text-blue-500'}>
                           {stat.icon}
                         </div>
-                        <div className="flex flex-col">
+                        <div className="flex flex-col items-center md:items-start">
                           <div className={`text-[12px] md:text-[24px] lg:text-[28px] font-black leading-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
                             {stat.value}
                           </div>
