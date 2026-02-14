@@ -1,12 +1,14 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Property, DistrictInfo, BlogPost } from './types';
+import { Property, DistrictInfo, BlogPost, BlogPostFull } from './types';
 import { OSLO_DISTRICTS, MOCK_BLOG_POSTS } from './constants';
+import { blogService } from './services/blogService';
 import MapComponent from './components/MapComponent';
 import MarketStatsPanel from './components/MarketStatsPanel';
 import BlogPostDetail from './components/BlogPostDetail';
-import { 
-  Building2, Menu, X, ChevronDown, Calendar, Download, 
+import BlogAdmin from './components/admin/BlogAdmin';
+import {
+  Building2, Menu, X, ChevronDown, Calendar, Download,
   Plus, Minus, Layers, Target, Zap, Coins,
   ChevronRight, Compass, TrendingUp, TrendingDown, Clock,
   LineChart, ArrowRight, LayoutGrid, Users, Phone
@@ -17,13 +19,36 @@ const LOGO_URL = "https://cdn.prod.website-files.com/691779eac33d8a85e5cce47f/69
 const App: React.FC = () => {
   const [activePage, setActivePage] = useState<'home' | 'innsikt'>('home');
   const [selectedDistrict, setSelectedDistrict] = useState<DistrictInfo>(OSLO_DISTRICTS[0]);
-  const [selectedBlogPost, setSelectedBlogPost] = useState<BlogPost | null>(null);
+  const [selectedBlogPost, setSelectedBlogPost] = useState<BlogPost | BlogPostFull | null>(null);
   const [activeNavDropdown, setActiveNavDropdown] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDistrictListOpen, setIsDistrictListOpen] = useState(false);
   const [newsletterName, setNewsletterName] = useState('');
-  
+  const [blogPosts, setBlogPosts] = useState<BlogPostFull[]>([]);
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
+
   const navRef = useRef<HTMLElement>(null);
+
+  // Load blog posts from posts.json
+  useEffect(() => {
+    blogService.fetchPosts().then(posts => {
+      if (posts.length > 0) {
+        setBlogPosts(posts);
+      }
+    });
+  }, []);
+
+  // Admin keyboard shortcut: Ctrl+Shift+A
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+        e.preventDefault();
+        setIsAdminOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -34,6 +59,9 @@ const App: React.FC = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Use CMS posts if available, otherwise fall back to mock data
+  const displayPosts: (BlogPost | BlogPostFull)[] = blogPosts.length > 0 ? blogPosts : MOCK_BLOG_POSTS;
 
   const navigateTo = (page: 'home' | 'innsikt') => {
     setActivePage(page);
@@ -211,41 +239,34 @@ const App: React.FC = () => {
                   
                   <div className="px-8 pb-8 space-y-7">
                     {/* Featured Sidebar Article */}
-                    <div className="group cursor-pointer">
-                      <div className="relative aspect-[16/9] rounded-2xl overflow-hidden mb-3 shadow-lg border border-white/5">
-                        <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=600" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                        <div className="absolute top-3 right-3 bg-blue-600 text-white text-[8px] font-black px-2 py-1 rounded uppercase tracking-widest">Analyse</div>
+                    {displayPosts.length > 0 && (
+                      <div className="group cursor-pointer" onClick={() => setSelectedBlogPost(displayPosts[0])}>
+                        <div className="relative aspect-[16/9] rounded-2xl overflow-hidden mb-3 shadow-lg border border-white/5">
+                          <img src={displayPosts[0].image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                          <div className="absolute top-3 right-3 bg-blue-600 text-white text-[8px] font-black px-2 py-1 rounded uppercase tracking-widest">{displayPosts[0].category}</div>
+                        </div>
+                        <div className="text-[8px] font-bold text-slate-500 uppercase mb-1.5 tracking-tight">{displayPosts[0].date} • {displayPosts[0].category}</div>
+                        <h4 className="text-[15px] font-black text-white leading-tight uppercase tracking-tight group-hover:text-blue-400 transition-colors">
+                          {displayPosts[0].title}
+                        </h4>
                       </div>
-                      <div className="text-[8px] font-bold text-slate-500 uppercase mb-1.5 tracking-tight">For 2 timer siden • Markedsrapport</div>
-                      <h4 className="text-[15px] font-black text-white leading-tight uppercase tracking-tight group-hover:text-blue-400 transition-colors">
-                        Markedsrapport Q3: Kraftig vekst i sentrale Oslo-områder
-                      </h4>
-                    </div>
+                    )}
 
                     {/* List Articles */}
                     <div className="space-y-5">
-                      <div className="flex gap-4 group cursor-pointer border-t border-white/5 pt-5">
-                        <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-white/5">
-                          <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=200" className="w-full h-full object-cover" />
+                      {displayPosts.slice(1, 3).map((post) => (
+                        <div key={post.id} className="flex gap-4 group cursor-pointer border-t border-white/5 pt-5" onClick={() => setSelectedBlogPost(post)}>
+                          <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-white/5">
+                            <img src={post.image} className="w-full h-full object-cover" />
+                          </div>
+                          <div>
+                            <div className="text-[7px] font-bold text-slate-500 uppercase mb-0.5 tracking-tight">{post.date} • {post.category}</div>
+                            <h5 className="text-[12px] font-black text-white uppercase group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug">
+                              {post.title}
+                            </h5>
+                          </div>
                         </div>
-                        <div>
-                          <div className="text-[7px] font-bold text-slate-500 uppercase mb-0.5 tracking-tight">I går • Nyheter</div>
-                          <h5 className="text-[12px] font-black text-white uppercase group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug">
-                            Nye reguleringsplaner for Bryn og Ensjø vedtatt
-                          </h5>
-                        </div>
-                      </div>
-                      <div className="flex gap-4 group cursor-pointer border-t border-white/5 pt-5">
-                        <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-white/5">
-                          <img src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&q=80&w=200" className="w-full h-full object-cover" />
-                        </div>
-                        <div>
-                          <div className="text-[7px] font-bold text-slate-500 uppercase mb-0.5 tracking-tight">2 dager siden • Næring</div>
-                          <h5 className="text-[12px] font-black text-white uppercase group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug">
-                            Kontorledigheten synker tross økt hjemmekontorbruk
-                          </h5>
-                        </div>
-                      </div>
+                      ))}
                     </div>
 
                     {/* Premium Box */}
@@ -319,17 +340,17 @@ const App: React.FC = () => {
                 </h2>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
-                  {MOCK_BLOG_POSTS.map((post) => (
-                    <div 
-                      key={post.id} 
+                  {displayPosts.map((post) => (
+                    <div
+                      key={post.id}
                       onClick={() => setSelectedBlogPost(post)}
                       className="group cursor-pointer"
                     >
                       <div className="aspect-[4/3] rounded-[32px] overflow-hidden mb-6 shadow-xl border border-slate-100">
-                        <img 
-                          src={post.image} 
-                          alt={post.title} 
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                        <img
+                          src={post.image}
+                          alt={post.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                       </div>
                       <h4 className="text-[17px] font-black text-slate-950 leading-tight uppercase tracking-tight mb-3 group-hover:text-blue-600 transition-colors">
@@ -424,7 +445,20 @@ const App: React.FC = () => {
       </footer>
 
       {selectedBlogPost && (
-        <BlogPostDetail post={selectedBlogPost} onClose={() => setSelectedBlogPost(null)} />
+        <BlogPostDetail
+          post={selectedBlogPost}
+          allPosts={displayPosts}
+          onClose={() => setSelectedBlogPost(null)}
+          onPostClick={(post) => setSelectedBlogPost(post)}
+        />
+      )}
+
+      {isAdminOpen && (
+        <BlogAdmin
+          posts={blogPosts}
+          onPostsChange={(posts) => setBlogPosts(posts)}
+          onClose={() => setIsAdminOpen(false)}
+        />
       )}
     </div>
   );

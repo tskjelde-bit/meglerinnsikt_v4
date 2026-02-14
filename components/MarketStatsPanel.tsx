@@ -1,19 +1,22 @@
 
 import React from 'react';
-import { DistrictInfo } from '../types';
+import { DistrictInfo, BlogPost, BlogPostFull } from '../types';
 import { ArrowRight } from 'lucide-react';
 
 interface MarketStatsPanelProps {
   district: DistrictInfo;
+  posts?: (BlogPost | BlogPostFull)[];
+  onPostClick?: (post: BlogPost | BlogPostFull) => void;
 }
 
-const SmallBlogCard: React.FC<{ 
-  category: string; 
-  title: string; 
+const SmallBlogCard: React.FC<{
+  category: string;
+  title: string;
   date: string;
   isBlue?: boolean;
-}> = ({ category, title, date, isBlue }) => (
-  <div className="group cursor-pointer mb-8 last:mb-0">
+  onClick?: () => void;
+}> = ({ category, title, date, isBlue, onClick }) => (
+  <div className="group cursor-pointer mb-8 last:mb-0" onClick={onClick}>
     <h4 className={`text-[22px] font-black mb-2 leading-[1.1] tracking-tight transition-colors ${isBlue ? 'text-blue-600' : 'text-slate-950 group-hover:text-blue-600'}`}>
       {title}
     </h4>
@@ -26,7 +29,10 @@ const SmallBlogCard: React.FC<{
   </div>
 );
 
-const MarketStatsPanel: React.FC<MarketStatsPanelProps> = ({ district }) => {
+const MarketStatsPanel: React.FC<MarketStatsPanelProps> = ({ district, posts, onPostClick }) => {
+  // Use dynamic posts if available, otherwise fallback to hardcoded
+  const displayPosts = posts && posts.length > 0 ? posts.slice(0, 3) : null;
+
   return (
     <div className="flex flex-col bg-white px-8 py-10">
       {/* Hero Section */}
@@ -44,25 +50,38 @@ const MarketStatsPanel: React.FC<MarketStatsPanelProps> = ({ district }) => {
       {/* Blog Posts Section */}
       <div className="flex flex-col mb-10">
         <h3 className="text-[12px] font-black text-slate-400 uppercase tracking-[0.2em] mb-8">Siste innlegg</h3>
-        
-        <SmallBlogCard 
-          category="Markedsinnsikt"
-          title="Lær deg å 'spå' Boligmarkedet"
-          date="JAN 12"
-        />
-        
-        <SmallBlogCard 
-          category="Markedsrapporter"
-          title="Markedsrapport januar 2026"
-          date="JAN 05"
-          isBlue={true}
-        />
 
-        <SmallBlogCard 
-          category="Markedsinnsikt"
-          title="Hvilken prisstrategi gir best pris?"
-          date="DES 28"
-        />
+        {displayPosts ? (
+          displayPosts.map((post, idx) => (
+            <SmallBlogCard
+              key={post.id}
+              category={post.category}
+              title={post.title}
+              date={post.date}
+              isBlue={idx === 1}
+              onClick={() => onPostClick?.(post)}
+            />
+          ))
+        ) : (
+          <>
+            <SmallBlogCard
+              category="Markedsinnsikt"
+              title="Lær deg å 'spå' Boligmarkedet"
+              date="JAN 12"
+            />
+            <SmallBlogCard
+              category="Markedsrapporter"
+              title="Markedsrapport januar 2026"
+              date="JAN 05"
+              isBlue={true}
+            />
+            <SmallBlogCard
+              category="Markedsinnsikt"
+              title="Hvilken prisstrategi gir best pris?"
+              date="DES 28"
+            />
+          </>
+        )}
       </div>
 
       {/* About Broker Section */}
@@ -71,9 +90,9 @@ const MarketStatsPanel: React.FC<MarketStatsPanelProps> = ({ district }) => {
           {/* Column 1: Image */}
           <div className="w-28 h-28 flex-shrink-0">
             <div className="w-full h-full rounded-[20px] overflow-hidden shadow-sm border border-slate-100 bg-slate-50">
-              <img 
-                src="https://cdn.prod.website-files.com/691779eac33d8a85e5cce47f/691cdde168737019d77f443a_profil-farger.avif" 
-                alt="Torbjørn Skjelde" 
+              <img
+                src="https://cdn.prod.website-files.com/691779eac33d8a85e5cce47f/691cdde168737019d77f443a_profil-farger.avif"
+                alt="Torbjørn Skjelde"
                 className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
               />
             </div>
@@ -84,7 +103,7 @@ const MarketStatsPanel: React.FC<MarketStatsPanelProps> = ({ district }) => {
             <div>
               <h4 className="text-[18px] font-black text-slate-950 tracking-tight leading-none uppercase mb-1">Torbjørn Skjelde</h4>
               <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] mb-3">Meglerinnsikt</p>
-              
+
               <p className="text-[13px] font-medium leading-[1.3] text-slate-600 mb-3 line-clamp-2">
                 Min jobb er å gjøre usikre boligbeslutninger trygge – med fakta, analyse og råd.
               </p>

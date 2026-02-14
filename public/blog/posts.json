@@ -1,0 +1,340 @@
+[
+  {
+    "id": "b1",
+    "slug": "boligpriser-oslo-2026-2028-analyse-av-ferske-prognoser",
+    "title": "Boligpriser Oslo 2026-2028: Analyse av ferske prognoser",
+    "date": "JAN 12",
+    "dateISO": "2026-01-12",
+    "category": "MARKEDSINNSIKT",
+    "image": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=600",
+    "excerpt": "En grundig gjennomgang av de nyeste prognosene for Oslos boligmarked de neste tre årene. Hva sier ekspertene, og hva betyr det for deg?",
+    "author": {
+      "name": "Torbjørn Skjelde",
+      "title": "Markedsanalytiker & Partner",
+      "image": "https://cdn.prod.website-files.com/691779eac33d8a85e5cce47f/691cdde168737019d77f443a_profil-farger.avif"
+    },
+    "readTime": "8 Min Read",
+    "tags": ["Boligpriser", "Prognoser", "Oslo", "Markedsanalyse"],
+    "published": true,
+    "content": [
+      { "type": "heading", "level": 2, "text": "Hva venter boligmarkedet i Oslo?" },
+      { "type": "paragraph", "text": "Det er et spørsmål mange stiller seg akkurat nå: Hva skjer med boligprisene i Oslo de neste årene? Med rentetoppen bak oss, økende optimisme i markedet og fortsatt sterk befolkningsvekst i hovedstaden, tegner det seg et bilde som er verdt å analysere grundig." },
+      { "type": "paragraph", "text": "I denne artikkelen tar jeg for meg de ferskeste prognosene fra landets fremste analytikere og institusjoner, og setter dem i kontekst med det vi ser i markedet akkurat nå." },
+      { "type": "image", "url": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1200", "caption": "Boligmarkedet i Oslo viser tegn til stabilisering etter en turbulent periode." },
+      { "type": "heading", "level": 3, "text": "Prognosene for 2026" },
+      { "type": "paragraph", "text": "De store bankene og analysemiljøene har i løpet av de siste ukene oppdatert sine prognoser for boligprisene. Det er bred enighet om at prisene vil stige, men det er uenighet om hvor mye." },
+      { "type": "numberedList", "items": [
+        { "title": "DNB Markets", "description": "Forventer en prisvekst på 5-7% i Oslo i 2026, drevet av lavere renter og sterk etterspørsel. Sentrale områder som Frogner og St. Hanshaugen ventes å lede an." },
+        { "title": "Nordea", "description": "Anslår en mer moderat vekst på 3-5%, og peker på at økt boligbygging kan dempe presset noe. Likevel holder de fast ved at tilbudet ikke vil møte etterspørselen." },
+        { "title": "Eiendom Norge", "description": "Opererer med et middelscenario på 4-6% prisvekst nasjonalt, men understreker at Oslo trolig vil ligge over snittet grunnet den unike etterspørselssituasjonen." }
+      ]},
+      { "type": "heading", "level": 3, "text": "Hva driver prisene oppover?" },
+      { "type": "paragraph", "text": "Det er flere faktorer som trekker i retning av prisvekst i Oslo fremover. La oss se på de viktigste driverne:" },
+      { "type": "bulletList", "title": "Viktige prisdrivere i Oslo", "items": [
+        "Norges Bank har signalisert ytterligere rentekutt gjennom 2026, noe som øker kjøpekraften direkte",
+        "Befolkningsveksten i Oslo er fortsatt blant de høyeste i Europa, med netto tilflytting på over 10.000 per år",
+        "Boligbyggingen har ligget under behovet i over et tiår, og reguleringsplanene tar stadig lenger tid",
+        "Arbeidsmarkedet i Oslo er robust, med lav arbeidsledighet og sterk lønnsvekst i flere sektorer",
+        "Urbaniseringstrenden forsterkes etter pandemien – flere ønsker å bo sentralt igjen"
+      ]},
+      { "type": "quote", "text": "Oslo er i en unik posisjon i nordisk sammenheng. Kombinasjonen av sterk befolkningsvekst, begrenset areal og høy kjøpekraft gjør at prisene har et strukturelt oppadgående press som er vanskelig å motvirke med pengepolitikk alene." },
+      { "type": "heading", "level": 3, "text": "Bydel for bydel: Hvor er potensialet størst?" },
+      { "type": "paragraph", "text": "Ikke alle bydeler i Oslo vil utvikle seg likt. Basert på pågående utbyggingsprosjekter, demografiske trender og prisnivåer ser vi størst potensial i følgende områder:" },
+      { "type": "imageGrid", "images": [
+        { "url": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=600", "caption": "Gamle Oslo og Bjørvika" },
+        { "url": "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&q=80&w=600", "caption": "Grünerløkka og Sagene" },
+        { "url": "https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&q=80&w=600", "caption": "Bjerke og Grorud" },
+        { "url": "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&q=80&w=600", "caption": "Ullern og Vestre Aker" }
+      ]},
+      { "type": "heading", "level": 3, "text": "Risikoer og usikkerhetsmomenter" },
+      { "type": "paragraph", "text": "Selv om grunnlaget for prisvekst ser solid ut, finnes det flere faktorer som kan bremse utviklingen eller skape volatilitet i markedet." },
+      { "type": "bulletList", "items": [
+        "Geopolitisk usikkerhet kan påvirke norsk økonomi og rentebanen",
+        "Strengere utlånsregulering kan begrense kjøpekraften for førstegangskjøpere",
+        "Et eventuelt tilbudssjokk gjennom massiv ferdigstillelse av nye boliger",
+        "Endringer i skattepolitikken, som økt formuesskatt på sekundærboliger"
+      ]},
+      { "type": "heading", "level": 3, "text": "Min vurdering" },
+      { "type": "paragraph", "text": "Basert på min analyse av tilgjengelige data og trender, mener jeg det er realistisk å forvente en prisvekst i Oslo på 4-6% i 2026, med potensial for enda sterkere vekst i enkeltbydeler som Gamle Oslo og Bjerke. For perioden 2027-2028 er usikkerheten større, men det strukturelle underskuddet av boliger tilsier at prisene vil fortsette oppover, om enn i et mer moderat tempo." },
+      { "type": "paragraph", "text": "For deg som vurderer å kjøpe eller selge, er det viktigste å ha en god forståelse av ditt lokale marked. Generelle prognoser gir retning, men det er de lokale forholdene som bestemmer prisen på din bolig." }
+    ]
+  },
+  {
+    "id": "b2",
+    "slug": "hvordan-vil-utviklingen-i-styringsrenta-paavirke-boligprisene",
+    "title": "Hvordan vil utviklingen i styringsrenta påvirke boligprisene fremover?",
+    "date": "JAN 05",
+    "dateISO": "2026-01-05",
+    "category": "MARKEDSINNSIKT",
+    "image": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=600",
+    "excerpt": "Styringsrenta er kanskje den viktigste enkeltfaktoren for boligprisene. Slik påvirker renteutviklingen markedet i Oslo.",
+    "author": {
+      "name": "Torbjørn Skjelde",
+      "title": "Markedsanalytiker & Partner",
+      "image": "https://cdn.prod.website-files.com/691779eac33d8a85e5cce47f/691cdde168737019d77f443a_profil-farger.avif"
+    },
+    "readTime": "6 Min Read",
+    "tags": ["Rente", "Styringsrenta", "Boligpriser", "Norges Bank"],
+    "published": true,
+    "content": [
+      { "type": "heading", "level": 2, "text": "Renta styrer mye – men ikke alt" },
+      { "type": "paragraph", "text": "Forholdet mellom styringsrenta og boligpriser er noe de fleste kjenner til intuitivt: lavere rente betyr billigere lån, som betyr høyere kjøpekraft og dermed høyere priser. Men virkeligheten er mer nyansert enn som så." },
+      { "type": "paragraph", "text": "I denne artikkelen dykker jeg ned i sammenhengen mellom renteutviklingen og boligmarkedet, og forsøker å gi et ærlig bilde av hva vi kan forvente fremover." },
+      { "type": "heading", "level": 3, "text": "Norges Banks signaler" },
+      { "type": "paragraph", "text": "Norges Bank har gjennom 2025 holdt styringsrenta stabil på 4,25%, men signaliserer nå at rentekutt kan komme i løpet av første halvår 2026. Markedet priser inn to til tre rentekutt i 2026, noe som vil gi en styringsrente på rundt 3,5% ved årsslutt." },
+      { "type": "quote", "text": "Rentekutt alene skaper ikke boligprisvekst – det er kombinasjonen av lavere rente, økt kjøpekraft og begrenset tilbud som driver prisene. Men når alle tre faktorene trekker i samme retning, kan effekten bli kraftig." },
+      { "type": "heading", "level": 3, "text": "Historisk sammenheng: Rente vs. boligpriser" },
+      { "type": "paragraph", "text": "Historisk data fra de siste 20 årene viser en klar invers sammenheng mellom styringsrenta og boligprisveksten i Oslo. Perioder med rentekutt har nesten alltid blitt fulgt av økt prispress i boligmarkedet, med en forsinkelse på 3-6 måneder." },
+      { "type": "numberedList", "items": [
+        { "title": "2008-2010: Finanskrisen", "description": "Renta ble kuttet fra 5,75% til 1,25%. Etter et kort prisfall i 2008 steg boligprisene i Oslo med over 10% i 2010." },
+        { "title": "2014-2016: Oljeprisfallet", "description": "Renta ble kuttet fra 1,5% til 0,5%. Oslo-prisene steg kraftig, med over 20% vekst i 2016 alene." },
+        { "title": "2020-2021: Pandemien", "description": "Nullrentepolitikk førte til den sterkeste prisveksten i Oslo på over et tiår, med over 12% prisvekst i 2021." }
+      ]},
+      { "type": "heading", "level": 3, "text": "Hva betyr et rentekutt i kroner og øre?" },
+      { "type": "paragraph", "text": "La meg illustrere med et eksempel. En husholdning med 4 millioner kroner i gjeld og flytende rente vil ved et rentekutt på 0,75 prosentpoeng spare omtrent 2.500 kroner i måneden etter skatt. Over et år utgjør dette 30.000 kroner i økt kjøpekraft." },
+      { "type": "bulletList", "title": "Effekt av rentekutt på kjøpekraft", "items": [
+        "Et lån på 4 MNOK: ca. 2.500 kr/mnd spart per 0,75% rentekutt",
+        "Et lån på 6 MNOK: ca. 3.750 kr/mnd spart per 0,75% rentekutt",
+        "Økt låneevne: ca. 5-8% mer i lån per prosentpoeng rentekutt",
+        "Psykologisk effekt: Økt optimisme fører til raskere beslutninger"
+      ]},
+      { "type": "heading", "level": 3, "text": "Min vurdering" },
+      { "type": "paragraph", "text": "Jeg forventer at rentekuttene som kommer i 2026 vil gi merkbar drahjelp til boligprisene i Oslo, men at effekten vil være mer moderat enn i tidligere perioder. Årsaken er at husholdningene allerede har tilpasset seg et høyere rentenivå, og at utlånsreguleringen begrenser hvor mye ekstra lån folk kan ta opp." }
+    ]
+  },
+  {
+    "id": "b3",
+    "slug": "markedsrapport-juni-2025",
+    "title": "Markedsrapport Juni 2025",
+    "date": "JUN 30",
+    "dateISO": "2025-06-30",
+    "category": "MARKEDSRAPPORTER",
+    "image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=600",
+    "excerpt": "Full oversikt over boligmarkedet i Oslo i juni 2025. Prisutvikling, omsetningshastighet og hva som preget markedet denne måneden.",
+    "author": {
+      "name": "Torbjørn Skjelde",
+      "title": "Markedsanalytiker & Partner",
+      "image": "https://cdn.prod.website-files.com/691779eac33d8a85e5cce47f/691cdde168737019d77f443a_profil-farger.avif"
+    },
+    "readTime": "5 Min Read",
+    "tags": ["Markedsrapport", "Juni 2025", "Prisutvikling"],
+    "published": true,
+    "content": [
+      { "type": "heading", "level": 2, "text": "Markedet i juni: Sterk avslutning på våren" },
+      { "type": "paragraph", "text": "Juni markerte slutten på vårsesongen i boligmarkedet, og det har vært en aktiv måned. Omsetningen var høy, og prisene fortsatte den stigende trenden vi har sett siden mars." },
+      { "type": "heading", "level": 3, "text": "Nøkkeltall juni 2025" },
+      { "type": "numberedList", "items": [
+        { "title": "Prisvekst", "description": "Boligprisene i Oslo steg med 0,8% sesongjustert i juni, noe over gjennomsnittet for måneden de siste ti årene (0,5%)." },
+        { "title": "Omsetning", "description": "Det ble solgt 2.847 boliger i Oslo i juni, opp 12% fra samme måned i fjor. Dette er det høyeste tallet for en juni-måned siden 2017." },
+        { "title": "Nye boliger", "description": "1.956 nye boliger ble lagt ut for salg, en økning på 8% sammenlignet med juni 2024." },
+        { "title": "Omsetningstid", "description": "Gjennomsnittlig omsetningstid falt til 18 dager, ned fra 22 dager i mai. Dette indikerer et marked i selgers favør." }
+      ]},
+      { "type": "heading", "level": 3, "text": "Bydel for bydel" },
+      { "type": "paragraph", "text": "De sentrale bydelene fortsetter å lede an i prisvekst, med Frogner og St. Hanshaugen på topp. Interessant nok ser vi også økende aktivitet i ytre bydeler som Bjerke og Grorud, der prisene fortsatt er relativt lave sammenlignet med sentrum." },
+      { "type": "bulletList", "title": "Topp 5 bydeler etter prisvekst i juni", "items": [
+        "Frogner: +1,3% (94.500 kr/m²)",
+        "St. Hanshaugen: +1,1% (89.200 kr/m²)",
+        "Gamle Oslo: +1,0% (82.100 kr/m²)",
+        "Grünerløkka: +0,9% (85.400 kr/m²)",
+        "Bjerke: +0,8% (62.300 kr/m²)"
+      ]},
+      { "type": "quote", "text": "Junimarkedet i Oslo var preget av høy aktivitet og sterk konkurranse om de beste objektene. Flere meglere rapporterer om budrunder med over ti deltakere på attraktive leiligheter i sentrale strøk." },
+      { "type": "heading", "level": 3, "text": "Utsikter for sommeren" },
+      { "type": "paragraph", "text": "Erfaringsmessig roer markedet seg i juli og august, men i år er det signaler om at aktiviteten vil holde seg høyere enn normalt. Mange kjøpere som ble stående utenfor i vårsesongen ventes å komme tilbake etter ferien." }
+    ]
+  },
+  {
+    "id": "b4",
+    "slug": "markedsrapport-oktober-2025",
+    "title": "Markedsrapport Oktober 2025",
+    "date": "OKT 31",
+    "dateISO": "2025-10-31",
+    "category": "MARKEDSRAPPORTER",
+    "image": "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&q=80&w=600",
+    "excerpt": "Oktobermarkedet bød på overraskelser. Full rapport med tall, analyser og utsikter for resten av året.",
+    "author": {
+      "name": "Torbjørn Skjelde",
+      "title": "Markedsanalytiker & Partner",
+      "image": "https://cdn.prod.website-files.com/691779eac33d8a85e5cce47f/691cdde168737019d77f443a_profil-farger.avif"
+    },
+    "readTime": "5 Min Read",
+    "tags": ["Markedsrapport", "Oktober 2025", "Høstmarkedet"],
+    "published": true,
+    "content": [
+      { "type": "heading", "level": 2, "text": "Oktobermarkedet: Sterkere enn forventet" },
+      { "type": "paragraph", "text": "Oktober overrasket positivt med høyere omsetning og sterkere prisvekst enn det markedet hadde forventet. Etter en noe roligere september, var det tydelig at mange kjøpere hadde ventet på det rette øyeblikket." },
+      { "type": "heading", "level": 3, "text": "Nøkkeltall for oktober" },
+      { "type": "numberedList", "items": [
+        { "title": "Prisvekst", "description": "Boligprisene i Oslo steg med 0,6% sesongjustert i oktober, mot forventet 0,3%." },
+        { "title": "Omsetning", "description": "2.312 boliger ble solgt i Oslo, opp 9% fra oktober i fjor." },
+        { "title": "Omsetningstid", "description": "Gjennomsnittlig omsetningstid var 20 dager, omtrent på linje med de siste månedene." }
+      ]},
+      { "type": "paragraph", "text": "Det som skiller dette oktobermarkedet fra tidligere år er den vedvarende styrken i de ytre bydelene. Tradisjonelt har høstmarkedet vært dominert av sentrumsboliger, men i år ser vi en jevnere fordeling av aktiviteten." },
+      { "type": "bulletList", "title": "Markedstrender i oktober", "items": [
+        "Fortsatt sterk etterspørsel etter 2-3 roms leiligheter i prisklassen 3-5 MNOK",
+        "Økt interesse for eneboliger i ytre bydeler blant barnefamilier",
+        "Nybyggsalget tok seg opp etter en treg sommer",
+        "Flere budgiver per bolig enn i september"
+      ]},
+      { "type": "heading", "level": 3, "text": "Utsikter mot jul" },
+      { "type": "paragraph", "text": "Historisk sett roer markedet seg kraftig i november og desember. Jeg forventer at prisveksten flater ut mot årsslutt, men at den akkumulerte prisveksten for 2025 vil lande på mellom 3,5% og 4,5% for Oslo samlet." }
+    ]
+  },
+  {
+    "id": "b5",
+    "slug": "markedsrapport-september-2025",
+    "title": "Markedsrapport September 2025",
+    "date": "SEP 30",
+    "dateISO": "2025-09-30",
+    "category": "MARKEDSRAPPORTER",
+    "image": "https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&q=80&w=600",
+    "excerpt": "September markerte starten på høstsesongen med solid aktivitet. Her er den fullstendige markedsrapporten.",
+    "author": {
+      "name": "Torbjørn Skjelde",
+      "title": "Markedsanalytiker & Partner",
+      "image": "https://cdn.prod.website-files.com/691779eac33d8a85e5cce47f/691cdde168737019d77f443a_profil-farger.avif"
+    },
+    "readTime": "5 Min Read",
+    "tags": ["Markedsrapport", "September 2025", "Høstmarkedet"],
+    "published": true,
+    "content": [
+      { "type": "heading", "level": 2, "text": "Høstsesongen er i gang" },
+      { "type": "paragraph", "text": "Etter sommerens naturlige pause var september startskuddet for høstens boligmarked. Aktiviteten tok seg raskt opp etter ferien, og mange boliger som ble lagt ut i slutten av august fant kjøpere i løpet av de første ukene." },
+      { "type": "heading", "level": 3, "text": "September i tall" },
+      { "type": "numberedList", "items": [
+        { "title": "Prisvekst", "description": "Boligprisene i Oslo steg med 0,4% sesongjustert i september, noe under gjennomsnittet for måneden." },
+        { "title": "Omsetning", "description": "2.156 boliger ble solgt, omtrent på linje med fjorårets september." },
+        { "title": "Tilbudssiden", "description": "1.834 nye boliger ble lagt ut for salg, en økning på 14% fra september 2024." }
+      ]},
+      { "type": "paragraph", "text": "Det økte tilbudet bidro til å dempe prispress noe, men etterspørselen holdt seg sterk nok til å absorbere de fleste nye objektene raskt. Særlig populært var kompakte leiligheter nær kollektivknutepunkter." },
+      { "type": "quote", "text": "September ga oss et balansert marked der både kjøpere og selgere kunne finne gode løsninger. Det er et sunnhetstegn for markedet at vi ser denne typen likevekt." },
+      { "type": "heading", "level": 3, "text": "Hva skiller årets høstmarked?" },
+      { "type": "bulletList", "items": [
+        "Flere førstegangskjøpere enn på lenge, trolig drevet av forventninger om rentekutt",
+        "Økt interesse for boliger med energieffektive løsninger",
+        "Kortere beslutningstid blant kjøpere – mange har gjort research i sommerferien",
+        "Stabil prisutvikling uten de store overraskelsene"
+      ]}
+    ]
+  },
+  {
+    "id": "b6",
+    "slug": "oslo-bygger-for-lite-boligunderskuddet-vokser",
+    "title": "Oslo bygger for lite – boligunderskuddet vokser",
+    "date": "AUG 15",
+    "dateISO": "2025-08-15",
+    "category": "MARKEDSINNSIKT",
+    "image": "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&q=80&w=600",
+    "excerpt": "Det bygges for få boliger i Oslo i forhold til behovet. Hva betyr det strukturelle underskuddet for prisene fremover?",
+    "author": {
+      "name": "Torbjørn Skjelde",
+      "title": "Markedsanalytiker & Partner",
+      "image": "https://cdn.prod.website-files.com/691779eac33d8a85e5cce47f/691cdde168737019d77f443a_profil-farger.avif"
+    },
+    "readTime": "7 Min Read",
+    "tags": ["Boligbygging", "Tilbud og etterspørsel", "Regulering", "Oslo"],
+    "published": true,
+    "content": [
+      { "type": "heading", "level": 2, "text": "En by som vokser raskere enn den bygger" },
+      { "type": "paragraph", "text": "Oslo trenger anslagsvis 4.000-5.000 nye boliger hvert år for å holde tritt med befolkningsveksten. I 2024 ble det ferdigstilt under 2.500 boliger. Dette gapet har vokst jevnt de siste årene, og konsekvensene merkes stadig tydeligere i prisstatistikken." },
+      { "type": "heading", "level": 3, "text": "Tallene som bekymrer" },
+      { "type": "numberedList", "items": [
+        { "title": "Boligunderskudd", "description": "Estimert akkumulert underskudd på 15.000-20.000 boliger i Oslo over det siste tiåret." },
+        { "title": "Igangsettinger", "description": "Antall igangsatte boliger i 2024 var 30% under det historiske gjennomsnittet for perioden 2015-2020." },
+        { "title": "Reguleringstid", "description": "Gjennomsnittlig tid fra reguleringsforslag til ferdig regulert tomt har økt fra 3 til 5 år." }
+      ]},
+      { "type": "heading", "level": 3, "text": "Hva skyldes underskuddet?" },
+      { "type": "bulletList", "title": "Hovedårsaker til boligunderskuddet", "items": [
+        "Langsomme reguleringsprosesser i Oslo kommune",
+        "Økte byggekostnader har gjort mange prosjekter ulønnsomme",
+        "Strengere miljøkrav øker tid og kostnad per prosjekt",
+        "NIMBY-motstand forsinker utbyggingsprosjekter i etablerte nabolag",
+        "Mangel på tilgjengelige tomter i sentrale områder"
+      ]},
+      { "type": "image", "url": "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&q=80&w=1200", "caption": "Nye boligprosjekter i Oslo holder ikke tritt med befolkningsveksten." },
+      { "type": "quote", "text": "Boligunderskuddet i Oslo er en strukturell utfordring som ikke kan løses på kort sikt. Selv med en dramatisk økning i byggaktivitet ville det ta 5-7 år å tette gapet mellom tilbud og etterspørsel." },
+      { "type": "heading", "level": 3, "text": "Konsekvenser for boligkjøpere" },
+      { "type": "paragraph", "text": "For den gjennomsnittlige boligkjøper i Oslo betyr dette at konkurransen om tilgjengelige boliger vil forbli hard. Prisene har et strukturelt gulv som gjør store prisfall usannsynlig, selv i perioder med økonomisk usikkerhet." },
+      { "type": "paragraph", "text": "Mitt råd er å fokusere på områder der det faktisk bygges nye boliger – som Hovinbyen, Løren og Ensjø – der tilbudet er noe bedre og prisene mer moderate enn i de mest sentrale strøkene." }
+    ]
+  },
+  {
+    "id": "b7",
+    "slug": "sommermarkedet-i-oslo-kan-bli-en-fest-men-for-hvem",
+    "title": "Sommermarkedet i Oslo kan bli en fest – men for hvem?",
+    "date": "JUN 10",
+    "dateISO": "2025-06-10",
+    "category": "MARKEDSINNSIKT",
+    "image": "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=600",
+    "excerpt": "Sommeren 2025 kan bli uvanlig aktiv i Oslos boligmarked. Men er det en fest for selgere, kjøpere, eller begge?",
+    "author": {
+      "name": "Torbjørn Skjelde",
+      "title": "Markedsanalytiker & Partner",
+      "image": "https://cdn.prod.website-files.com/691779eac33d8a85e5cce47f/691cdde168737019d77f443a_profil-farger.avif"
+    },
+    "readTime": "6 Min Read",
+    "tags": ["Sommermarkedet", "Kjøpere vs selgere", "Oslo"],
+    "published": true,
+    "content": [
+      { "type": "heading", "level": 2, "text": "En uvanlig sommer i vente" },
+      { "type": "paragraph", "text": "Normalt er sommerens boligmarked en stille affære. De fleste drar på ferie, og de som selger gjør det ofte fordi de må. Men i år peker flere indikatorer mot at sommeren 2025 kan bli langt mer aktiv enn vanlig." },
+      { "type": "paragraph", "text": "Spørsmålet er hvem som tjener mest på denne utviklingen – og hvem som risikerer å stå igjen som taperen." },
+      { "type": "heading", "level": 3, "text": "Selgernes marked?" },
+      { "type": "paragraph", "text": "Med begrenset tilbud og sterk etterspørsel har selgerne hatt overtaket i store deler av 2025. Men det betyr ikke at alle selgere kan forvente drømmepris. Kvalitet, beliggenhet og standard har aldri betydd mer for sluttprisen." },
+      { "type": "bulletList", "title": "Hva selgere bør tenke på i sommermarkedet", "items": [
+        "Pris boligen riktig fra starten – overprising i et sommermarked straffer seg",
+        "Styling og presentasjon er viktigere enn noensinne i konkurranse med feriemodus",
+        "Vurder timing nøye – slutten av juni og begynnelsen av august er de mest aktive periodene",
+        "Ha en plan B hvis boligen ikke selges før fellesferien"
+      ]},
+      { "type": "heading", "level": 3, "text": "Muligheter for kjøpere" },
+      { "type": "paragraph", "text": "Selv i et selgermarked finnes det muligheter for kjøpere. Sommeren bringer ofte med seg boliger som selges under tidspress, og med færre aktive kjøpere kan det oppstå gode muligheter for den som er forberedt." },
+      { "type": "quote", "text": "Den beste strategien for kjøpere i sommermarkedet er å være fullt finansiert, godt forberedt og klar til å slå til raskt. De beste objektene forsvinner ofte før mange rekker å reagere." },
+      { "type": "heading", "level": 3, "text": "Min prognose for sommeren" },
+      { "type": "paragraph", "text": "Jeg tror sommeren 2025 vil gi en prisvekst på 0,5-1,0% totalt for juni-august, noe over det historiske snittet. Aktiviteten vil være ujevn, med topper rundt midtsommer og i begynnelsen av august." }
+    ]
+  },
+  {
+    "id": "b8",
+    "slug": "unngaa-de-vanligste-feilene-som-foerstegangskjoper-i-oslo",
+    "title": "Unngå de vanligste feilene som førstegangskjøper i Oslo",
+    "date": "MAI 22",
+    "dateISO": "2025-05-22",
+    "category": "TIPS & TRIKS",
+    "image": "https://images.unsplash.com/photo-1553729459-efe14ef6055d?auto=format&fit=crop&q=80&w=600",
+    "excerpt": "Å kjøpe din første bolig i Oslo er en stor beslutning. Her er feilene du bør unngå – og rådene som faktisk hjelper.",
+    "author": {
+      "name": "Torbjørn Skjelde",
+      "title": "Markedsanalytiker & Partner",
+      "image": "https://cdn.prod.website-files.com/691779eac33d8a85e5cce47f/691cdde168737019d77f443a_profil-farger.avif"
+    },
+    "readTime": "7 Min Read",
+    "tags": ["Førstegangskjøpere", "Tips", "Oslo", "Budgivning"],
+    "published": true,
+    "content": [
+      { "type": "heading", "level": 2, "text": "Første boligkjøp: Slik unngår du de dyreste tabbene" },
+      { "type": "paragraph", "text": "Å kjøpe bolig for første gang er en av livets største økonomiske beslutninger. I Oslo, der prisene er blant de høyeste i landet, er marginene for feil ekstra store. Gjennom mine år som megler har jeg sett de samme feilene gå igjen blant førstegangskjøpere – og mange av dem kan unngås med litt forberedelse." },
+      { "type": "heading", "level": 3, "text": "De 5 vanligste feilene" },
+      { "type": "numberedList", "items": [
+        { "title": "Ikke få finansieringsbevis først", "description": "Altfor mange begynner å se på boliger før de vet hva de faktisk har råd til. Uten finansieringsbevis risikerer du å falle for en bolig du ikke kan kjøpe, eller å gå glipp av en god mulighet fordi du ikke kan legge inn bud raskt nok." },
+        { "title": "Undervurdere fellesgjeld og felleskostnader", "description": "Mange førstegangskjøpere fokuserer kun på kjøpesummen og glemmer fellesgjelden. En leilighet til 3 MNOK med 2 MNOK i fellesgjeld koster deg reelt 5 MNOK. Sjekk alltid totalkostnaden." },
+        { "title": "La seg rive med i budrunder", "description": "Emosjonelle budgivere er meglerens drøm og kjøperens mareritt. Sett en absolutt grense før visningen, og hold deg til den. Det kommer alltid nye muligheter." },
+        { "title": "Ikke lese tilstandsrapporten grundig", "description": "Tilstandsrapporten er din viktigste kilde til informasjon om boligens faktiske stand. Mange hopper over denne fordi den er teknisk, men det kan koste deg hundretusener i uforutsette utgifter." },
+        { "title": "Kjøpe for trangt", "description": "Det er fristende å kjøpe den billigste leiligheten du finner for å komme inn i markedet. Men en for liten bolig kan bety at du må selge og kjøpe igjen allerede etter 2-3 år, med tilhørende kostnader." }
+      ]},
+      { "type": "heading", "level": 3, "text": "Gode råd for førstegangskjøpere i Oslo" },
+      { "type": "bulletList", "title": "Sjekkliste før du kjøper", "items": [
+        "Få finansieringsbevis fra banken FØR du begynner å se på boliger",
+        "Regn alltid med totalkostnad: kjøpesum + fellesgjeld + dokumentavgift + omkostninger",
+        "Sett av minimum 15% av kjøpesum i egenkapital (kravet er nå 15%)",
+        "Les tilstandsrapporten, årsberetningen og regnskapet for borettslaget/sameiet",
+        "Gå på minst 10-15 visninger før du legger inn ditt første bud",
+        "Vurder beliggenhet og infrastruktur over overflatestandard – du kan pusse opp senere"
+      ]},
+      { "type": "quote", "text": "Det beste rådet jeg kan gi en førstegangskjøper er dette: Vær tålmodig, vær forberedt, og ikke la følelsene styre budgivningen. Det er bedre å gå glipp av én bolig enn å betale for mye for den." },
+      { "type": "heading", "level": 3, "text": "Hvilke områder er best for førstegangskjøpere?" },
+      { "type": "paragraph", "text": "I dagens Oslo-marked bør førstegangskjøpere se mot bydeler som Bjerke, Alna, Grorud og Søndre Nordstrand. Her er prisene fortsatt overkommelige, kollektivtilbudet er godt, og det pågår omfattende byutvikling som trolig vil løfte verdiene over tid." },
+      { "type": "paragraph", "text": "Områder som Løren, Ensjø og Hasle er også verdt å følge med på – her er det mange nybygg med moderne standard og rimelige innstegspriser for Oslo å være." }
+    ]
+  }
+]

@@ -1,9 +1,10 @@
 
 import React, { useState } from 'react';
-import { BlogPost } from '../types';
+import { BlogPost, BlogPostFull } from '../types';
 import { MOCK_BLOG_POSTS } from '../constants';
-import { 
-  X, Linkedin, Phone, ChevronDown, Clock, Share2, Bookmark, 
+import BlogContentRenderer from './BlogContentRenderer';
+import {
+  X, Linkedin, Phone, ChevronDown, Clock, Share2, Bookmark,
   Target, Layout, Search, Mail, ArrowRight, User, Sparkles,
   Zap, Bell, Calendar, TrendingUp, ChevronRight, MessageSquare,
   Facebook, Twitter, MoreHorizontal, Download, Map as MapIcon,
@@ -12,12 +13,24 @@ import {
 
 const LOGO_URL = "https://cdn.prod.website-files.com/691779eac33d8a85e5cce47f/692a5a3fb0a7a66a7673d639_Azure-stacked-c.png";
 
+const DEFAULT_AUTHOR = {
+  name: 'Torbjørn Skjelde',
+  title: 'Markedsanalytiker & Partner',
+  image: 'https://cdn.prod.website-files.com/691779eac33d8a85e5cce47f/691cdde168737019d77f443a_profil-farger.avif'
+};
+
 interface BlogPostDetailProps {
-  post: BlogPost;
+  post: BlogPost | BlogPostFull;
+  allPosts?: (BlogPost | BlogPostFull)[];
   onClose: () => void;
+  onPostClick?: (post: BlogPost | BlogPostFull) => void;
 }
 
-const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, onClose }) => {
+function isFullPost(post: BlogPost | BlogPostFull): post is BlogPostFull {
+  return 'content' in post && Array.isArray((post as BlogPostFull).content);
+}
+
+const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, allPosts, onClose, onPostClick }) => {
   const [activeNavDropdown, setActiveNavDropdown] = useState<string | null>(null);
   const [newsletterEmail, setNewsletterEmail] = useState('');
 
@@ -25,12 +38,18 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, onClose }) => {
     setActiveNavDropdown(activeNavDropdown === name ? null : name);
   };
 
-  // Filter out the current post for the "You might also like" section
-  const relatedPosts = MOCK_BLOG_POSTS.filter(p => p.id !== post.id).slice(0, 3);
+  const postsSource = allPosts || MOCK_BLOG_POSTS;
+  const relatedPosts = postsSource.filter(p => p.id !== post.id).slice(0, 3);
+
+  const full = isFullPost(post);
+  const author = full ? post.author : DEFAULT_AUTHOR;
+  const readTime = full ? post.readTime : '12 Min Read';
+  const tags = full ? post.tags : ['RealEstate', 'DataAnalysis', 'Economy2026'];
+  const excerpt = full ? post.excerpt : '';
 
   return (
     <div className="fixed inset-0 z-[3000] bg-white flex flex-col overflow-y-auto animate-in fade-in duration-500 custom-scrollbar">
-      
+
       {/* GLOBAL HEADER */}
       <header className="h-16 md:h-20 bg-white/90 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-6 lg:px-14 z-[1001] shrink-0 sticky top-0 shadow-sm">
         <div className="flex items-center gap-10">
@@ -62,7 +81,7 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, onClose }) => {
           <button className="bg-slate-950 text-white px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-tight hover:bg-blue-600 transition-all">
             Selge bolig?
           </button>
-          <button 
+          <button
             onClick={onClose}
             className="p-2.5 bg-slate-50 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all"
           >
@@ -83,7 +102,7 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, onClose }) => {
               {post.category}
             </span>
             <span className="text-[11px] font-bold text-slate-300 uppercase tracking-widest flex items-center gap-1.5">
-              <Clock size={12} /> 12 Min Read • {post.date}, 2026
+              <Clock size={12} /> {readTime} • {post.date}, 2026
             </span>
           </div>
           <h1 className="text-4xl md:text-7xl font-black leading-[1.05] tracking-tighter mb-8 max-w-4xl uppercase">
@@ -91,11 +110,11 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, onClose }) => {
           </h1>
           <div className="flex items-center gap-5">
             <div className="w-14 h-14 rounded-full border-2 border-white/20 overflow-hidden shadow-xl">
-              <img src="https://cdn.prod.website-files.com/691779eac33d8a85e5cce47f/691cdde168737019d77f443a_profil-farger.avif" alt="Author" className="w-full h-full object-cover" />
+              <img src={author.image} alt="Author" className="w-full h-full object-cover" />
             </div>
             <div>
-              <p className="font-black text-xl uppercase tracking-tight">Torbjørn Skjelde</p>
-              <p className="text-sm font-bold text-blue-400 uppercase tracking-widest">Markedsanalytiker & Partner</p>
+              <p className="font-black text-xl uppercase tracking-tight">{author.name}</p>
+              <p className="text-sm font-bold text-blue-400 uppercase tracking-widest">{author.title}</p>
             </div>
           </div>
         </div>
@@ -104,118 +123,118 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, onClose }) => {
       {/* ARTICLE CONTENT & SIDEBAR */}
       <div className="max-w-7xl mx-auto w-full px-6 lg:px-14 py-20">
         <div className="flex flex-col lg:flex-row gap-16">
-          
+
           {/* MAIN COLUMN */}
           <article className="lg:w-2/3">
-            <div className="prose prose-slate max-w-none">
-              
-              <h2 className="text-[34px] font-black text-slate-950 uppercase tracking-tight mt-0 mb-8 leading-tight">
-                Introduksjon: Et marked i transformasjon
-              </h2>
-              
-              <p className="text-xl leading-relaxed text-slate-600 font-medium mb-12">
-                Når vi nå beveger oss inn i 2026, fortsetter det norske eiendomsmarkedet å vise en bemerkelsesverdig motstandskraft til tross for svingende renter. Våre nyeste data indikerer et betydelig skifte i urban boligetterspørsel, drevet av en blanding av teknologisk integrasjon og endrede boligpreferanser.
-              </p>
+            {full && post.content.length > 0 ? (
+              <BlogContentRenderer blocks={post.content} />
+            ) : (
+              <div className="prose prose-slate max-w-none">
+                <h2 className="text-[34px] font-black text-slate-950 uppercase tracking-tight mt-0 mb-8 leading-tight">
+                  Introduksjon: Et marked i transformasjon
+                </h2>
 
-              <div className="my-16 rounded-[40px] overflow-hidden shadow-xl border border-slate-100">
-                <img 
-                  src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&q=80&w=1200" 
-                  alt="Urban landscape" 
-                  className="w-full h-80 object-cover"
-                />
-                <div className="p-4 bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] text-center">
-                  Figur 1: Urban fortetting og moderne arkitektur i Bjørvika-området.
-                </div>
-              </div>
+                <p className="text-xl leading-relaxed text-slate-600 font-medium mb-12">
+                  Når vi nå beveger oss inn i 2026, fortsetter det norske eiendomsmarkedet å vise en bemerkelsesverdig motstandskraft til tross for svingende renter. Våre nyeste data indikerer et betydelig skifte i urban boligetterspørsel, drevet av en blanding av teknologisk integrasjon og endrede boligpreferanser.
+                </p>
 
-              <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight mt-16 mb-6">
-                Endring i urban boligetterspørsel
-              </h3>
-              
-              <p className="text-slate-600 leading-relaxed mb-10">
-                Urbane sentre opplever en "ny bølge" av revitalisering. I motsetning til perioden før 2020, er dagens etterspørsel tungt vektet mot blandede utviklingsprosjekter som tilbyr omfattende fasiliteter. Dataene tyder på at prisstabilitet er i ferd med å returnere til de store storbyområdene, med en 4,2% økning i medianverdier sammenlignet med i fjor.
-              </p>
-
-              {/* Bullet list */}
-              <div className="bg-slate-50 p-10 rounded-[40px] border border-slate-100 mb-12">
-                <h4 className="text-[14px] font-black text-blue-600 uppercase tracking-[0.3em] mb-6">Viktige drivere:</h4>
-                <ul className="space-y-4 m-0 p-0 list-none">
-                  {[
-                    "Økt fleksibilitet i arbeidslivet gir rom for mer fokus på bokvalitet.",
-                    "Høyere krav til energieffektivitet i nybygg (BREEAM-sertifisering).",
-                    "Sentralisering mot kollektivknutepunkter fortsetter å eskalere.",
-                    "Demografiske skifter: Flere aleneboende søker sosiale bofellesskap."
-                  ].map((item, i) => (
-                    <li key={i} className="flex gap-4 items-start text-slate-700 font-medium">
-                      <CheckCircle2 className="text-blue-500 shrink-0 mt-1" size={18} />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <h4 className="text-xl font-black text-slate-900 uppercase tracking-tight mb-6">
-                Analyse av sekundærboligmarkedet
-              </h4>
-
-              <p className="mb-10 text-slate-600">
-                Vi ser en markant nedgang i antall sekundærboliger for salg, noe som tyder på at investorer nå sitter på gjerdet i påvente av rentekutt. Dette skaper et vakuum i leiemarkedet som igjen presser leieprisene oppover i de sentrale bydelene.
-              </p>
-
-              {/* Side-by-side images */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-16">
-                <div className="rounded-[32px] overflow-hidden shadow-lg">
-                  <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&q=80&w=600" className="w-full h-64 object-cover" />
-                  <div className="p-3 bg-slate-50 text-[9px] font-bold text-slate-400 uppercase tracking-widest text-center">Interiør trender 2026</div>
-                </div>
-                <div className="rounded-[32px] overflow-hidden shadow-lg">
-                  <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&q=80&w=600" className="w-full h-64 object-cover" />
-                  <div className="p-3 bg-slate-50 text-[9px] font-bold text-slate-400 uppercase tracking-widest text-center">Materialvalg og estetikk</div>
-                </div>
-              </div>
-
-              <h5 className="text-[16px] font-black text-slate-900 uppercase tracking-tight mb-4">
-                Presisjon i prissetting
-              </h5>
-
-              <p className="text-slate-600 mb-8">
-                I dagens marked er marginene små. En feilpriset bolig kan bli liggende i månedsvis, mens en korrekt priset bolig ofte går etter første visningsrunde. Her er de kritiske stegene vi følger:
-              </p>
-
-              {/* Numbered list */}
-              <div className="space-y-8 mb-16">
-                {[
-                  { t: "Markeds-benchmark", d: "Vi sammenligner med faktiske salgspriser de siste 30 dagene, ikke bare prisantydning." },
-                  { t: "Kjøper-persona", d: "Vi identifiserer hvem som er den ideelle kjøperen og tilpasser markedsføringen deretter." },
-                  { t: "Algoritmisk synlighet", d: "Våre AI-verktøy sikrer at annonsen din treffer de som faktisk har finansieringsbeviset klart." }
-                ].map((item, i) => (
-                  <div key={i} className="flex gap-6 items-start group">
-                    <div className="w-12 h-12 bg-slate-950 text-white rounded-2xl flex items-center justify-center text-lg font-black shrink-0 group-hover:bg-blue-600 transition-colors">
-                      {i + 1}
-                    </div>
-                    <div>
-                      <h6 className="text-[15px] font-black text-slate-900 uppercase mb-1">{item.t}</h6>
-                      <p className="text-[14px] text-slate-500 font-medium leading-relaxed m-0">{item.d}</p>
-                    </div>
+                <div className="my-16 rounded-[40px] overflow-hidden shadow-xl border border-slate-100">
+                  <img
+                    src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&q=80&w=1200"
+                    alt="Urban landscape"
+                    className="w-full h-80 object-cover"
+                  />
+                  <div className="p-4 bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] text-center">
+                    Figur 1: Urban fortetting og moderne arkitektur i Bjørvika-området.
                   </div>
-                ))}
-              </div>
+                </div>
 
-              <div className="p-10 border-l-[8px] border-blue-600 bg-blue-50/50 rounded-r-[32px] my-16">
-                <p className="text-2xl font-black text-slate-900 italic leading-snug tracking-tight">
-                  "Dataene lyver ikke – vi er vitne til en fundamental restrukturering av hvordan folk verdsetter boareal."
+                <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight mt-16 mb-6">
+                  Endring i urban boligetterspørsel
+                </h3>
+
+                <p className="text-slate-600 leading-relaxed mb-10">
+                  Urbane sentre opplever en "ny bølge" av revitalisering. I motsetning til perioden før 2020, er dagens etterspørsel tungt vektet mot blandede utviklingsprosjekter som tilbyr omfattende fasiliteter. Dataene tyder på at prisstabilitet er i ferd med å returnere til de store storbyområdene, med en 4,2% økning i medianverdier sammenlignet med i fjor.
+                </p>
+
+                <div className="bg-slate-50 p-10 rounded-[40px] border border-slate-100 mb-12">
+                  <h4 className="text-[14px] font-black text-blue-600 uppercase tracking-[0.3em] mb-6">Viktige drivere:</h4>
+                  <ul className="space-y-4 m-0 p-0 list-none">
+                    {[
+                      "Økt fleksibilitet i arbeidslivet gir rom for mer fokus på bokvalitet.",
+                      "Høyere krav til energieffektivitet i nybygg (BREEAM-sertifisering).",
+                      "Sentralisering mot kollektivknutepunkter fortsetter å eskalere.",
+                      "Demografiske skifter: Flere aleneboende søker sosiale bofellesskap."
+                    ].map((item, i) => (
+                      <li key={i} className="flex gap-4 items-start text-slate-700 font-medium">
+                        <CheckCircle2 className="text-blue-500 shrink-0 mt-1" size={18} />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <h4 className="text-xl font-black text-slate-900 uppercase tracking-tight mb-6">
+                  Analyse av sekundærboligmarkedet
+                </h4>
+
+                <p className="mb-10 text-slate-600">
+                  Vi ser en markant nedgang i antall sekundærboliger for salg, noe som tyder på at investorer nå sitter på gjerdet i påvente av rentekutt. Dette skaper et vakuum i leiemarkedet som igjen presser leieprisene oppover i de sentrale bydelene.
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-16">
+                  <div className="rounded-[32px] overflow-hidden shadow-lg">
+                    <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&q=80&w=600" className="w-full h-64 object-cover" />
+                    <div className="p-3 bg-slate-50 text-[9px] font-bold text-slate-400 uppercase tracking-widest text-center">Interiør trender 2026</div>
+                  </div>
+                  <div className="rounded-[32px] overflow-hidden shadow-lg">
+                    <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&q=80&w=600" className="w-full h-64 object-cover" />
+                    <div className="p-3 bg-slate-50 text-[9px] font-bold text-slate-400 uppercase tracking-widest text-center">Materialvalg og estetikk</div>
+                  </div>
+                </div>
+
+                <h5 className="text-[16px] font-black text-slate-900 uppercase tracking-tight mb-4">
+                  Presisjon i prissetting
+                </h5>
+
+                <p className="text-slate-600 mb-8">
+                  I dagens marked er marginene små. En feilpriset bolig kan bli liggende i månedsvis, mens en korrekt priset bolig ofte går etter første visningsrunde. Her er de kritiske stegene vi følger:
+                </p>
+
+                <div className="space-y-8 mb-16">
+                  {[
+                    { t: "Markeds-benchmark", d: "Vi sammenligner med faktiske salgspriser de siste 30 dagene, ikke bare prisantydning." },
+                    { t: "Kjøper-persona", d: "Vi identifiserer hvem som er den ideelle kjøperen og tilpasser markedsføringen deretter." },
+                    { t: "Algoritmisk synlighet", d: "Våre AI-verktøy sikrer at annonsen din treffer de som faktisk har finansieringsbeviset klart." }
+                  ].map((item, i) => (
+                    <div key={i} className="flex gap-6 items-start group">
+                      <div className="w-12 h-12 bg-slate-950 text-white rounded-2xl flex items-center justify-center text-lg font-black shrink-0 group-hover:bg-blue-600 transition-colors">
+                        {i + 1}
+                      </div>
+                      <div>
+                        <h6 className="text-[15px] font-black text-slate-900 uppercase mb-1">{item.t}</h6>
+                        <p className="text-[14px] text-slate-500 font-medium leading-relaxed m-0">{item.d}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="p-10 border-l-[8px] border-blue-600 bg-blue-50/50 rounded-r-[32px] my-16">
+                  <p className="text-2xl font-black text-slate-900 italic leading-snug tracking-tight">
+                    "Dataene lyver ikke – vi er vitne til en fundamental restrukturering av hvordan folk verdsetter boareal."
+                  </p>
+                </div>
+
+                <p className="text-slate-600 leading-relaxed">
+                  Oppsummert ser vi at markedet i Oslo er i ferd med å profesjonaliseres ytterligere. Kravene til både selger og megler øker, og det er de som benytter seg av de beste verktøyene som vil stå igjen som vinnere.
                 </p>
               </div>
-
-              <p className="text-slate-600 leading-relaxed">
-                Oppsummert ser vi at markedet i Oslo er i ferd med å profesjonaliseres ytterligere. Kravene til både selger og megler øker, og det er de som benytter seg av de beste verktøyene som vil stå igjen som vinnere.
-              </p>
-            </div>
+            )}
 
             {/* ARTICLE TAGS & SHARE */}
             <div className="mt-24 pt-10 border-t border-slate-100 flex flex-wrap items-center justify-between gap-6">
               <div className="flex gap-3">
-                {['RealEstate', 'DataAnalysis', 'Economy2026'].map(tag => (
+                {tags.map(tag => (
                   <span key={tag} className="px-5 py-2 bg-slate-50 text-slate-500 text-[10px] font-black uppercase tracking-widest rounded-full cursor-pointer hover:bg-blue-600 hover:text-white transition-all">
                     #{tag}
                   </span>
@@ -235,7 +254,7 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, onClose }) => {
           {/* SIDEBAR */}
           <aside className="lg:w-1/3">
             <div className="sticky top-32 space-y-12">
-              
+
               {/* MOST READ SECTION */}
               <section>
                 <h3 className="text-sm font-black text-slate-900 uppercase tracking-[0.3em] mb-8 flex items-center gap-3">
@@ -275,7 +294,7 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, onClose }) => {
                     { name: 'Markedsrapporter', count: 12, color: 'bg-emerald-600' },
                     { name: 'Tips & Triks', count: 8, color: 'bg-orange-600' }
                   ].map((topic) => (
-                    <button 
+                    <button
                       key={topic.name}
                       className="group flex items-center justify-between p-4 bg-slate-50 hover:bg-white border border-transparent hover:border-slate-100 rounded-2xl transition-all"
                     >
@@ -305,7 +324,7 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, onClose }) => {
                   <p className="text-slate-500 text-sm font-medium mb-10 leading-relaxed">
                     Visualiser lokale markedstrender helt ned på bydelsnivå. Se historiske prisendringer og varmekart i sanntid.
                   </p>
-                  <button 
+                  <button
                     onClick={onClose}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 transition-all uppercase tracking-widest text-[11px] shadow-xl shadow-blue-900/40"
                   >
@@ -328,9 +347,9 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, onClose }) => {
                 <h4 className="text-xl font-black text-slate-950 uppercase tracking-tight mb-3">Weekly Market Pulse</h4>
                 <p className="text-sm font-medium text-slate-500 mb-10 leading-relaxed">Få kuraterte datainnsikter levert hver mandag morgen.</p>
                 <div className="space-y-3">
-                  <input 
-                    className="w-full text-sm rounded-2xl border-slate-200 bg-white px-5 py-4 focus:ring-2 focus:ring-blue-600 outline-none transition-all" 
-                    placeholder="Din e-postadresse" 
+                  <input
+                    className="w-full text-sm rounded-2xl border-slate-200 bg-white px-5 py-4 focus:ring-2 focus:ring-blue-600 outline-none transition-all"
+                    placeholder="Din e-postadresse"
                     type="email"
                     value={newsletterEmail}
                     onChange={(e) => setNewsletterEmail(e.target.value)}
@@ -352,10 +371,14 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, onClose }) => {
           <h2 className="text-3xl font-black text-slate-950 uppercase tracking-tight mb-16">Du vil kanskje også like</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {relatedPosts.map((relatedPost) => (
-              <div 
-                key={relatedPost.id} 
+              <div
+                key={relatedPost.id}
                 onClick={() => {
-                  onClose();
+                  if (onPostClick) {
+                    onPostClick(relatedPost);
+                  } else {
+                    onClose();
+                  }
                 }}
                 className="bg-white rounded-[40px] overflow-hidden border border-slate-100 group cursor-pointer hover:shadow-2xl transition-all"
               >
@@ -370,7 +393,9 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, onClose }) => {
                     {relatedPost.title}
                   </h3>
                   <p className="text-slate-500 text-sm font-medium mt-6 line-clamp-2 leading-relaxed">
-                    Dykk ned i de nyeste trendene og få innsikten du trenger for å lykkes i det norske boligmarkedet.
+                    {isFullPost(relatedPost) && relatedPost.excerpt
+                      ? relatedPost.excerpt
+                      : 'Dykk ned i de nyeste trendene og få innsikten du trenger for å lykkes i det norske boligmarkedet.'}
                   </p>
                   <div className="mt-8 flex items-center text-[10px] font-black text-blue-600 uppercase tracking-widest">
                     Les hele saken <ChevronRight size={14} className="ml-1 group-hover:translate-x-1 transition-transform" />
@@ -391,11 +416,11 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, onClose }) => {
               <p className="text-slate-400 text-sm md:text-base font-medium leading-relaxed mb-10">
                 Motta min månedlige oppdatering på boligmarkedet i Oslo. Faglig og ærlig om fortid, nåtid og fremtid.
               </p>
-              
+
               <div className="flex items-end gap-6 border-b border-white/10 pb-4 group focus-within:border-white transition-colors">
-                <input 
-                  type="text" 
-                  placeholder="Ditt navn eller e-post" 
+                <input
+                  type="text"
+                  placeholder="Ditt navn eller e-post"
                   className="bg-transparent border-none outline-none text-white text-[15px] placeholder:text-slate-600 font-medium py-1 w-full"
                 />
                 <button className="text-blue-500 text-[13px] font-black whitespace-nowrap hover:text-white transition-colors uppercase tracking-[0.2em]">
