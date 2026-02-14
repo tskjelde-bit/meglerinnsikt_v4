@@ -133,7 +133,7 @@ const HomePage: React.FC<{
             </h2>
             <p className={`md:hidden text-[12px] font-black uppercase tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-slate-400'}`}>
               {isDistrictSelected
-                ? <span className="text-white normal-case mt-2 block">{getMarketData(selectedDistrict).interpretation}</span>
+                ? <span className="text-white">{getMarketData(selectedDistrict).interpretation}</span>
                 : <><span className="text-blue-500">Selger</span> eller <span className="text-blue-500">kjøpers</span> marked akkurat nå?</>
               }
             </p>
