@@ -117,7 +117,9 @@ const HomePage: React.FC<{
 
   useEffect(() => {
     const updateMapHeight = () => {
-      if (headerRef.current && window.innerWidth < 768) {
+      if (window.innerWidth >= 768) {
+        setMapHeight('auto');
+      } else if (headerRef.current) {
         const headerBottom = headerRef.current.getBoundingClientRect().bottom;
         setMapHeight(`calc(100dvh - ${headerBottom}px)`);
       }
