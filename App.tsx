@@ -272,16 +272,17 @@ const HomePage: React.FC<{
                           ${i !== 0 ? `border-l ${isDarkMode ? 'border-white/5' : 'border-slate-100'}` : ''}
                         `}
                       >
-                        <div className={stat.iconColor}>
+                        <div className={`hidden md:block ${stat.iconColor}`}>
                           {stat.icon}
                         </div>
                         <div className="flex flex-col items-center md:items-start">
-                          <div className={`text-[12px] md:text-[24px] lg:text-[28px] font-black leading-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-                            {stat.value}
+                          <div className={`text-[12px] md:text-[24px] lg:text-[28px] font-black leading-tight ${stat.iconColor}`}>
+                            <span className={`md:hidden`}>{stat.value}</span>
+                            <span className={`hidden md:inline ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{stat.value}</span>
                           </div>
-                          <div className={`text-[8px] md:text-[9px] font-black uppercase tracking-widest leading-none mt-0.5 ${isDarkMode ? 'text-white' : 'text-slate-400'}`}>
+                          <div className={`text-[8px] md:text-[9px] font-black uppercase tracking-widest leading-none mt-0.5 ${stat.iconColor}`}>
                             <span className="md:hidden">{stat.mobileLabel}</span>
-                            <span className="hidden md:inline">{stat.label}</span>
+                            <span className={`hidden md:inline ${isDarkMode ? 'text-white' : 'text-slate-400'}`}>{stat.label}</span>
                           </div>
                         </div>
                       </div>
