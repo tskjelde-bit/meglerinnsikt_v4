@@ -9,6 +9,7 @@ import MarketStatsPanel from './components/MarketStatsPanel';
 import BlogPostDetail from './components/BlogPostDetail';
 import BlogPostPage from './components/BlogPostPage';
 import BlogAdmin from './components/admin/BlogAdmin';
+import TelegramChatWidget from './components/TelegramChatWidget';
 import {
   Building2, Menu, X, ChevronDown, Calendar, Download,
   Plus, Minus, Layers, Target, Zap, Coins,
@@ -27,12 +28,14 @@ const HomePage: React.FC<{
   setIsAdminOpen: (open: boolean) => void;
   isDarkMode: boolean;
   setIsDarkMode: (dark: boolean) => void;
-}> = ({ displayPosts, blogPosts, onPostsChange, isAdminOpen, setIsAdminOpen, isDarkMode, setIsDarkMode }) => {
+  setIsChatOpen: (open: boolean) => void;
+}> = ({ displayPosts, blogPosts, onPostsChange, isAdminOpen, setIsAdminOpen, isDarkMode, setIsDarkMode, setIsChatOpen }) => {
   const navigate = useNavigate();
   const [selectedDistrict, setSelectedDistrict] = useState<DistrictInfo>(OSLO_DISTRICTS[0]);
   const [isDistrictListOpen, setIsDistrictListOpen] = useState(false);
   const [newsletterName, setNewsletterName] = useState('');
   const [isDistrictSelected, setIsDistrictSelected] = useState(false);
+  const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
 
   const handlePostClick = (post: BlogPost | BlogPostFull) => {
     if ('slug' in post && (post as BlogPostFull).slug) {
@@ -86,34 +89,33 @@ const HomePage: React.FC<{
                 selectedProperty={null}
                 selectedDistrict={selectedDistrict}
                 onPropertySelect={() => {}}
-                onDistrictSelect={(d) => { setSelectedDistrict(d); setIsDistrictSelected(true); }}
+                onDistrictSelect={(d) => { setSelectedDistrict(d); setIsDistrictSelected(true); setIsAnalysisOpen(true); }}
               />
             </div>
 
             {/* DISTRICT DROPDOWN */}
             <div className="absolute top-2.5 left-1/2 -translate-x-1/2 md:top-8 md:left-8 md:translate-x-0 z-[500] w-[130px] md:w-72 pointer-events-auto">
-              <div className="bg-white/95 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-2xl overflow-hidden border border-slate-100">
+              <div className="bg-white/95 backdrop-blur-sm rounded-lg md:rounded-xl shadow-2xl overflow-hidden border border-slate-100">
                 <button
                   onClick={() => setIsDistrictListOpen(!isDistrictListOpen)}
                   className="w-full flex items-center justify-between p-1.5 md:p-4 hover:bg-slate-50 transition-colors text-left"
                 >
-                  <div className="flex items-center gap-2 md:gap-3">
-                    <div className="w-6 h-6 md:w-10 md:h-10 bg-slate-50 rounded-lg md:rounded-xl flex items-center justify-center text-slate-400 border border-slate-100">
-                      <Compass size={12} className="transform -rotate-45" />
-                    </div>
+                  <div className="flex items-center gap-1.5 md:gap-3">
+                    <Target size={18} className="md:hidden text-slate-400 shrink-0" />
+                    <Target size={28} className="hidden md:block text-slate-400 shrink-0" />
                     <div>
-                      <div className="text-[10px] md:text-[12px] font-black text-slate-900 uppercase tracking-tight leading-none md:mb-1">Utforsk Oslo</div>
-                      <div className="hidden md:block text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Klikk på en bydel</div>
+                      <div className="text-[10px] md:text-[14px] font-black text-slate-900 uppercase tracking-tight leading-none md:mb-1.5">{selectedDistrict.name.replace(' (Totalt)', '')}</div>
+                      <div className="hidden md:block text-[12px] font-black uppercase tracking-widest text-slate-400 leading-none">Velg bydel i kartet</div>
                     </div>
                   </div>
-                  <ChevronDown size={12} className={`text-slate-300 transition-transform ${isDistrictListOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown size={18} className={`text-slate-500 transition-transform md:w-6 md:h-6 ${isDistrictListOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {isDistrictListOpen && (
                   <div className="max-h-[200px] md:max-h-[300px] overflow-y-auto py-1 border-t border-slate-50 custom-scrollbar">
                     {OSLO_DISTRICTS.map((district) => (
                       <button
                         key={district.id}
-                        onClick={() => { setSelectedDistrict(district); setIsDistrictListOpen(false); setIsDistrictSelected(true); }}
+                        onClick={() => { setSelectedDistrict(district); setIsDistrictListOpen(false); setIsDistrictSelected(true); setIsAnalysisOpen(true); }}
                         className="w-full flex items-center justify-between px-4 py-2 md:px-6 md:py-3 text-left hover:bg-blue-50 transition-colors group"
                       >
                         <span className={`text-[10px] md:text-[11px] font-black uppercase tracking-tight ${selectedDistrict.id === district.id ? 'text-blue-600' : 'text-slate-600'}`}>
@@ -132,7 +134,7 @@ const HomePage: React.FC<{
                 { icon: <Plus size={14} />, onClick: undefined, extraClass: '' },
                 { icon: <Minus size={14} />, onClick: undefined, extraClass: '' },
                 { icon: <Layers size={14} />, onClick: undefined, extraClass: 'mt-1 md:mt-2' },
-                { icon: <Target size={14} />, onClick: () => { setSelectedDistrict(OSLO_DISTRICTS[0]); setIsDistrictSelected(false); }, extraClass: '' },
+                { icon: <Target size={14} />, onClick: () => { setSelectedDistrict(OSLO_DISTRICTS[0]); setIsDistrictSelected(false); setIsAnalysisOpen(false); }, extraClass: '' },
               ].map((ctrl, i) => (
                 <button key={i} onClick={ctrl.onClick} className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all ${ctrl.extraClass} ${
                   isDarkMode ? 'bg-[#0b1120] text-white border border-white/5' : 'bg-white text-slate-700 border border-slate-200 shadow-sm'
@@ -141,10 +143,16 @@ const HomePage: React.FC<{
             </div>
 
             {/* CONSOLIDATED INSIGHT BOX */}
-            <div className="absolute bottom-3 left-3 right-3 md:bottom-6 md:left-6 md:right-6 z-[500] pointer-events-none">
+            <div className="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 z-[500] pointer-events-none">
               <div className="pointer-events-auto flex flex-col gap-3">
-                <div className={`rounded-xl md:rounded-[20px] overflow-hidden transition-colors duration-300 ${
-                  isDarkMode ? 'bg-[#242c3d]/95 backdrop-blur-md shadow-2xl border border-white/10 md:bg-[#242c3d]/70 md:border-white/5' : 'bg-white/95 backdrop-blur-md shadow-2xl border border-slate-200 md:bg-white/70 md:border-slate-100'
+                <div className={`rounded-lg md:rounded-xl overflow-hidden transition-all duration-300 ${
+                  isDarkMode
+                    ? isAnalysisOpen && isDistrictSelected
+                      ? 'bg-[#242c3d] backdrop-blur-md shadow-2xl border border-white/10'
+                      : 'bg-[#242c3d]/95 backdrop-blur-md shadow-2xl border border-white/10 md:bg-[#242c3d]/70 md:border-white/5'
+                    : isAnalysisOpen && isDistrictSelected
+                      ? 'bg-white backdrop-blur-md shadow-2xl border border-slate-200'
+                      : 'bg-white/95 backdrop-blur-md shadow-2xl border border-slate-200 md:bg-white/70 md:border-slate-100'
                 }`}>
                   <div className="grid grid-cols-4">
                     {[
@@ -174,9 +182,103 @@ const HomePage: React.FC<{
                     ))}
                   </div>
 
-                  <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected ? 'max-h-20 opacity-100' : 'max-h-0 opacity-0'}`}>
-                    <button className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-3 md:py-4 rounded-b-xl md:rounded-b-[20px] transition-all uppercase tracking-widest text-[10px] md:text-[11px]">
-                      Hva betyr dette for min bolig? <ArrowRight size={16} />
+                  {/* Expanded district analysis - desktop/tablet */}
+                  <div className={`hidden md:block overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected && isAnalysisOpen ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <div className={`border-t ${isDarkMode ? 'border-white/10' : 'border-slate-200'}`}>
+                      {/* Toggle close */}
+                      <div className="flex justify-center pt-2">
+                        <button
+                          onClick={() => setIsAnalysisOpen(false)}
+                          className={`flex items-center gap-1 px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest transition-colors ${
+                            isDarkMode ? 'text-slate-400 hover:text-white' : 'text-slate-400 hover:text-slate-700'
+                          }`}
+                        >
+                          Lukk <ChevronDown size={10} className="rotate-180" />
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-4 p-5 pt-2">
+                        {/* Kvadratmeterpris */}
+                        <div className={`col-span-1 rounded-xl p-4 ${isDarkMode ? 'bg-white/5' : 'bg-slate-100/80'}`}>
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                            <span className={`text-[11px] font-black uppercase tracking-widest ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                              Kvadratmeterpris
+                            </span>
+                          </div>
+                          <p className={`text-[14px] font-medium leading-relaxed ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
+                            {(() => {
+                              const osloSnitt = OSLO_DISTRICTS[0].pricePerSqm;
+                              const diff = selectedDistrict.pricePerSqm - osloSnitt;
+                              if (selectedDistrict.id === 'oslo') return `Oslo-snittet ligger på ${osloSnitt.toLocaleString('nb-NO')} kr/m² i snitt.`;
+                              if (diff > 0) return `${diff.toLocaleString('nb-NO')} kr/m² over Oslo-snittet (${osloSnitt.toLocaleString('nb-NO')} kr/m²). Høyere prisnivå enn byen for øvrig.`;
+                              if (diff < 0) return `${Math.abs(diff).toLocaleString('nb-NO')} kr/m² under Oslo-snittet (${osloSnitt.toLocaleString('nb-NO')} kr/m²). Lavere prisnivå enn byen for øvrig.`;
+                              return `I takt med Oslo-snittet på ${osloSnitt.toLocaleString('nb-NO')} kr/m².`;
+                            })()}
+                          </p>
+                        </div>
+
+                        {/* Prisutvikling */}
+                        <div className={`col-span-1 rounded-xl p-4 ${isDarkMode ? 'bg-white/5' : 'bg-slate-100/80'}`}>
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                            <span className={`text-[11px] font-black uppercase tracking-widest ${isDarkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                              Prisutvikling
+                            </span>
+                          </div>
+                          <p className={`text-[14px] font-medium leading-relaxed ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
+                            {(() => {
+                              const osloSnitt = OSLO_DISTRICTS[0].priceChange;
+                              const diff = +(selectedDistrict.priceChange - osloSnitt).toFixed(1);
+                              if (selectedDistrict.id === 'oslo') return `Oslo-snittet ligger på +${osloSnitt}% prisvekst siste 12 måneder.`;
+                              if (diff > 0) return `+${diff} prosentpoeng over Oslo-snittet (${osloSnitt}%). Sterkere prisvekst enn byen for øvrig.`;
+                              if (diff < 0) return `${diff} prosentpoeng under Oslo-snittet (${osloSnitt}%). Svakere prisvekst enn byen for øvrig.`;
+                              return `I takt med Oslo-snittet på +${osloSnitt}% prisvekst.`;
+                            })()}
+                          </p>
+                        </div>
+
+                        {/* Likviditet */}
+                        <div className={`col-span-1 rounded-xl p-4 ${isDarkMode ? 'bg-white/5' : 'bg-slate-100/80'}`}>
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-amber-500"></div>
+                            <span className={`text-[11px] font-black uppercase tracking-widest ${isDarkMode ? 'text-amber-400' : 'text-amber-600'}`}>
+                              Omløpshastighet
+                            </span>
+                          </div>
+                          <p className={`text-[14px] font-medium leading-relaxed ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
+                            {(() => {
+                              const osloSnitt = OSLO_DISTRICTS[0].avgDaysOnMarket;
+                              const diff = selectedDistrict.avgDaysOnMarket - osloSnitt;
+                              if (selectedDistrict.id === 'oslo') return `Oslo-snittet ligger på ${osloSnitt} dager omløpstid.`;
+                              if (diff < 0) return `${Math.abs(diff)} dager raskere enn Oslo-snittet (${osloSnitt} dager). Svært likvid marked.`;
+                              if (diff > 0) return `${diff} dager tregere enn Oslo-snittet (${osloSnitt} dager). Lavere likviditet.`;
+                              return `I takt med Oslo-snittet på ${osloSnitt} dager omløpstid.`;
+                            })()}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Toggle open button + CTA */}
+                  <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+                    {/* Open analysis button - desktop only, hidden when analysis is open */}
+                    <div className={`hidden md:block overflow-hidden transition-all duration-300 ${isAnalysisOpen ? 'max-h-0 opacity-0' : 'max-h-10 opacity-100'}`}>
+                      <button
+                        onClick={() => setIsAnalysisOpen(true)}
+                        className={`w-full flex items-center justify-center gap-1 py-2 text-[9px] font-black uppercase tracking-widest transition-colors ${
+                          isDarkMode ? 'text-slate-400 hover:text-white border-t border-white/5' : 'text-slate-400 hover:text-slate-700 border-t border-slate-100'
+                        }`}
+                      >
+                        Se analyse <ChevronDown size={10} />
+                      </button>
+                    </div>
+                    <button
+                      onClick={() => setIsChatOpen(true)}
+                      className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-3 md:py-4 rounded-b-lg md:rounded-b-xl transition-all uppercase tracking-widest text-[10px] md:text-[11px]"
+                    >
+                      Chat med meg om dine boligplaner <ArrowRight size={16} />
                     </button>
                   </div>
                 </div>
@@ -387,6 +489,7 @@ const App: React.FC = () => {
   const [blogPosts, setBlogPosts] = useState<BlogPostFull[]>([]);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const navRef = useRef<HTMLElement>(null);
   const navigate = useNavigate();
@@ -489,6 +592,7 @@ const App: React.FC = () => {
               setIsAdminOpen={setIsAdminOpen}
               isDarkMode={isDarkMode}
               setIsDarkMode={setIsDarkMode}
+              setIsChatOpen={setIsChatOpen}
             />
           ) : (
             <div className="flex-1 flex items-center justify-center p-20 text-slate-500 font-black uppercase tracking-widest text-xs">Siden er under utvikling</div>
@@ -499,6 +603,9 @@ const App: React.FC = () => {
 
       {/* Admin overlay - available on all pages */}
       {isAdminOpen && !isBlogPostPage && null}
+
+      {/* Telegram Chat Widget */}
+      <TelegramChatWidget isDarkMode={isDarkMode} isOpen={isChatOpen} setIsOpen={setIsChatOpen} />
     </div>
   );
 };
