@@ -43,7 +43,7 @@ const BlogContentRenderer: React.FC<BlogContentRendererProps> = ({ blocks }) => 
 
           case 'image':
             return (
-              <div key={index} className="my-16 rounded-[40px] overflow-hidden shadow-xl border border-slate-100">
+              <div key={index} className="my-12 md:my-16 rounded-[24px] md:rounded-[40px] overflow-hidden shadow-xl border border-slate-100">
                 <img
                   src={block.url}
                   alt={block.caption || ''}
@@ -59,8 +59,8 @@ const BlogContentRenderer: React.FC<BlogContentRendererProps> = ({ blocks }) => 
 
           case 'quote':
             return (
-              <div key={index} className="p-10 border-l-[8px] border-blue-600 bg-blue-50/50 rounded-r-[32px] my-16">
-                <p className="text-2xl font-black text-slate-900 italic leading-snug tracking-tight">
+              <div key={index} className="p-6 md:p-10 border-l-[8px] border-blue-600 bg-blue-50/50 rounded-r-[32px] my-12 md:my-16">
+                <p className="text-xl md:text-2xl font-black text-slate-900 italic leading-snug tracking-tight">
                   "{block.text}"
                 </p>
               </div>
@@ -68,7 +68,7 @@ const BlogContentRenderer: React.FC<BlogContentRendererProps> = ({ blocks }) => 
 
           case 'bulletList':
             return (
-              <div key={index} className="bg-slate-50 p-10 rounded-[40px] border border-slate-100 mb-12">
+              <div key={index} className="bg-slate-50 p-6 md:p-10 rounded-[24px] md:rounded-[40px] border border-slate-100 mb-12">
                 {block.title && (
                   <h4 className="text-[14px] font-black text-blue-600 uppercase tracking-[0.3em] mb-6">
                     {block.title}

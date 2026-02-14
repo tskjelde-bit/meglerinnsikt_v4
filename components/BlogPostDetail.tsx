@@ -48,10 +48,10 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, allPosts, onClose
   const excerpt = full ? post.excerpt : '';
 
   return (
-    <div className="fixed inset-0 z-[3000] bg-white flex flex-col overflow-y-auto animate-in fade-in duration-500 custom-scrollbar">
+    <div className="fixed inset-0 z-[3000] bg-white flex flex-col overflow-y-auto overflow-x-hidden animate-in fade-in duration-500 custom-scrollbar">
 
       {/* GLOBAL HEADER */}
-      <header className="h-16 md:h-20 bg-white/90 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-6 lg:px-14 z-[1001] shrink-0 sticky top-0 shadow-sm">
+      <header className="h-16 md:h-20 bg-white/90 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-4 md:px-6 lg:px-14 z-[1001] shrink-0 sticky top-0 shadow-sm">
         <div className="flex items-center gap-10">
           <div onClick={onClose} className="flex items-center gap-3 cursor-pointer group">
             <img src={LOGO_URL} alt="Meglerinnsikt Logo" className="h-10 md:h-12 w-auto object-contain" />
@@ -96,7 +96,7 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, allPosts, onClose
           <img src={post.image} alt={post.title} className="w-full h-full object-cover brightness-[0.7] transform scale-105" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
         </div>
-        <div className="relative z-10 max-w-7xl mx-auto w-full px-6 lg:px-14 pb-20 text-white">
+        <div className="relative z-10 max-w-7xl mx-auto w-full px-4 md:px-6 lg:px-14 pb-12 md:pb-20 text-white">
           <div className="flex items-center gap-2 mb-6">
             <span className="bg-blue-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
               {post.category}
@@ -105,7 +105,7 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, allPosts, onClose
               <Clock size={12} /> {readTime} • {post.date}, 2026
             </span>
           </div>
-          <h1 className="text-4xl md:text-7xl font-black leading-[1.05] tracking-tighter mb-8 max-w-4xl uppercase">
+          <h1 className="text-3xl md:text-5xl lg:text-7xl font-black leading-[1.05] tracking-tighter mb-6 md:mb-8 max-w-4xl uppercase">
             {post.title}
           </h1>
           <div className="flex items-center gap-5">
@@ -121,7 +121,7 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, allPosts, onClose
       </section>
 
       {/* ARTICLE CONTENT & SIDEBAR */}
-      <div className="max-w-7xl mx-auto w-full px-6 lg:px-14 py-20">
+      <div className="max-w-7xl mx-auto w-full px-4 md:px-6 lg:px-14 py-12 md:py-20">
         <div className="flex flex-col lg:flex-row gap-16">
 
           {/* MAIN COLUMN */}
@@ -138,7 +138,7 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, allPosts, onClose
                   Når vi nå beveger oss inn i 2026, fortsetter det norske eiendomsmarkedet å vise en bemerkelsesverdig motstandskraft til tross for svingende renter. Våre nyeste data indikerer et betydelig skifte i urban boligetterspørsel, drevet av en blanding av teknologisk integrasjon og endrede boligpreferanser.
                 </p>
 
-                <div className="my-16 rounded-[40px] overflow-hidden shadow-xl border border-slate-100">
+                <div className="my-12 md:my-16 rounded-[24px] md:rounded-[40px] overflow-hidden shadow-xl border border-slate-100">
                   <img
                     src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&q=80&w=1200"
                     alt="Urban landscape"
@@ -157,7 +157,7 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, allPosts, onClose
                   Urbane sentre opplever en "ny bølge" av revitalisering. I motsetning til perioden før 2020, er dagens etterspørsel tungt vektet mot blandede utviklingsprosjekter som tilbyr omfattende fasiliteter. Dataene tyder på at prisstabilitet er i ferd med å returnere til de store storbyområdene, med en 4,2% økning i medianverdier sammenlignet med i fjor.
                 </p>
 
-                <div className="bg-slate-50 p-10 rounded-[40px] border border-slate-100 mb-12">
+                <div className="bg-slate-50 p-6 md:p-10 rounded-[24px] md:rounded-[40px] border border-slate-100 mb-12">
                   <h4 className="text-[14px] font-black text-blue-600 uppercase tracking-[0.3em] mb-6">Viktige drivere:</h4>
                   <ul className="space-y-4 m-0 p-0 list-none">
                     {[
@@ -219,8 +219,8 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, allPosts, onClose
                   ))}
                 </div>
 
-                <div className="p-10 border-l-[8px] border-blue-600 bg-blue-50/50 rounded-r-[32px] my-16">
-                  <p className="text-2xl font-black text-slate-900 italic leading-snug tracking-tight">
+                <div className="p-6 md:p-10 border-l-[8px] border-blue-600 bg-blue-50/50 rounded-r-[32px] my-12 md:my-16">
+                  <p className="text-xl md:text-2xl font-black text-slate-900 italic leading-snug tracking-tight">
                     "Dataene lyver ikke – vi er vitne til en fundamental restrukturering av hvordan folk verdsetter boareal."
                   </p>
                 </div>
@@ -232,8 +232,8 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, allPosts, onClose
             )}
 
             {/* ARTICLE TAGS & SHARE */}
-            <div className="mt-24 pt-10 border-t border-slate-100 flex flex-wrap items-center justify-between gap-6">
-              <div className="flex gap-3">
+            <div className="mt-16 md:mt-24 pt-10 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4">
+              <div className="flex flex-wrap gap-2 md:gap-3">
                 {tags.map(tag => (
                   <span key={tag} className="px-5 py-2 bg-slate-50 text-slate-500 text-[10px] font-black uppercase tracking-widest rounded-full cursor-pointer hover:bg-blue-600 hover:text-white transition-all">
                     #{tag}
@@ -314,7 +314,7 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, allPosts, onClose
               </section>
 
               {/* INTERACTIVE MAP CTA CARD */}
-              <div className="relative bg-slate-950 rounded-[40px] overflow-hidden p-10 text-white shadow-2xl">
+              <div className="relative bg-slate-950 rounded-[24px] md:rounded-[40px] overflow-hidden p-6 md:p-10 text-white shadow-2xl">
                 <div className="absolute top-0 right-0 w-48 h-48 bg-blue-600/20 rounded-full blur-[80px] -mr-24 -mt-24"></div>
                 <div className="relative z-10">
                   <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-blue-900/40">
@@ -340,7 +340,7 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, allPosts, onClose
               </div>
 
               {/* WEEKLY MARKET PULSE */}
-              <div className="bg-blue-50/50 rounded-[40px] p-10 border border-blue-100 text-center shadow-sm">
+              <div className="bg-blue-50/50 rounded-[24px] md:rounded-[40px] p-6 md:p-10 border border-blue-100 text-center shadow-sm">
                 <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-sm">
                   <Mail size={28} className="text-blue-600" />
                 </div>
@@ -366,8 +366,8 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, allPosts, onClose
       </div>
 
       {/* YOU MIGHT ALSO LIKE SECTION */}
-      <section className="bg-slate-50 py-24">
-        <div className="max-w-7xl mx-auto px-6 lg:px-14">
+      <section className="bg-slate-50 py-16 md:py-24">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-14">
           <h2 className="text-3xl font-black text-slate-950 uppercase tracking-tight mb-16">Du vil kanskje også like</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {relatedPosts.map((relatedPost) => (
@@ -408,7 +408,7 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, allPosts, onClose
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-[#0b1120] py-20 px-6 lg:px-14 border-t border-white/5 z-[1002]">
+      <footer className="bg-[#0b1120] py-16 md:py-20 px-4 md:px-6 lg:px-14 border-t border-white/5 z-[1002]">
         <div className="max-w-7xl mx-auto w-full">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-12 mb-20">
             <div className="max-w-md">
@@ -417,7 +417,7 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, allPosts, onClose
                 Motta min månedlige oppdatering på boligmarkedet i Oslo. Faglig og ærlig om fortid, nåtid og fremtid.
               </p>
 
-              <div className="flex items-end gap-6 border-b border-white/10 pb-4 group focus-within:border-white transition-colors">
+              <div className="flex items-end gap-4 md:gap-6 border-b border-white/10 pb-4 group focus-within:border-white transition-colors">
                 <input
                   type="text"
                   placeholder="Ditt navn eller e-post"
@@ -435,7 +435,7 @@ const BlogPostDetail: React.FC<BlogPostDetailProps> = ({ post, allPosts, onClose
           </div>
 
           <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 text-[11px] font-black text-slate-500 uppercase tracking-[0.3em]">
-            <div className="flex gap-12">
+            <div className="flex gap-6 md:gap-12 flex-wrap justify-center">
               <a href="#" className="hover:text-white transition-colors">Kundeomtaler</a>
               <a href="#" className="hover:text-white transition-colors">Instagram</a>
               <a href="#" className="hover:text-white transition-colors">LinkedIn</a>

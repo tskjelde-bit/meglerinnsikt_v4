@@ -58,6 +58,17 @@ export const OSLO_DISTRICTS: DistrictInfo[] = [
     lng: 10.7401
   },
   {
+    id: 'sentrum',
+    name: 'Sentrum',
+    priceChange: 3.5,
+    avgDaysOnMarket: 15,
+    pricePerSqm: 135000,
+    medianPrice: 5500000,
+    description: 'Oslos sentrale kjerneområde med høy etterspørsel og kompakte leiligheter.',
+    lat: 59.9127,
+    lng: 10.7461
+  },
+  {
     id: 'frogner',
     name: 'Frogner',
     priceChange: 3.2,

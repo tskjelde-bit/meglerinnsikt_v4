@@ -154,7 +154,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
     labels.forEach((feature: any) => {
       const name = feature.properties.BYDELSNAVN;
       const district = findDistrictByName(name);
-      if (!district) return; // Skip Sentrum etc.
+      if (!district) return;
 
       const coords = feature.geometry.coordinates;
       const isSelected = selected && district.name === selected.name;
