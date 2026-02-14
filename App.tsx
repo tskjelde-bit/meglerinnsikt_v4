@@ -41,7 +41,7 @@ const HomePage: React.FC<{
     <>
       {/* DASHBOARD SECTION (DARK) */}
       <section className="max-w-[1700px] mx-auto w-full py-8 md:py-12">
-        <div className="px-6 md:px-14 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
+        <div className="px-3 md:px-14 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
           <div className="space-y-3">
             <div className="flex items-center gap-1.5 text-[10px] font-black text-slate-500 uppercase tracking-widest">
               <span>Hjem</span> <ChevronRight size={10} className="text-slate-700" /> <span className="text-slate-300">Eiendomsinnsikt</span>
@@ -67,7 +67,7 @@ const HomePage: React.FC<{
         </div>
 
         {/* GRID */}
-        <div className="grid lg:grid-cols-12 gap-10 items-stretch mb-12 px-6 md:px-14">
+        <div className="grid lg:grid-cols-12 gap-6 md:gap-10 items-stretch mb-12 px-3 md:px-14">
           {/* MAP COLUMN */}
           <div className="lg:col-span-8 relative rounded-2xl overflow-hidden border border-white/5 shadow-2xl bg-[#1a2333]/20 h-[420px] md:h-[600px] lg:h-auto flex flex-col">
             <div className="absolute inset-0 z-0 bg-white">
@@ -235,7 +235,7 @@ const HomePage: React.FC<{
 
       {/* 3. White Section Wrapper: Features & Blog Grid */}
       <section className="bg-white py-24">
-        <div className="max-w-[1700px] mx-auto px-6 md:px-14">
+        <div className="max-w-[1700px] mx-auto px-3 md:px-14">
 
           {/* Features Section */}
           <div className="text-center mb-24">
@@ -314,7 +314,7 @@ const HomePage: React.FC<{
 
       {/* 4. Dark Section Wrapper: CTA */}
       <section className="bg-[#0b1120] py-32 border-t border-white/5">
-        <div className="max-w-[1700px] mx-auto px-6 md:px-14 text-center">
+        <div className="max-w-[1700px] mx-auto px-3 md:px-14 text-center">
           <h2 className="text-[42px] md:text-[64px] font-black text-white leading-tight uppercase tracking-tighter mb-6">
             Klar for å <br/> <span className="text-blue-500">ta neste steg?</span>
           </h2>
@@ -335,7 +335,7 @@ const HomePage: React.FC<{
 
       {/* FOOTER */}
       <footer className="bg-white py-16 border-t border-slate-100">
-        <div className="max-w-[1700px] mx-auto px-6 md:px-14 flex flex-col md:flex-row justify-between items-center gap-8">
+        <div className="max-w-[1700px] mx-auto px-3 md:px-14 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-2 text-slate-400">
             <Diamond size={24} className="text-blue-600" />
             <span className="text-xl font-black tracking-tighter text-slate-900">Lumina</span>
@@ -418,7 +418,7 @@ const App: React.FC = () => {
     <div className={`flex flex-col bg-[#0b1120] min-h-screen text-white font-sans overflow-x-hidden ${isBlogPostPage ? '' : ''}`}>
       {/* 1. Global Header - only show on home page, blog post pages have their own */}
       {!isBlogPostPage && (
-        <header className="h-16 md:h-20 bg-white flex items-center justify-between px-6 lg:px-14 z-[1000] sticky top-0 shrink-0 shadow-sm">
+        <header className="h-16 md:h-20 bg-white flex items-center justify-between px-3 lg:px-14 z-[1000] sticky top-0 shrink-0 shadow-sm">
           <div className="flex items-center gap-10">
             <div onClick={() => navigateTo('home')} className="flex items-center gap-3 cursor-pointer group">
               <img
