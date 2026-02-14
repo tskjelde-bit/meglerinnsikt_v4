@@ -237,12 +237,10 @@ const HomePage: React.FC<{
                   <div className={`overflow-hidden transition-all duration-300 ${isDistrictSelected ? 'max-h-10 opacity-100' : 'max-h-0 opacity-0'}`}>
                     <button
                       onClick={() => setIsAnalysisOpen(!isAnalysisOpen)}
-                      className={`w-full flex items-center justify-center gap-1 py-1 md:py-2 transition-colors ${
-                        isDarkMode ? 'text-slate-400 hover:text-white' : 'text-slate-400 hover:text-slate-700'
-                      }`}
+                      className={`w-full flex items-center justify-center gap-1 py-1 md:py-2 transition-colors text-white md:text-slate-400 md:hover:text-white`}
                     >
                       <span className="hidden md:inline text-[9px] font-black uppercase tracking-widest">{isAnalysisOpen ? 'Lukk' : 'Se analyse'}</span>
-                      <ChevronDown size={20} className={`md:!w-[10px] md:!h-[10px] transition-transform ${isAnalysisOpen ? '' : 'rotate-180'}`} />
+                      <ChevronDown size={28} className={`md:!w-[10px] md:!h-[10px] transition-transform ${isAnalysisOpen ? '' : 'rotate-180'}`} />
                     </button>
                   </div>
                   <div className="grid grid-cols-3 md:grid-cols-4">
