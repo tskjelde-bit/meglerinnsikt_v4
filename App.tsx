@@ -161,7 +161,7 @@ const HomePage: React.FC<{
         {/* GRID */}
         <div className="grid lg:grid-cols-12 gap-6 lg:gap-8 lg:items-stretch mb-0 md:mb-12 md:px-14">
           {/* MAP COLUMN */}
-          <div className={`lg:col-span-8 relative rounded-none md:rounded-2xl overflow-hidden shadow-2xl h-[calc(100dvh-180px)] md:h-[450px] lg:h-auto flex flex-col transition-colors duration-300 ${
+          <div className={`lg:col-span-8 relative rounded-none md:rounded-2xl overflow-hidden shadow-2xl h-[calc(100dvh-140px)] md:h-[450px] lg:h-auto flex flex-col transition-colors duration-300 ${
             isDarkMode ? 'md:border md:border-white/5 bg-[#1a2333]/20' : 'md:border md:border-slate-200 bg-white'
           }`}>
             <div className="absolute inset-0 z-0 bg-white">
