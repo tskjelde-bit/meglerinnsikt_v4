@@ -9,7 +9,6 @@ import MarketStatsPanel from './components/MarketStatsPanel';
 import BlogPostDetail from './components/BlogPostDetail';
 import BlogPostPage from './components/BlogPostPage';
 import BlogAdmin from './components/admin/BlogAdmin';
-import TelegramChatWidget from './components/TelegramChatWidget';
 import {
   Building2, Menu, X, ChevronDown, Calendar, Download,
   Plus, Minus, Layers, Target, Zap, Coins,
@@ -721,11 +720,20 @@ const App: React.FC = () => {
   const [blogPosts, setBlogPosts] = useState<BlogPostFull[]>([]);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
-  const [isChatOpen, setIsChatOpen] = useState(false);
-
   const navRef = useRef<HTMLElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Tawk.to live chat
+  useEffect(() => {
+    const s1 = document.createElement('script');
+    s1.async = true;
+    s1.src = 'https://embed.tawk.to/6990c13880f4ef1c393fe7a6/1jhen5hn8';
+    s1.charset = 'UTF-8';
+    s1.setAttribute('crossorigin', '*');
+    document.head.appendChild(s1);
+    return () => { document.head.removeChild(s1); };
+  }, []);
 
   // Load blog posts from posts.json
   useEffect(() => {
@@ -798,12 +806,6 @@ const App: React.FC = () => {
 
           <div className="flex items-center gap-4">
             <button
-              onClick={() => setIsChatOpen(!isChatOpen)}
-              className="hidden md:flex w-10 h-10 rounded-xl border border-slate-200 bg-white items-center justify-center text-slate-500 hover:bg-slate-50 hover:border-blue-300 transition-all"
-            >
-              <MessageCircle size={18} />
-            </button>
-            <button
               onClick={() => setIsDarkMode(!isDarkMode)}
               className="hidden md:flex w-10 h-10 rounded-xl border border-slate-200 bg-white items-center justify-center text-slate-500 hover:bg-slate-50 hover:border-blue-300 transition-all"
             >
@@ -842,8 +844,6 @@ const App: React.FC = () => {
       {/* Admin overlay - available on all pages */}
       {isAdminOpen && !isBlogPostPage && null}
 
-      {/* Telegram Chat Widget */}
-      <TelegramChatWidget isDarkMode={isDarkMode} isOpen={isChatOpen} setIsOpen={setIsChatOpen} />
     </div>
   );
 };
