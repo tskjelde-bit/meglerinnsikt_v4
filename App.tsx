@@ -1,4 +1,10 @@
 
+declare global {
+  interface Window {
+    Tawk_API?: { maximize?: () => void; };
+  }
+}
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { Property, DistrictInfo, BlogPost, BlogPostFull } from './types';
@@ -453,7 +459,7 @@ const HomePage: React.FC<{
                   {/* Toggle open button + CTA */}
                   <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
                     <button
-                      onClick={() => setIsChatOpen(true)}
+                      onClick={() => window.Tawk_API?.maximize?.()}
                       className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-3 md:py-4 md:rounded-b-xl transition-all uppercase tracking-widest text-[12px] md:text-[11px]"
                     >
                       <span className="animate-[pulse-scale_2s_ease-in-out_infinite]">{(() => {
@@ -621,10 +627,10 @@ const HomePage: React.FC<{
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-blue-600 text-white px-10 py-5 rounded-[20px] font-black text-[13px] uppercase tracking-widest hover:bg-blue-700 shadow-xl shadow-blue-900/40 transition-all">
+            <button onClick={() => window.Tawk_API?.maximize?.()} className="bg-blue-600 text-white px-10 py-5 rounded-[20px] font-black text-[13px] uppercase tracking-widest hover:bg-blue-700 shadow-xl shadow-blue-900/40 transition-all">
               Få gratis verdivurdering
             </button>
-            <button className="bg-[#1a2333] text-white px-10 py-5 rounded-[20px] font-black text-[13px] uppercase tracking-widest hover:bg-[#252f44] border border-white/5 transition-all">
+            <button onClick={() => window.Tawk_API?.maximize?.()} className="bg-[#1a2333] text-white px-10 py-5 rounded-[20px] font-black text-[13px] uppercase tracking-widest hover:bg-[#252f44] border border-white/5 transition-all">
               Book en rask prat
             </button>
           </div>
@@ -811,7 +817,7 @@ const App: React.FC = () => {
             >
               {isDarkMode ? <Moon size={18} /> : <Sun size={18} className="text-amber-500" />}
             </button>
-            <button className="bg-slate-950 text-white px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-tight hover:bg-blue-600 transition-all">
+            <button onClick={() => window.Tawk_API?.maximize?.()} className="bg-slate-950 text-white px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-tight hover:bg-blue-600 transition-all">
               Få verdivurdering
             </button>
             <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="lg:hidden p-2 text-slate-900">
