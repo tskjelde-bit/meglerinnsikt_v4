@@ -63,7 +63,7 @@ const HomePage: React.FC<{
               <span>Hjem</span> <ChevronRight size={10} className={isDarkMode ? 'text-slate-700' : 'text-slate-300'} /> <span className={isDarkMode ? 'text-slate-300' : 'text-slate-600'}>Eiendomsinnsikt</span>
             </div>
             <h2 className={`text-[28px] md:text-[32px] lg:text-[40px] font-black leading-tight tracking-tight uppercase ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-              <span className="hidden md:inline">Eiendomsinnsikt </span><span className="md:hidden"><span className="font-bold">Boligmarkedet {getPreposition(selectedDistrict.name)}</span><br/><span className="italic text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')} nå</span></span><span className="hidden md:inline text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')}</span>
+              <span className="hidden md:inline">Eiendomsinnsikt </span><span className="md:hidden"><span className="font-semibold text-[22px]">Boligmarkedet {getPreposition(selectedDistrict.name)}</span><br/><span className="text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')} nå</span></span><span className="hidden md:inline text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')}</span>
             </h2>
             <p className={`md:hidden text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-400' : 'text-slate-400'}`}>
               Er det kjøper ellers selgers marked her nå?
