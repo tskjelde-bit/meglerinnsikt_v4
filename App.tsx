@@ -82,7 +82,7 @@ const HomePage: React.FC<{
         {/* GRID */}
         <div className="grid lg:grid-cols-12 gap-6 md:gap-10 lg:items-stretch mb-0 md:mb-12 px-3 md:px-14">
           {/* MAP COLUMN */}
-          <div className={`lg:col-span-8 relative rounded-2xl overflow-hidden shadow-2xl h-[calc(100dvh-152px)] md:h-[600px] lg:h-auto flex flex-col transition-colors duration-300 ${
+          <div className={`lg:col-span-8 relative rounded-2xl overflow-hidden shadow-2xl h-[calc(100dvh-152px)] md:h-[500px] lg:h-auto flex flex-col transition-colors duration-300 ${
             isDarkMode ? 'border border-white/5 bg-[#1a2333]/20' : 'border border-slate-200 bg-white'
           }`}>
             <div className="absolute inset-0 z-0 bg-white">
@@ -361,7 +361,7 @@ const HomePage: React.FC<{
           {/* SIDEBAR COLUMN */}
           <div className="lg:col-span-4 flex flex-col md:px-0">
             {/* Desktop: rounded box */}
-            <div className={`md:rounded-2xl flex flex-col md:shadow-xl h-full transition-colors duration-300 ${
+            <div className={`md:rounded-2xl flex flex-col md:shadow-xl lg:h-full transition-colors duration-300 ${
               isDarkMode ? 'md:bg-[#1e293b] md:border md:border-white/5' : 'md:bg-white md:border md:border-slate-200'
             }`}>
               <div className="flex justify-between items-center md:p-8 md:pb-6 pt-6 pb-4 shrink-0">
@@ -386,33 +386,16 @@ const HomePage: React.FC<{
                   </div>
                 )}
 
-                {/* List Articles - mobile: no image, full-width text; desktop: with thumbnail */}
-                <div className="space-y-5 md:space-y-6 shrink-0">
+                {/* List Articles - text only, no thumbnails */}
+                <div className="space-y-3 md:space-y-6 shrink-0">
                   {displayPosts.slice(1, 3).map((post) => (
-                    <div key={post.id} className={`group cursor-pointer pt-5 md:pt-6 ${isDarkMode ? 'border-t border-white/10 md:border-white/5' : 'border-t border-slate-200 md:border-slate-100'}`} onClick={() => handlePostClick(post)}>
-                      {/* Desktop: row with thumbnail */}
-                      <div className="hidden md:flex gap-5">
-                        <div className={`w-16 h-16 rounded-xl overflow-hidden shrink-0 ${isDarkMode ? 'border border-white/5' : 'border border-slate-100'}`}>
-                          <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
-                        </div>
-                        <div>
-                          <div className={`text-[9px] font-black uppercase mb-1 tracking-widest flex items-center gap-1.5 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
-                            <span>{post.date}</span> <span className={isDarkMode ? 'text-slate-700' : 'text-slate-300'}>&bull;</span> <span>{post.category}</span>
-                          </div>
-                          <h5 className={`text-[13px] font-black uppercase group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-                            {post.title}
-                          </h5>
-                        </div>
+                    <div key={post.id} className={`group cursor-pointer pt-3 md:pt-6 ${isDarkMode ? 'border-t border-white/10 md:border-white/5' : 'border-t border-slate-200 md:border-slate-100'}`} onClick={() => handlePostClick(post)}>
+                      <div className={`text-[10px] md:text-[9px] font-black uppercase mb-1.5 md:mb-1 tracking-widest flex items-center gap-2 md:gap-1.5 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                        <span>{post.date}</span> <span className={isDarkMode ? 'text-slate-700' : 'text-slate-300'}>&bull;</span> <span>{post.category}</span>
                       </div>
-                      {/* Mobile: text only, same size as featured */}
-                      <div className="md:hidden">
-                        <div className={`text-[10px] font-black uppercase mb-2 tracking-widest flex items-center gap-2 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
-                          <span>{post.date}</span> <span className={isDarkMode ? 'text-slate-700' : 'text-slate-300'}>&bull;</span> <span>{post.category}</span>
-                        </div>
-                        <h5 className={`text-[18px] font-black leading-tight uppercase tracking-tight group-hover:text-blue-400 transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-                          {post.title}
-                        </h5>
-                      </div>
+                      <h5 className={`text-[15px] font-black leading-tight uppercase tracking-tight group-hover:text-blue-400 transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                        {post.title}
+                      </h5>
                     </div>
                   ))}
                 </div>
