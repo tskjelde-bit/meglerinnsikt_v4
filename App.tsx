@@ -503,7 +503,8 @@ const HomePage: React.FC<{
             Hva er boligen din <br/> <span className="text-blue-500">verdt akkurat nå?</span>
           </h2>
           <p className="text-slate-400 text-lg md:text-xl font-medium max-w-2xl mx-auto mb-12">
-            Få en gratis og uforpliktende verdivurdering basert på ferske salgsdata fra ditt nærområde. Tar under ett minutt.
+            <span className="md:hidden">Er det smart å selge her nå?</span>
+            <span className="hidden md:inline">Få en gratis og uforpliktende verdivurdering basert på ferske salgsdata fra ditt nærområde. Tar under ett minutt.</span>
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
