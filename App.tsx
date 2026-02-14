@@ -51,19 +51,19 @@ const HomePage: React.FC<{
 
     const matrix: Record<string, Record<string, string>> = {
       higher: {
-        faster: 'Sterkt selgermarked – Sterkere prisvekst og raskere salg enn Oslo-snittet akkurat nå.',
-        similar: 'Moderat selgermarked – Høyere prisvekst enn snittet, med stabil etterspørsel.',
-        slower: 'Ubalansert – Prisene stiger mer enn snittet, men salget tar noe lengre tid.',
+        faster: 'Sterkere prisvekst og raskere salg enn Oslo-snittet akkurat nå.',
+        similar: 'Høyere prisvekst enn snittet – stabil etterspørsel.',
+        slower: 'Prisene stiger mer enn snittet, men salget tar noe lengre tid.',
       },
       similar: {
-        faster: 'Aktivt marked – Boliger selges raskere enn snittet, med stabil prisutvikling.',
-        similar: 'Nøytralt marked – Markedet følger Oslo-snittet både på pris og tempo.',
-        slower: 'Avventende marked – Salget tar lengre tid enn snittet, men prisnivået holder seg stabilt.',
+        faster: 'Boliger selges raskere enn snittet, med stabil prisutvikling.',
+        similar: 'Markedet følger Oslo-snittet både på pris og tempo.',
+        slower: 'Salget tar lengre tid enn snittet, men prisnivået holder seg stabilt.',
       },
       lower: {
-        faster: 'Prispress – Rask omsetning, men svakere prisvekst enn Oslo-snittet.',
-        similar: 'Svakt kjøpermarked – Lavere prisvekst enn snittet, med normal omsetningstid.',
-        slower: 'Kjøpermarked – Svakere prisutvikling og tregere salg enn Oslo-snittet.',
+        faster: 'Rask omsetning, men svakere prisvekst enn Oslo-snittet.',
+        similar: 'Lavere prisvekst enn snittet, med normal omsetningstid.',
+        slower: 'Svakere prisutvikling og tregere salg enn Oslo-snittet.',
       },
     };
     return matrix[priceLevel][speedLevel];
