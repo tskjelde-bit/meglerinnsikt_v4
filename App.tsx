@@ -614,7 +614,7 @@ const HomePage: React.FC<{
       <section className={`py-32 transition-colors duration-300 ${isDarkMode ? 'bg-[#0b1120] border-t border-white/5' : 'bg-slate-900 border-t border-slate-200'}`}>
         <div className="max-w-[1700px] mx-auto px-3 md:px-14 text-center">
           <h2 className="text-[42px] md:text-[64px] font-black text-white leading-tight uppercase tracking-tighter mb-6">
-            Boligmarkedet {getPreposition(selectedDistrict.name)} <br/> <span className="text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')} nå</span>
+            Boligmarkedet {getPreposition(selectedDistrict.name)} <br/> <span className="text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')}</span>
           </h2>
           <p className="text-slate-400 text-lg md:text-xl font-medium max-w-2xl mx-auto mb-12">
             <span className="md:hidden">Er det smart å selge her nå?</span>
