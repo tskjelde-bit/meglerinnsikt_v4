@@ -423,7 +423,7 @@ const HomePage: React.FC<{
       </section>
 
       {/* MOBILE BLOG SECTION - completely outside the dashboard section, no height constraints */}
-      <section className={`lg:hidden max-w-[1700px] mx-auto w-full px-3 py-8 transition-colors duration-300`}>
+      <section className={`lg:hidden max-w-[1700px] mx-auto w-full px-3 py-24 transition-colors duration-300`}>
         <div className="flex justify-between items-center pb-4">
           <h3 className={`text-[14px] font-black uppercase tracking-wider ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Siste innlegg</h3>
           <button className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] hover:underline">Se alle</button>
