@@ -46,8 +46,8 @@ const HomePage: React.FC<{
   return (
     <>
       {/* DASHBOARD SECTION */}
-      <section className={`max-w-[1700px] mx-auto w-full py-8 md:py-12 transition-colors duration-300 ${isDarkMode ? '' : ''}`}>
-        <div className="px-3 md:px-14 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-4 md:mb-10">
+      <section className={`max-w-[1700px] mx-auto w-full pt-4 pb-0 md:py-12 transition-colors duration-300 ${isDarkMode ? '' : ''}`}>
+        <div className="px-3 md:px-14 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-2 md:mb-10">
           <div className="space-y-1 md:space-y-3">
             <div className={`hidden md:flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
               <span>Hjem</span> <ChevronRight size={10} className={isDarkMode ? 'text-slate-700' : 'text-slate-300'} /> <span className={isDarkMode ? 'text-slate-300' : 'text-slate-600'}>Eiendomsinnsikt</span>
@@ -80,9 +80,9 @@ const HomePage: React.FC<{
         </div>
 
         {/* GRID */}
-        <div className="grid lg:grid-cols-12 gap-6 md:gap-10 items-stretch mb-12 px-3 md:px-14">
+        <div className="grid lg:grid-cols-12 gap-6 md:gap-10 items-stretch mb-0 md:mb-12 px-3 md:px-14">
           {/* MAP COLUMN */}
-          <div className={`lg:col-span-8 relative rounded-2xl overflow-hidden shadow-2xl h-[420px] md:h-[600px] lg:h-auto flex flex-col transition-colors duration-300 ${
+          <div className={`lg:col-span-8 relative rounded-2xl overflow-hidden shadow-2xl h-[calc(100dvh-140px)] md:h-[600px] lg:h-auto flex flex-col transition-colors duration-300 ${
             isDarkMode ? 'border border-white/5 bg-[#1a2333]/20' : 'border border-slate-200 bg-white'
           }`}>
             <div className="absolute inset-0 z-0 bg-white">
