@@ -66,7 +66,7 @@ const HomePage: React.FC<{
               <span className="hidden md:inline">Eiendomsinnsikt </span><span className="md:hidden"><span className="font-semibold text-[22px]">Boligmarkedet {getPreposition(selectedDistrict.name)}</span><br/><span className="text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')} nå</span></span><span className="hidden md:inline text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')}</span>
             </h2>
             <p className={`md:hidden text-[12px] font-black uppercase tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-slate-400'}`}>
-              Er det <span className="text-blue-500">kjøpers</span> eller <span className="text-blue-500">selgers</span> marked her nå?
+              <span className="text-blue-500">Selger</span> eller <span className="text-blue-500">kjøpers</span> marked akkurat nå?
             </p>
             <p className={`hidden md:block font-medium text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
               Avansert dataanalyse for det norske eiendomsmarkedet
