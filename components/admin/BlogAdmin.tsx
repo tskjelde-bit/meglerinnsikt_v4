@@ -4,7 +4,7 @@ import { blogService } from '../../services/blogService';
 import BlogEditor from './BlogEditor';
 import {
   X, Plus, Pencil, Trash2, Eye, EyeOff, Download, Upload,
-  FileJson, RefreshCw, Search, Calendar
+  FileJson, RefreshCw, Search, Calendar, Rocket, CheckCircle2, AlertCircle, Loader2
 } from 'lucide-react';
 
 interface BlogAdminProps {
@@ -17,6 +17,7 @@ const BlogAdmin: React.FC<BlogAdminProps> = ({ posts, onPostsChange, onClose }) 
   const [localPosts, setLocalPosts] = useState<BlogPostFull[]>([]);
   const [editingPost, setEditingPost] = useState<BlogPostFull | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [publishStatus, setPublishStatus] = useState<{ type: 'idle' | 'loading' | 'success' | 'error'; message?: string }>({ type: 'idle' });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -88,6 +89,20 @@ const BlogAdmin: React.FC<BlogAdminProps> = ({ posts, onPostsChange, onClose }) 
     }
   };
 
+  const handlePublish = async () => {
+    setPublishStatus({ type: 'loading' });
+    const result = await blogService.publishPosts();
+    if (result.success) {
+      setPublishStatus({ type: 'success', message: result.message });
+      // Also refresh the live view
+      onPostsChange(localPosts.filter(p => p.published));
+      setTimeout(() => setPublishStatus({ type: 'idle' }), 3000);
+    } else {
+      setPublishStatus({ type: 'error', message: result.message });
+      setTimeout(() => setPublishStatus({ type: 'idle' }), 5000);
+    }
+  };
+
   const filteredPosts = localPosts.filter(p =>
     p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.category.toLowerCase().includes(searchQuery.toLowerCase())
@@ -140,6 +155,27 @@ const BlogAdmin: React.FC<BlogAdminProps> = ({ posts, onPostsChange, onClose }) 
           >
             <Download size={14} />
             Eksporter JSON
+          </button>
+          <button
+            onClick={handlePublish}
+            disabled={publishStatus.type === 'loading'}
+            className={`flex items-center gap-2 px-5 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-lg ${
+              publishStatus.type === 'success'
+                ? 'bg-emerald-600 text-white'
+                : publishStatus.type === 'error'
+                ? 'bg-red-600 text-white'
+                : 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-white hover:from-emerald-700 hover:to-emerald-600 shadow-emerald-200'
+            }`}
+          >
+            {publishStatus.type === 'loading' ? (
+              <><Loader2 size={14} className="animate-spin" /> Lagrer...</>
+            ) : publishStatus.type === 'success' ? (
+              <><CheckCircle2 size={14} /> {publishStatus.message}</>
+            ) : publishStatus.type === 'error' ? (
+              <><AlertCircle size={14} /> Feil!</>
+            ) : (
+              <><Rocket size={14} /> Publiser</>
+            )}
           </button>
           <button
             onClick={handleCreateNew}
@@ -264,7 +300,7 @@ const BlogAdmin: React.FC<BlogAdminProps> = ({ posts, onPostsChange, onClose }) 
 
       {/* Footer hint */}
       <div className="px-6 py-3 bg-white border-t border-slate-200 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-        Trykk Ctrl+Shift+A for å lukke admin-panelet • Endringer lagres i nettleseren • Eksporter JSON for å publisere
+        Ctrl+Shift+A for å lukke • Endringer lagres i nettleseren • Trykk «Publiser» for å oppdatere posts.json
       </div>
     </div>
   );

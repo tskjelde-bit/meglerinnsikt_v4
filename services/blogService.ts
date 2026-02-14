@@ -121,5 +121,24 @@ export const blogService = {
     a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
+  },
+
+  // Publish posts: write directly to public/blog/posts.json via dev server API
+  async publishPosts(): Promise<{ success: boolean; message: string }> {
+    const posts = this.getLocalPosts();
+    try {
+      const res = await fetch('/api/save-posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(posts)
+      });
+      const data = await res.json();
+      if (data.success) {
+        return { success: true, message: `${data.count} innlegg lagret til posts.json` };
+      }
+      return { success: false, message: data.error || 'Ukjent feil' };
+    } catch (err: any) {
+      return { success: false, message: `Kunne ikke nå dev-serveren: ${err.message}` };
+    }
   }
 };
