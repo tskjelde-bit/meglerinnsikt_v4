@@ -115,6 +115,7 @@ const HomePage: React.FC<{
   const [mapHeight, setMapHeight] = useState('100dvh');
   const [activeTileLayer, setActiveTileLayer] = useState<TileLayerKey>('blue');
   const [isLayerMenuOpen, setIsLayerMenuOpen] = useState(false);
+  const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
   const headerRef = useRef<HTMLDivElement>(null);
   const mapComponentRef = useRef<MapComponentHandle>(null);
 
@@ -456,12 +457,32 @@ const HomePage: React.FC<{
                   </div>
 
                   {/* Toggle open button + CTA */}
-                  <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+                  <div className={`relative overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+                    {/* Calculator overlay */}
+                    {isCalculatorOpen && (
+                      <div className="absolute inset-0 bg-[#1a2333] flex flex-col p-4 md:p-6 z-10">
+                        {/* Close button */}
+                        <button
+                          onClick={() => setIsCalculatorOpen(false)}
+                          className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center text-white/70 hover:text-white transition-colors"
+                          aria-label="Lukk kalkulator"
+                        >
+                          <X size={20} />
+                        </button>
+
+                        {/* Calculator content */}
+                        <div className="flex-1 flex flex-col justify-center gap-3 text-white">
+                          <p className="text-sm opacity-70">Kalkulator kommer her...</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* CTA button */}
                     <button
-                      onClick={() => setIsChatOpen(true)}
-                      className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-3 md:py-5 md:rounded-b-xl transition-all uppercase tracking-widest text-[12px] md:text-[15px]"
+                      onClick={() => !isCalculatorOpen && setIsCalculatorOpen(true)}
+                      className={`w-full flex items-center justify-center gap-2 ${isCalculatorOpen ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'} text-white font-black py-3 md:py-5 md:rounded-b-xl transition-all uppercase tracking-widest text-[12px] md:text-[15px]`}
                     >
-                      <span>{(() => {
+                      <span>{isCalculatorOpen ? 'Beregn' : (() => {
                         let name = selectedDistrict.name.replace(' (Totalt)', '');
                         if (name === 'St. Hanshaugen') name = 'St. Hansh.';
                         return `Hva er boligen din ${getPreposition(selectedDistrict.name)} ${name} verdt?`;
