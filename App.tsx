@@ -363,13 +363,13 @@ const HomePage: React.FC<{
                       </div>
 
                       {/* Mobile: vertical list with round icons */}
-                      <div className="md:hidden flex flex-col px-4 py-3">
+                      <div className="md:hidden flex flex-col px-4 pt-1 pb-2">
                         {/* Prisutvikling */}
-                        <div className="py-2.5 flex items-start gap-3">
-                          <div className="w-8 h-8 rounded-full bg-[#03d392]/15 flex items-center justify-center shrink-0 mt-0.5">
-                            <TrendingUp size={15} className="text-[#03d392]" />
+                        <div className="py-1.5 flex items-center gap-2.5">
+                          <div className="w-6 h-6 rounded-full bg-[#03d392]/15 flex items-center justify-center shrink-0">
+                            <TrendingUp size={12} className="text-[#03d392]" />
                           </div>
-                          <p className={`text-[12px] font-medium leading-relaxed ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
+                          <p className={`text-[12px] font-medium leading-snug ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
                             {(() => {
                               const osloSnitt = OSLO_DISTRICTS[0].priceChange;
                               const diff = +(selectedDistrict.priceChange - osloSnitt).toFixed(1);
@@ -384,11 +384,11 @@ const HomePage: React.FC<{
                         <div className={`border-t ${isDarkMode ? 'border-white/10' : 'border-slate-200'}`}></div>
 
                         {/* Kvadratmeterpris */}
-                        <div className="py-2.5 flex items-start gap-3">
-                          <div className="w-8 h-8 rounded-full bg-blue-500/15 flex items-center justify-center shrink-0 mt-0.5">
-                            <Ruler size={15} className="text-blue-400" />
+                        <div className="py-1.5 flex items-center gap-2.5">
+                          <div className="w-6 h-6 rounded-full bg-blue-500/15 flex items-center justify-center shrink-0">
+                            <Ruler size={12} className="text-blue-400" />
                           </div>
-                          <p className={`text-[12px] font-medium leading-relaxed ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
+                          <p className={`text-[12px] font-medium leading-snug ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
                             {(() => {
                               const osloSnitt = OSLO_DISTRICTS[0].pricePerSqm;
                               const diff = selectedDistrict.pricePerSqm - osloSnitt;
@@ -403,11 +403,11 @@ const HomePage: React.FC<{
                         <div className={`border-t ${isDarkMode ? 'border-white/10' : 'border-slate-200'}`}></div>
 
                         {/* Omløpshastighet */}
-                        <div className="py-2.5 flex items-start gap-3">
-                          <div className="w-8 h-8 rounded-full bg-[#F8B324]/15 flex items-center justify-center shrink-0 mt-0.5">
-                            <Clock size={15} className="text-[#F8B324]" />
+                        <div className="py-1.5 flex items-center gap-2.5">
+                          <div className="w-6 h-6 rounded-full bg-[#F8B324]/15 flex items-center justify-center shrink-0">
+                            <Clock size={12} className="text-[#F8B324]" />
                           </div>
-                          <p className={`text-[12px] font-medium leading-relaxed ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
+                          <p className={`text-[12px] font-medium leading-snug ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
                             {(() => {
                               const osloSnitt = OSLO_DISTRICTS[0].avgDaysOnMarket;
                               const diff = selectedDistrict.avgDaysOnMarket - osloSnitt;
@@ -429,7 +429,8 @@ const HomePage: React.FC<{
                       className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-3 md:py-4 md:rounded-b-xl transition-all uppercase tracking-widest text-[12px] md:text-[11px]"
                     >
                       <span className="animate-[pulse-scale_2s_ease-in-out_infinite]">{(() => {
-                        const name = selectedDistrict.name.replace(' (Totalt)', '');
+                        let name = selectedDistrict.name.replace(' (Totalt)', '');
+                        if (name === 'St. Hanshaugen') name = 'St. Hansh.';
                         return `Hva er boligen din ${getPreposition(selectedDistrict.name)} ${name} verdt?`;
                       })()}</span> <ArrowRight size={16} />
                     </button>
