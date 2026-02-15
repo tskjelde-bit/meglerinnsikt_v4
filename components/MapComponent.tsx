@@ -41,7 +41,8 @@ export const TILE_LAYERS: Record<TileLayerKey, { name: string; url: string; opti
 
 // Per-layer style config
 const LAYER_STYLES: Record<TileLayerKey, {
-  showOverlay: boolean;          // show GeoJSON + labels at all (false = map style handles everything)
+  showOverlay: boolean;          // show GeoJSON polygons (false = map style handles borders)
+  showLabels: boolean;           // show our district name labels
   showChoropleth: boolean;       // fill areas with choropleth colors
   borderColor: string;
   borderWeight: number;
@@ -55,6 +56,7 @@ const LAYER_STYLES: Record<TileLayerKey, {
 }> = {
   blue: {
     showOverlay: true,
+    showLabels: true,
     showChoropleth: true,
     borderColor: '#FFFFFF',
     borderWeight: 1.5,
@@ -67,20 +69,22 @@ const LAYER_STYLES: Record<TileLayerKey, {
     labelSelectedShadow: '0 1px 3px rgba(0,0,0,0.4)',
   },
   snapmap: {
-    showOverlay: false,           // Mapbox style has its own districts + labels
+    showOverlay: false,           // Mapbox style has its own borders
+    showLabels: true,             // Our district labels on top
     showChoropleth: false,
     borderColor: 'transparent',
     borderWeight: 0,
     borderOpacity: 0,
     selectedFillColor: 'transparent',
     hoverFillOpacity: 0,
-    labelColor: 'transparent',
-    labelSelectedColor: 'transparent',
-    labelShadow: 'none',
-    labelSelectedShadow: 'none',
+    labelColor: '#1E3A50',
+    labelSelectedColor: '#FFFFFF',
+    labelShadow: '0 0 4px rgba(255,255,255,0.9), 0 0 2px rgba(255,255,255,0.9)',
+    labelSelectedShadow: '0 1px 3px rgba(0,0,0,0.4)',
   },
   dark: {
     showOverlay: true,
+    showLabels: true,
     showChoropleth: false,
     borderColor: 'rgba(255,255,255,0.25)',
     borderWeight: 1,
@@ -272,8 +276,8 @@ const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({
 
     const style = LAYER_STYLES[activeTileKeyRef.current];
 
-    // Snapmap: no labels — Mapbox style has its own
-    if (!style.showOverlay) return;
+    // Skip labels if disabled for this layer
+    if (!style.showLabels) return;
 
     const selected = selectedDistrictRef.current;
 
@@ -395,7 +399,7 @@ const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({
     <div
       ref={containerRef}
       className="w-full h-full"
-      style={{ background: '#E2E8F0' }}
+      style={{ background: 'transparent' }}
     />
   );
 });

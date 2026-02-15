@@ -187,7 +187,7 @@ const HomePage: React.FC<{
           <div style={{ minHeight: mapHeight }} className={`lg:col-span-8 relative rounded-none md:rounded-2xl overflow-hidden shadow-2xl md:!h-[450px] lg:!h-auto flex flex-col transition-colors duration-300 ${
             isDarkMode ? 'bg-[#1a2333]/20' : 'md:border md:border-slate-200 bg-white'
           }`}>
-            <div className="absolute inset-0 z-0 bg-white">
+            <div className="absolute inset-0 z-0">
               <MapComponent
                 ref={mapComponentRef}
                 properties={[]}
