@@ -309,64 +309,100 @@ const HomePage: React.FC<{
                   <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected && isAnalysisOpen ? 'max-h-[650px] opacity-100' : 'max-h-0 opacity-0'}`}>
                     <div>
 
-                      {/* Desktop: 3-column grid with boxes */}
-                      <div className="hidden md:grid grid-cols-3 gap-4 p-5 pt-2">
-                        <div className={`col-span-1 rounded-xl p-4 ${isDarkMode ? 'bg-white/5' : 'bg-slate-100/80'}`}>
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                            <span className={`text-[11px] font-black uppercase tracking-widest ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
-                              Kvadratmeterpris
-                            </span>
-                          </div>
-                          <p className={`text-[14px] font-medium leading-relaxed ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
-                            {(() => {
-                              const osloSnitt = OSLO_DISTRICTS[0].pricePerSqm;
-                              const diff = selectedDistrict.pricePerSqm - osloSnitt;
-                              if (selectedDistrict.id === 'oslo') return `Oslo-snittet ligger på ${osloSnitt.toLocaleString('nb-NO')} kr/m² i snitt.`;
-                              if (diff > 0) return `${diff.toLocaleString('nb-NO')} kr/m² over Oslo-snittet (${osloSnitt.toLocaleString('nb-NO')} kr/m²). Høyere prisnivå enn byen for øvrig.`;
-                              if (diff < 0) return `${Math.abs(diff).toLocaleString('nb-NO')} kr/m² under Oslo-snittet (${osloSnitt.toLocaleString('nb-NO')} kr/m²). Lavere prisnivå enn byen for øvrig.`;
-                              return `I takt med Oslo-snittet på ${osloSnitt.toLocaleString('nb-NO')} kr/m².`;
-                            })()}
-                          </p>
-                        </div>
+                      {/* Desktop: 4-column grid matching stats: Prisendring, Salgstid, Medianpris, per M2 */}
+                      <div className="hidden md:grid grid-cols-4 gap-4 p-5 pt-2">
+                        {(() => {
+                          const oslo = OSLO_DISTRICTS[0];
+                          const pDiff = +(selectedDistrict.priceChange - oslo.priceChange).toFixed(1);
+                          const sDiff = selectedDistrict.pricePerSqm - oslo.pricePerSqm;
+                          const dDiff = selectedDistrict.avgDaysOnMarket - oslo.avgDaysOnMarket;
+                          const mDiff = selectedDistrict.medianPrice - oslo.medianPrice;
+                          const isOslo = selectedDistrict.id === 'oslo';
+                          const getHex = (good: boolean, bad: boolean) => good ? '#03d392' : bad ? '#e05a5a' : '#F8B324';
+                          const priceHex = isOslo ? '#60a5fa' : getHex(pDiff > 0.3, pDiff < -0.3);
+                          const daysHex = isOslo ? '#60a5fa' : getHex(dDiff < -1, dDiff > 1);
+                          const medianHex = '#60a5fa';
+                          const sqmHex = isOslo ? '#60a5fa' : getHex(sDiff > 0, sDiff < 0);
+                          return <>
+                            {/* 1: Prisutvikling — under Prisendring */}
+                            <div className={`col-span-1 rounded-xl p-4 ${isDarkMode ? 'bg-white/5' : 'bg-slate-100/80'}`}>
+                              <div className="flex items-center gap-2 mb-2">
+                                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: priceHex }}></div>
+                                <span className="text-[11px] font-black uppercase tracking-widest" style={{ color: priceHex }}>
+                                  Prisutvikling
+                                </span>
+                              </div>
+                              <p className={`text-[14px] font-medium leading-relaxed ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
+                                {(() => {
+                                  const osloSnitt = oslo.priceChange;
+                                  if (isOslo) return `Oslo-snittet ligger på +${osloSnitt}% prisvekst siste 12 måneder.`;
+                                  if (pDiff > 0) return `+${pDiff} prosentpoeng over Oslo-snittet (${osloSnitt}%). Sterkere prisvekst enn byen for øvrig.`;
+                                  if (pDiff < 0) return `${pDiff} prosentpoeng under Oslo-snittet (${osloSnitt}%). Svakere prisvekst enn byen for øvrig.`;
+                                  return `I takt med Oslo-snittet på +${osloSnitt}% prisvekst.`;
+                                })()}
+                              </p>
+                            </div>
 
-                        <div className={`col-span-1 rounded-xl p-4 ${isDarkMode ? 'bg-white/5' : 'bg-slate-100/80'}`}>
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#03d392]"></div>
-                            <span className={`text-[11px] font-black uppercase tracking-widest ${isDarkMode ? 'text-[#03d392]' : 'text-[#03d392]'}`}>
-                              Prisutvikling
-                            </span>
-                          </div>
-                          <p className={`text-[14px] font-medium leading-relaxed ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
-                            {(() => {
-                              const osloSnitt = OSLO_DISTRICTS[0].priceChange;
-                              const diff = +(selectedDistrict.priceChange - osloSnitt).toFixed(1);
-                              if (selectedDistrict.id === 'oslo') return `Oslo-snittet ligger på +${osloSnitt}% prisvekst siste 12 måneder.`;
-                              if (diff > 0) return `+${diff} prosentpoeng over Oslo-snittet (${osloSnitt}%). Sterkere prisvekst enn byen for øvrig.`;
-                              if (diff < 0) return `${diff} prosentpoeng under Oslo-snittet (${osloSnitt}%). Svakere prisvekst enn byen for øvrig.`;
-                              return `I takt med Oslo-snittet på +${osloSnitt}% prisvekst.`;
-                            })()}
-                          </p>
-                        </div>
+                            {/* 2: Omløpshastighet — under Salgstid */}
+                            <div className={`col-span-1 rounded-xl p-4 ${isDarkMode ? 'bg-white/5' : 'bg-slate-100/80'}`}>
+                              <div className="flex items-center gap-2 mb-2">
+                                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: daysHex }}></div>
+                                <span className="text-[11px] font-black uppercase tracking-widest" style={{ color: daysHex }}>
+                                  Omløpshastighet
+                                </span>
+                              </div>
+                              <p className={`text-[14px] font-medium leading-relaxed ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
+                                {(() => {
+                                  const osloSnitt = oslo.avgDaysOnMarket;
+                                  const diff = selectedDistrict.avgDaysOnMarket - osloSnitt;
+                                  if (isOslo) return `Oslo-snittet ligger på ${osloSnitt} dager omløpstid.`;
+                                  if (diff < 0) return `${Math.abs(diff)} dager raskere enn Oslo-snittet (${osloSnitt} dager). Svært likvid marked.`;
+                                  if (diff > 0) return `${diff} dager tregere enn Oslo-snittet (${osloSnitt} dager). Lavere likviditet.`;
+                                  return `I takt med Oslo-snittet på ${osloSnitt} dager omløpstid.`;
+                                })()}
+                              </p>
+                            </div>
 
-                        <div className={`col-span-1 rounded-xl p-4 ${isDarkMode ? 'bg-white/5' : 'bg-slate-100/80'}`}>
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#F8B324]"></div>
-                            <span className={`text-[11px] font-black uppercase tracking-widest ${isDarkMode ? 'text-[#F8B324]' : 'text-[#F8B324]'}`}>
-                              Omløpshastighet
-                            </span>
-                          </div>
-                          <p className={`text-[14px] font-medium leading-relaxed ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
-                            {(() => {
-                              const osloSnitt = OSLO_DISTRICTS[0].avgDaysOnMarket;
-                              const diff = selectedDistrict.avgDaysOnMarket - osloSnitt;
-                              if (selectedDistrict.id === 'oslo') return `Oslo-snittet ligger på ${osloSnitt} dager omløpstid.`;
-                              if (diff < 0) return `${Math.abs(diff)} dager raskere enn Oslo-snittet (${osloSnitt} dager). Svært likvid marked.`;
-                              if (diff > 0) return `${diff} dager tregere enn Oslo-snittet (${osloSnitt} dager). Lavere likviditet.`;
-                              return `I takt med Oslo-snittet på ${osloSnitt} dager omløpstid.`;
-                            })()}
-                          </p>
-                        </div>
+                            {/* 3: Medianpris — under Medianpris */}
+                            <div className={`col-span-1 rounded-xl p-4 ${isDarkMode ? 'bg-white/5' : 'bg-slate-100/80'}`}>
+                              <div className="flex items-center gap-2 mb-2">
+                                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: medianHex }}></div>
+                                <span className="text-[11px] font-black uppercase tracking-widest" style={{ color: medianHex }}>
+                                  Medianpris
+                                </span>
+                              </div>
+                              <p className={`text-[14px] font-medium leading-relaxed ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
+                                {(() => {
+                                  const osloSnitt = oslo.medianPrice;
+                                  if (isOslo) return `Oslo-snittet ligger på ${(osloSnitt / 1000000).toFixed(1)} mill. kr i medianpris.`;
+                                  if (mDiff > 0) return `${(mDiff / 1000000).toFixed(1)} mill. kr over Oslo-snittet (${(osloSnitt / 1000000).toFixed(1)} mill.). Høyere prisnivå.`;
+                                  if (mDiff < 0) return `${(Math.abs(mDiff) / 1000000).toFixed(1)} mill. kr under Oslo-snittet (${(osloSnitt / 1000000).toFixed(1)} mill.). Lavere prisnivå.`;
+                                  return `I takt med Oslo-snittet på ${(osloSnitt / 1000000).toFixed(1)} mill. kr.`;
+                                })()}
+                              </p>
+                            </div>
+
+                            {/* 4: Kvadratmeterpris — under per M2 */}
+                            <div className={`col-span-1 rounded-xl p-4 ${isDarkMode ? 'bg-white/5' : 'bg-slate-100/80'}`}>
+                              <div className="flex items-center gap-2 mb-2">
+                                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: sqmHex }}></div>
+                                <span className="text-[11px] font-black uppercase tracking-widest" style={{ color: sqmHex }}>
+                                  Kvadratmeterpris
+                                </span>
+                              </div>
+                              <p className={`text-[14px] font-medium leading-relaxed ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
+                                {(() => {
+                                  const osloSnitt = oslo.pricePerSqm;
+                                  const diff = selectedDistrict.pricePerSqm - osloSnitt;
+                                  if (isOslo) return `Oslo-snittet ligger på ${osloSnitt.toLocaleString('nb-NO')} kr/m² i snitt.`;
+                                  if (diff > 0) return `${diff.toLocaleString('nb-NO')} kr/m² over Oslo-snittet (${osloSnitt.toLocaleString('nb-NO')} kr/m²). Høyere prisnivå enn byen for øvrig.`;
+                                  if (diff < 0) return `${Math.abs(diff).toLocaleString('nb-NO')} kr/m² under Oslo-snittet (${osloSnitt.toLocaleString('nb-NO')} kr/m²). Lavere prisnivå enn byen for øvrig.`;
+                                  return `I takt med Oslo-snittet på ${osloSnitt.toLocaleString('nb-NO')} kr/m².`;
+                                })()}
+                              </p>
+                            </div>
+                          </>;
+                        })()}
                       </div>
 
                       {/* Mobile: vertical list with round icons — colors match stat system */}
