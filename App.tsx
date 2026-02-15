@@ -245,16 +245,16 @@ const HomePage: React.FC<{
                     ? isDarkMode ? 'bg-[#242c3d] shadow-2xl' : 'bg-white shadow-2xl'
                     : ''
                 }`}>
+                  {/* Mobile chevron: outside grid, like original */}
+                  <div className={`md:hidden overflow-hidden transition-all duration-300 ${isDistrictSelected ? 'max-h-10 opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <button
+                      onClick={() => setIsAnalysisOpen(!isAnalysisOpen)}
+                      className="w-full flex items-center justify-center py-1 transition-colors text-white"
+                    >
+                      <ChevronDown size={28} className={`transition-transform ${isAnalysisOpen ? '' : 'rotate-180'}`} />
+                    </button>
+                  </div>
                   <div className="relative grid grid-cols-3 md:grid-cols-4">
-                    {/* Mobile chevron: own row like original */}
-                    <div className={`md:hidden col-span-3 overflow-hidden transition-all duration-300 ${isDistrictSelected ? 'max-h-7 opacity-100' : 'max-h-0 opacity-0'}`}>
-                      <button
-                        onClick={() => setIsAnalysisOpen(!isAnalysisOpen)}
-                        className="w-full flex items-center justify-center -mb-4 transition-colors text-white"
-                      >
-                        <ChevronDown size={28} className={`transition-transform ${isAnalysisOpen ? '' : 'rotate-180'}`} />
-                      </button>
-                    </div>
                     {/* Desktop chevron: overlaid, no extra row */}
                     <div className={`hidden md:block absolute left-1/2 -translate-x-1/2 -top-2 z-10 transition-all duration-300 ${isDistrictSelected ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                       <button
