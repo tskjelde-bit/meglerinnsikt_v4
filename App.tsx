@@ -145,16 +145,13 @@ const HomePage: React.FC<{
               <span>Hjem</span> <ChevronRight size={10} className={isDarkMode ? 'text-slate-700' : 'text-slate-300'} /> <span className={isDarkMode ? 'text-slate-300' : 'text-slate-600'}>Eiendomsinnsikt</span>
             </div>
             <h2 className={`text-[20px] md:text-[32px] lg:text-[40px] font-black leading-tight tracking-tight uppercase ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-              <span className="hidden md:inline">Eiendomsinnsikt </span><span className="md:hidden"><span className="text-[18px]">Boligmarkedet {getPreposition(selectedDistrict.name)} </span><span className="text-[18px] text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')}</span></span><span className="hidden md:inline text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')}</span>
+              <span className="text-[18px] md:text-[32px] lg:text-[40px]">Boligmarkedet {getPreposition(selectedDistrict.name)} </span><span className="text-[18px] md:text-[32px] lg:text-[40px] text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')}</span>
             </h2>
-            <p className={`md:hidden text-[12px] font-black uppercase tracking-wider text-white/70`}>
+            <p className={`text-[12px] md:text-sm font-black uppercase tracking-wider ${isDarkMode ? 'text-white/70' : 'text-slate-500'}`}>
               {isDistrictSelected
                 ? <span>{getMarketData(selectedDistrict).interpretation}</span>
                 : <><span className="text-blue-500">Selger</span> eller <span className="text-blue-500">kjøpers</span> marked akkurat nå?</>
               }
-            </p>
-            <p className={`hidden md:block font-medium text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-              Avansert dataanalyse for det norske eiendomsmarkedet
             </p>
           </div>
 
@@ -178,7 +175,7 @@ const HomePage: React.FC<{
         <div className="grid lg:grid-cols-12 gap-6 lg:gap-8 lg:items-stretch mb-0 md:mb-12 md:px-14">
           {/* MAP COLUMN */}
           <div style={{ minHeight: mapHeight }} className={`lg:col-span-8 relative rounded-none md:rounded-2xl overflow-visible md:overflow-hidden shadow-2xl md:!h-[450px] lg:!h-auto flex flex-col transition-colors duration-300 ${
-            isDarkMode ? 'md:border md:border-white/5 bg-[#1a2333]/20' : 'md:border md:border-slate-200 bg-white'
+            isDarkMode ? 'bg-[#1a2333]/20' : 'md:border md:border-slate-200 bg-white'
           }`}>
             <div className="absolute inset-0 z-0 bg-white">
               <MapComponent
@@ -241,67 +238,60 @@ const HomePage: React.FC<{
             </div>
 
             {/* CONSOLIDATED INSIGHT BOX */}
-            <div className="absolute bottom-0 left-0 right-0 md:bottom-4 md:left-4 md:right-4 z-[500] pointer-events-none">
+            <div className="absolute bottom-0 left-0 right-0 z-[500] pointer-events-none">
               <div className="pointer-events-auto flex flex-col gap-3">
-                <div className={`rounded-none md:rounded-xl overflow-hidden transition-all duration-300 ${
-                  isDarkMode
-                    ? isAnalysisOpen && isDistrictSelected
-                      ? 'bg-[#242c3d] backdrop-blur-md shadow-2xl border border-white/10'
-                      : 'bg-[#242c3d]/95 backdrop-blur-md shadow-2xl border border-white/10 md:bg-[#242c3d]/70 md:border-white/5'
-                    : isAnalysisOpen && isDistrictSelected
-                      ? 'bg-white backdrop-blur-md shadow-2xl border border-slate-200'
-                      : 'bg-white/95 backdrop-blur-md shadow-2xl border border-slate-200 md:bg-white/70 md:border-slate-100'
+                <div className={`rounded-none overflow-hidden transition-all duration-300 ${
+                  isDistrictSelected
+                    ? isDarkMode ? 'bg-[#242c3d] shadow-2xl' : 'bg-white shadow-2xl'
+                    : ''
                 }`}>
-                  {/* Chevron at top - toggles open/close */}
-                  <div className={`overflow-hidden transition-all duration-300 ${isDistrictSelected ? 'max-h-10 opacity-100' : 'max-h-0 opacity-0'}`}>
-                    <button
-                      onClick={() => setIsAnalysisOpen(!isAnalysisOpen)}
-                      className={`w-full flex items-center justify-center gap-1 py-1 md:py-2 transition-colors text-white md:text-slate-400 md:hover:text-white`}
-                    >
-                      <span className="hidden md:inline text-[9px] font-black uppercase tracking-widest">{isAnalysisOpen ? 'Lukk' : 'Se analyse'}</span>
-                      <ChevronDown size={28} className={`md:!w-[10px] md:!h-[10px] transition-transform ${isAnalysisOpen ? '' : 'rotate-180'}`} />
-                    </button>
-                  </div>
-                  <div className="grid grid-cols-3 md:grid-cols-4">
+                  <div className="relative grid grid-cols-3 md:grid-cols-4">
+                    {/* Mobile chevron: own row like original */}
+                    <div className={`md:hidden col-span-3 overflow-hidden transition-all duration-300 ${isDistrictSelected ? 'max-h-7 opacity-100' : 'max-h-0 opacity-0'}`}>
+                      <button
+                        onClick={() => setIsAnalysisOpen(!isAnalysisOpen)}
+                        className="w-full flex items-center justify-center -mb-4 transition-colors text-white"
+                      >
+                        <ChevronDown size={28} className={`transition-transform ${isAnalysisOpen ? '' : 'rotate-180'}`} />
+                      </button>
+                    </div>
+                    {/* Desktop chevron: overlaid, no extra row */}
+                    <div className={`hidden md:block absolute left-1/2 -translate-x-1/2 -top-2 z-10 transition-all duration-300 ${isDistrictSelected ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                      <button
+                        onClick={() => setIsAnalysisOpen(!isAnalysisOpen)}
+                        className="flex items-center justify-center text-white hover:text-white transition-colors drop-shadow-lg"
+                      >
+                        <ChevronDown size={44} className={`transition-transform ${isAnalysisOpen ? '' : 'rotate-180'}`} />
+                      </button>
+                    </div>
                     {(() => {
                       const oslo = OSLO_DISTRICTS[0];
                       const priceDiff = selectedDistrict.priceChange - oslo.priceChange;
                       const daysDiff = selectedDistrict.avgDaysOnMarket - oslo.avgDaysOnMarket;
                       const sqmDiff = selectedDistrict.pricePerSqm - oslo.pricePerSqm;
-                      const getColor = (diff: number, invert = false) => {
-                        const d = invert ? -diff : diff;
-                        if (d > 0.3 || (!invert && d > 1) || (invert && diff < -1)) return 'text-[#03d392]';
-                        if (d < -0.3 || (!invert && d < -1) || (invert && diff > 1)) return 'text-[#BC2023]';
-                        return 'text-[#F8B324]';
-                      };
-                      const priceColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (priceDiff > 0.3 ? 'text-[#03d392]' : priceDiff < -0.3 ? 'text-[#BC2023]' : 'text-[#F8B324]');
-                      const daysColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (daysDiff < -1 ? 'text-[#03d392]' : daysDiff > 1 ? 'text-[#BC2023]' : 'text-[#F8B324]');
-                      const sqmColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (sqmDiff > 0 ? 'text-[#03d392]' : sqmDiff < 0 ? 'text-[#BC2023]' : 'text-[#F8B324]');
+                      const priceColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (priceDiff > 0.3 ? 'text-[#03d392]' : priceDiff < -0.3 ? 'text-[#e05a5a]' : 'text-[#F8B324]');
+                      const daysColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (daysDiff < -1 ? 'text-[#03d392]' : daysDiff > 1 ? 'text-[#e05a5a]' : 'text-[#F8B324]');
+                      const sqmColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (sqmDiff > 0 ? 'text-[#03d392]' : sqmDiff < 0 ? 'text-[#e05a5a]' : 'text-[#F8B324]');
                       return [
-                        { icon: <TrendingUp size={18} className="md:w-7 md:h-7" />, label: "PRISENDRING", mobileLabel: "Prisendring", value: `+${selectedDistrict.priceChange}%`, mobileValue: `+${selectedDistrict.priceChange}%`, iconColor: priceColor, hideOnMobile: false },
-                        { icon: <Clock size={18} className="md:w-7 md:h-7" />, label: "SALGSTID", mobileLabel: "Salgstid", value: `${selectedDistrict.avgDaysOnMarket}`, mobileValue: `${selectedDistrict.avgDaysOnMarket} dager`, iconColor: daysColor, hideOnMobile: false },
-                        { icon: <Building2 size={18} className="md:w-7 md:h-7" />, label: "MEDIANPRIS", mobileLabel: "MEDIAN", value: `${(selectedDistrict.medianPrice / 1000000).toFixed(1)}M`, mobileValue: `${(selectedDistrict.medianPrice / 1000000).toFixed(1)}M`, iconColor: 'text-blue-400', hideOnMobile: true },
-                        { icon: <Coins size={18} className="md:w-7 md:h-7" />, label: "KR/M²", mobileLabel: "per M2", value: `${Math.round(selectedDistrict.pricePerSqm / 1000)}k`, mobileValue: `${Math.round(selectedDistrict.pricePerSqm / 1000)} K`, iconColor: sqmColor, hideOnMobile: false }
+                        { label: "Prisendring", value: `+${selectedDistrict.priceChange}%`, iconColor: priceColor, hideOnMobile: false },
+                        { label: "Salgstid", value: `${selectedDistrict.avgDaysOnMarket} dager`, iconColor: daysColor, hideOnMobile: false },
+                        { label: "Medianpris", value: `${(selectedDistrict.medianPrice / 1000000).toFixed(1)}M`, iconColor: 'text-blue-400', hideOnMobile: true },
+                        { label: "per M2", value: `${Math.round(selectedDistrict.pricePerSqm / 1000)} K`, iconColor: sqmColor, hideOnMobile: false }
                       ];
                     })().map((stat, i) => (
                       <div
                         key={i}
-                        className={`flex flex-col items-center justify-center pt-2 pb-4 px-2 gap-1 md:flex-row md:gap-4 md:py-5 md:px-4
+                        className={`flex flex-col items-center justify-center pt-0 md:pt-4 pb-4 px-2
                           ${stat.hideOnMobile ? 'hidden md:flex' : ''}
-                          ${i !== 0 ? `border-l ${isDarkMode ? 'border-white/5' : 'border-slate-100'}` : ''}
+                          ${i !== 0 && isDistrictSelected ? `border-l ${isDarkMode ? 'border-white/5' : 'border-slate-100'}` : ''}
                         `}
                       >
-                        <div className={`hidden md:block ${stat.iconColor}`}>
-                          {stat.icon}
-                        </div>
-                        <div className="flex flex-col items-center md:items-start">
-                          <div className="text-[15px] md:text-[24px] lg:text-[28px] font-black leading-tight">
-                            <span className={`md:hidden ${selectedDistrict.id === 'oslo' ? 'text-white' : stat.iconColor}`}>{stat.mobileValue}</span>
-                            <span className={`hidden md:inline ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{stat.value}</span>
+                        <div className="flex flex-col items-center">
+                          <div className={`text-[15px] md:text-[24px] lg:text-[28px] font-black leading-tight ${selectedDistrict.id === 'oslo' ? 'text-[#242c3d]' : stat.iconColor}`}>
+                            {stat.value}
                           </div>
-                          <div className="text-[10px] md:text-[9px] font-black uppercase tracking-widest leading-none mt-0.5">
-                            <span className={`md:hidden ${selectedDistrict.id === 'oslo' ? 'text-white/60' : stat.iconColor}`}>{stat.mobileLabel}</span>
-                            <span className={`hidden md:inline ${isDarkMode ? 'text-white' : 'text-slate-400'}`}>{stat.label}</span>
+                          <div className={`text-[10px] font-black uppercase tracking-widest leading-none mt-0.5 ${selectedDistrict.id === 'oslo' ? 'text-[#242c3d]/60' : stat.iconColor}`}>
+                            {stat.label}
                           </div>
                         </div>
                       </div>
@@ -310,19 +300,7 @@ const HomePage: React.FC<{
 
                   {/* Expanded district analysis */}
                   <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected && isAnalysisOpen ? 'max-h-[650px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                    <div className={`border-t ${isDarkMode ? 'border-white/10' : 'border-slate-200'}`}>
-
-                      {/* Tolkningslinje - desktop only (mobile shows in subheading) */}
-                      <div className="hidden md:block px-5 pb-2">
-                        <p className={`text-[14px] font-bold italic text-center ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
-                          {getMarketData(selectedDistrict).interpretation}
-                        </p>
-                        {getMarketData(selectedDistrict).trigger && (
-                          <p className={`text-[12px] font-bold text-center mt-1 ${isDarkMode ? 'text-[#03d392]' : 'text-[#03d392]'}`}>
-                            Dette er et gunstig tidspunkt å vurdere salg.
-                          </p>
-                        )}
-                      </div>
+                    <div>
 
                       {/* Desktop: 3-column grid with boxes */}
                       <div className="hidden md:grid grid-cols-3 gap-4 p-5 pt-2">

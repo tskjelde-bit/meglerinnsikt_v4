@@ -199,7 +199,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
     const map = L.map(containerRef.current, {
       zoomControl: false,
       attributionControl: false,
-    }).setView([59.92, 10.76], 12);
+    }).setView([59.89, 10.76], 11.5);
 
     // Tile layer – muted blue-grey tones for water/land context
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png', {
