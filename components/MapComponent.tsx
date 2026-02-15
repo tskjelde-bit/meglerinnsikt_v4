@@ -24,7 +24,7 @@ const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || '';
 export const TILE_LAYERS: Record<TileLayerKey, { name: string; url: string; options?: L.TileLayerOptions }> = {
   blue: {
     name: 'Blue',
-    url: `https://api.mapbox.com/styles/v1/mapbox/light-v11/tiles/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`,
+    url: `https://api.mapbox.com/styles/v1/drskjelde/cmlo7u0tk002r01qn5z3i9jps/tiles/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`,
     options: { maxZoom: 19, tileSize: 512, zoomOffset: -1 },
   },
   snapmap: {
