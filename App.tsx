@@ -4,7 +4,7 @@ import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { Property, DistrictInfo, BlogPost, BlogPostFull } from './types';
 import { OSLO_DISTRICTS, MOCK_BLOG_POSTS } from './constants';
 import { blogService } from './services/blogService';
-import MapComponent from './components/MapComponent';
+import MapComponent, { MapComponentHandle, TileLayerKey, TILE_LAYERS } from './components/MapComponent';
 import MarketStatsPanel from './components/MarketStatsPanel';
 import BlogPostDetail from './components/BlogPostDetail';
 import BlogPostPage from './components/BlogPostPage';
@@ -113,7 +113,10 @@ const HomePage: React.FC<{
   const [isDistrictSelected, setIsDistrictSelected] = useState(false);
   const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
   const [mapHeight, setMapHeight] = useState('100dvh');
+  const [activeTileLayer, setActiveTileLayer] = useState<TileLayerKey>('blue');
+  const [isLayerMenuOpen, setIsLayerMenuOpen] = useState(false);
   const headerRef = useRef<HTMLDivElement>(null);
+  const mapComponentRef = useRef<MapComponentHandle>(null);
 
   useEffect(() => {
     const updateMapHeight = () => {
@@ -186,6 +189,7 @@ const HomePage: React.FC<{
           }`}>
             <div className="absolute inset-0 z-0 bg-white">
               <MapComponent
+                ref={mapComponentRef}
                 properties={[]}
                 districts={OSLO_DISTRICTS}
                 selectedProperty={null}
@@ -195,53 +199,45 @@ const HomePage: React.FC<{
               />
             </div>
 
-            {/* DISTRICT DROPDOWN */}
-            <div className="absolute top-2.5 left-1/2 -translate-x-1/2 md:top-8 md:left-8 md:translate-x-0 z-[500] w-[130px] md:w-72 pointer-events-auto">
-              <div className="bg-white/95 backdrop-blur-sm rounded-lg md:rounded-xl shadow-2xl overflow-hidden border border-slate-100">
-                <button
-                  onClick={() => setIsDistrictListOpen(!isDistrictListOpen)}
-                  className="w-full flex items-center justify-between p-1.5 md:p-4 hover:bg-slate-50 transition-colors text-left"
-                >
-                  <div className="flex items-center gap-1.5 md:gap-3">
-                    <Target size={18} className="md:hidden text-slate-400 shrink-0" />
-                    <Target size={28} className="hidden md:block text-slate-400 shrink-0" />
-                    <div>
-                      <div className="text-[10px] md:text-[14px] font-black text-slate-900 uppercase tracking-tight leading-none md:mb-1.5">{selectedDistrict.name.replace(' (Totalt)', '')}</div>
-                      <div className="hidden md:block text-[12px] font-black uppercase tracking-widest text-slate-400 leading-none">Velg bydel i kartet</div>
-                    </div>
-                  </div>
-                  <ChevronDown size={18} className={`text-slate-500 transition-transform md:w-6 md:h-6 ${isDistrictListOpen ? 'rotate-180' : ''}`} />
-                </button>
-                {isDistrictListOpen && (
-                  <div className="max-h-[200px] md:max-h-[300px] overflow-y-auto py-1 border-t border-slate-50 custom-scrollbar">
-                    {OSLO_DISTRICTS.map((district) => (
+
+            {/* MAP CONTROLS - CIRCULAR */}
+            <div className="absolute top-1/2 -translate-y-1/2 right-4 z-[500] flex flex-col gap-2 pointer-events-auto">
+              {/* Zoom in */}
+              <button onClick={() => mapComponentRef.current?.zoomIn()} className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all ${
+                isDarkMode ? 'bg-[#0b1120] text-white border border-white/5' : 'bg-white text-slate-700 border border-slate-200 shadow-sm'
+              }`}><Plus size={14} /></button>
+              {/* Zoom out */}
+              <button onClick={() => mapComponentRef.current?.zoomOut()} className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all ${
+                isDarkMode ? 'bg-[#0b1120] text-white border border-white/5' : 'bg-white text-slate-700 border border-slate-200 shadow-sm'
+              }`}><Minus size={14} /></button>
+              {/* Layers toggle */}
+              <div className="relative mt-1 md:mt-2">
+                <button onClick={() => setIsLayerMenuOpen(!isLayerMenuOpen)} className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all ${
+                  isLayerMenuOpen ? 'bg-blue-600 text-white' : isDarkMode ? 'bg-[#0b1120] text-white border border-white/5' : 'bg-white text-slate-700 border border-slate-200 shadow-sm'
+                }`}><Layers size={14} /></button>
+                {/* Layer menu popup */}
+                {isLayerMenuOpen && (
+                  <div className={`absolute right-full mr-2 top-0 rounded-lg shadow-xl overflow-hidden border ${isDarkMode ? 'bg-[#0b1120] border-white/10' : 'bg-white border-slate-200'}`} style={{ minWidth: '120px' }}>
+                    {(Object.keys(TILE_LAYERS) as TileLayerKey[]).map((key) => (
                       <button
-                        key={district.id}
-                        onClick={() => { setSelectedDistrict(district); setIsDistrictListOpen(false); setIsDistrictSelected(true); setIsAnalysisOpen(true); }}
-                        className="w-full flex items-center justify-between px-4 py-2 md:px-6 md:py-3 text-left hover:bg-blue-50 transition-colors group"
+                        key={key}
+                        onClick={() => { mapComponentRef.current?.setTileLayer(key); setActiveTileLayer(key); setIsLayerMenuOpen(false); }}
+                        className={`w-full flex items-center gap-2 px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wider transition-colors ${
+                          activeTileLayer === key
+                            ? 'bg-blue-600 text-white'
+                            : isDarkMode ? 'text-white hover:bg-white/10' : 'text-slate-700 hover:bg-slate-50'
+                        }`}
                       >
-                        <span className={`text-[10px] md:text-[11px] font-black uppercase tracking-tight ${selectedDistrict.id === district.id ? 'text-blue-600' : 'text-slate-600'}`}>
-                          {district.name}
-                        </span>
+                        {TILE_LAYERS[key].name}
                       </button>
                     ))}
                   </div>
                 )}
               </div>
-            </div>
-
-            {/* MAP CONTROLS - CIRCULAR */}
-            <div className="absolute top-1/2 -translate-y-1/2 right-4 z-[500] flex flex-col gap-2 pointer-events-auto">
-              {[
-                { icon: <Plus size={14} />, onClick: undefined, extraClass: '' },
-                { icon: <Minus size={14} />, onClick: undefined, extraClass: '' },
-                { icon: <Layers size={14} />, onClick: undefined, extraClass: 'mt-1 md:mt-2' },
-                { icon: <Target size={14} />, onClick: () => { setSelectedDistrict(OSLO_DISTRICTS[0]); setIsDistrictSelected(false); setIsAnalysisOpen(false); }, extraClass: '' },
-              ].map((ctrl, i) => (
-                <button key={i} onClick={ctrl.onClick} className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all ${ctrl.extraClass} ${
-                  isDarkMode ? 'bg-[#0b1120] text-white border border-white/5' : 'bg-white text-slate-700 border border-slate-200 shadow-sm'
-                }`}>{ctrl.icon}</button>
-              ))}
+              {/* Reset / center */}
+              <button onClick={() => { mapComponentRef.current?.resetView(); setSelectedDistrict(OSLO_DISTRICTS[0]); setIsDistrictSelected(false); setIsAnalysisOpen(false); }} className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all ${
+                isDarkMode ? 'bg-[#0b1120] text-white border border-white/5' : 'bg-white text-slate-700 border border-slate-200 shadow-sm'
+              }`}><Target size={14} /></button>
             </div>
 
             {/* CONSOLIDATED INSIGHT BOX */}

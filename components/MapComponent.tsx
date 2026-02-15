@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { Property, DistrictInfo } from '../types';
 import L from 'leaflet';
 
@@ -15,6 +15,94 @@ const CHOROPLETH_SCALE: [number, string][] = [
 const CHOROPLETH_MAX = '#1E3A8A';
 const SELECTED_COLOR = '#2D4B5F';
 const DEFAULT_COLOR = '#F1F5F9';
+
+// Tile layer definitions — all Mapbox
+export type TileLayerKey = 'blue' | 'snapmap' | 'dark';
+
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || '';
+
+export const TILE_LAYERS: Record<TileLayerKey, { name: string; url: string; options?: L.TileLayerOptions }> = {
+  blue: {
+    name: 'Blue',
+    url: `https://api.mapbox.com/styles/v1/mapbox/light-v11/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`,
+    options: { maxZoom: 19, tileSize: 256 },
+  },
+  snapmap: {
+    name: 'Snapmap',
+    url: `https://api.mapbox.com/styles/v1/drskjelde/cmkm3e0hv00it01sd4ddd4syy/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`,
+    options: { maxZoom: 19, tileSize: 256 },
+  },
+  dark: {
+    name: 'Dark',
+    url: `https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`,
+    options: { maxZoom: 19, tileSize: 256 },
+  },
+};
+
+// Per-layer style config
+const LAYER_STYLES: Record<TileLayerKey, {
+  showOverlay: boolean;          // show GeoJSON + labels at all (false = map style handles everything)
+  showChoropleth: boolean;       // fill areas with choropleth colors
+  borderColor: string;
+  borderWeight: number;
+  borderOpacity: number;
+  selectedFillColor: string;
+  hoverFillOpacity: number;
+  labelColor: string;
+  labelSelectedColor: string;
+  labelShadow: string;
+  labelSelectedShadow: string;
+}> = {
+  blue: {
+    showOverlay: true,
+    showChoropleth: true,
+    borderColor: '#FFFFFF',
+    borderWeight: 1.5,
+    borderOpacity: 0.8,
+    selectedFillColor: SELECTED_COLOR,
+    hoverFillOpacity: 0.55,
+    labelColor: '#1E3A50',
+    labelSelectedColor: '#FFFFFF',
+    labelShadow: '0 0 4px rgba(255,255,255,0.9), 0 0 2px rgba(255,255,255,0.9)',
+    labelSelectedShadow: '0 1px 3px rgba(0,0,0,0.4)',
+  },
+  snapmap: {
+    showOverlay: false,           // Mapbox style has its own districts + labels
+    showChoropleth: false,
+    borderColor: 'transparent',
+    borderWeight: 0,
+    borderOpacity: 0,
+    selectedFillColor: 'transparent',
+    hoverFillOpacity: 0,
+    labelColor: 'transparent',
+    labelSelectedColor: 'transparent',
+    labelShadow: 'none',
+    labelSelectedShadow: 'none',
+  },
+  dark: {
+    showOverlay: true,
+    showChoropleth: false,
+    borderColor: 'rgba(255,255,255,0.25)',
+    borderWeight: 1,
+    borderOpacity: 1,
+    selectedFillColor: 'rgba(59,130,246,0.35)',
+    hoverFillOpacity: 0.25,
+    labelColor: 'rgba(255,255,255,0.8)',
+    labelSelectedColor: '#FFFFFF',
+    labelShadow: '0 1px 3px rgba(0,0,0,0.8)',
+    labelSelectedShadow: '0 1px 4px rgba(0,0,0,0.9)',
+  },
+};
+
+const DEFAULT_CENTER: L.LatLngExpression = [59.89, 10.76];
+const DEFAULT_ZOOM = 11.5;
+
+export interface MapComponentHandle {
+  zoomIn: () => void;
+  zoomOut: () => void;
+  resetView: () => void;
+  setTileLayer: (key: TileLayerKey) => void;
+}
 
 function getChoroplethColor(priceChange: number): string {
   for (let i = CHOROPLETH_SCALE.length - 1; i >= 0; i--) {
@@ -39,14 +127,14 @@ interface MapComponentProps {
   onDistrictSelect: (d: DistrictInfo) => void;
 }
 
-const MapComponent: React.FC<MapComponentProps> = ({
+const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({
   properties,
   districts,
   selectedProperty,
   selectedDistrict,
   onPropertySelect,
   onDistrictSelect
-}) => {
+}, ref) => {
   const mapRef = useRef<L.Map | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const geoJsonLayerRef = useRef<L.GeoJSON | null>(null);
@@ -54,6 +142,8 @@ const MapComponent: React.FC<MapComponentProps> = ({
   const geoJsonDataRef = useRef<any>(null);
   const labelDataRef = useRef<any[]>([]);
   const dataLoadedRef = useRef(false);
+  const tileLayerRef = useRef<L.TileLayer | null>(null);
+  const activeTileKeyRef = useRef<TileLayerKey>('blue');
 
   // Stable refs for callbacks
   const districtsRef = useRef(districts);
@@ -75,31 +165,48 @@ const MapComponent: React.FC<MapComponentProps> = ({
     // Remove previous layer
     if (geoJsonLayerRef.current) {
       map.removeLayer(geoJsonLayerRef.current);
+      geoJsonLayerRef.current = null;
     }
 
     const selected = selectedDistrictRef.current;
+    const style = LAYER_STYLES[activeTileKeyRef.current];
+
+    // Snapmap: no overlay at all — Mapbox style handles districts + labels
+    if (!style.showOverlay) return;
 
     const layer = L.geoJSON(geoJsonData, {
       style: (feature) => {
         const name = feature?.properties?.BYDELSNAVN;
         const district = findDistrictByName(name);
-        let fillColor = DEFAULT_COLOR;
 
-        if (district) {
-          if (selected && district.name === selected.name) {
-            fillColor = SELECTED_COLOR;
-          } else {
-            fillColor = getChoroplethColor(district.priceChange);
+        if (style.showChoropleth) {
+          // Blue mode: full choropleth fill
+          let fillColor = DEFAULT_COLOR;
+          if (district) {
+            if (selected && district.name === selected.name) {
+              fillColor = style.selectedFillColor;
+            } else {
+              fillColor = getChoroplethColor(district.priceChange);
+            }
           }
+          return {
+            fillColor,
+            fillOpacity: 0.4,
+            weight: style.borderWeight,
+            color: style.borderColor,
+            opacity: style.borderOpacity,
+          };
+        } else {
+          // Snapmap / Dark: transparent fill, borders only
+          const isSelected = district && selected && district.name === selected.name;
+          return {
+            fillColor: isSelected ? style.selectedFillColor : 'transparent',
+            fillOpacity: isSelected ? 0.4 : 0,
+            weight: style.borderWeight,
+            color: style.borderColor,
+            opacity: style.borderOpacity,
+          };
         }
-
-        return {
-          fillColor,
-          fillOpacity: 0.4,
-          weight: 1.5,
-          color: '#FFFFFF',
-          opacity: 0.8,
-        };
       },
       onEachFeature: (feature, layer) => {
         const name = feature?.properties?.BYDELSNAVN;
@@ -111,14 +218,21 @@ const MapComponent: React.FC<MapComponentProps> = ({
           mouseover: (e: L.LeafletMouseEvent) => {
             const target = e.target;
             const sel = selectedDistrictRef.current;
+            const st = LAYER_STYLES[activeTileKeyRef.current];
             if (!sel || district.name !== sel.name) {
-              target.setStyle({
-                fillColor: getHoverColor(district.priceChange),
-                fillOpacity: 0.55,
-              });
+              if (st.showChoropleth) {
+                target.setStyle({
+                  fillColor: getHoverColor(district.priceChange),
+                  fillOpacity: st.hoverFillOpacity,
+                });
+              } else {
+                target.setStyle({
+                  fillColor: getChoroplethColor(district.priceChange),
+                  fillOpacity: st.hoverFillOpacity,
+                });
+              }
               target.bringToFront();
             }
-            // Set pointer cursor
             const el = (target as any)._path;
             if (el) el.style.cursor = 'pointer';
           },
@@ -136,8 +250,6 @@ const MapComponent: React.FC<MapComponentProps> = ({
     }).addTo(map);
 
     geoJsonLayerRef.current = layer;
-
-    // Outer border removed — clean look with thin white borders only
   }, [findDistrictByName]);
 
   const renderLabels = useCallback(() => {
@@ -148,6 +260,11 @@ const MapComponent: React.FC<MapComponentProps> = ({
     // Remove previous labels
     labelMarkersRef.current.forEach(m => m.remove());
     labelMarkersRef.current = [];
+
+    const style = LAYER_STYLES[activeTileKeyRef.current];
+
+    // Snapmap: no labels — Mapbox style has its own
+    if (!style.showOverlay) return;
 
     const selected = selectedDistrictRef.current;
 
@@ -167,8 +284,8 @@ const MapComponent: React.FC<MapComponentProps> = ({
           text-transform: uppercase;
           letter-spacing: 0.08em;
           white-space: nowrap;
-          color: ${isSelected ? '#FFFFFF' : '#1E3A50'};
-          text-shadow: ${isSelected ? '0 1px 3px rgba(0,0,0,0.4)' : '0 0 4px rgba(255,255,255,0.9), 0 0 2px rgba(255,255,255,0.9)'};
+          color: ${isSelected ? style.labelSelectedColor : style.labelColor};
+          text-shadow: ${isSelected ? style.labelSelectedShadow : style.labelShadow};
           pointer-events: auto;
           cursor: pointer;
           user-select: none;
@@ -192,6 +309,28 @@ const MapComponent: React.FC<MapComponentProps> = ({
     });
   }, [findDistrictByName]);
 
+  // Expose controls to parent
+  useImperativeHandle(ref, () => ({
+    zoomIn: () => { mapRef.current?.zoomIn(); },
+    zoomOut: () => { mapRef.current?.zoomOut(); },
+    resetView: () => { mapRef.current?.setView(DEFAULT_CENTER, DEFAULT_ZOOM); },
+    setTileLayer: (key: TileLayerKey) => {
+      const map = mapRef.current;
+      if (!map) return;
+      if (tileLayerRef.current) {
+        map.removeLayer(tileLayerRef.current);
+      }
+      activeTileKeyRef.current = key;
+      const def = TILE_LAYERS[key];
+      tileLayerRef.current = L.tileLayer(def.url, def.options).addTo(map);
+      // Re-render GeoJSON + labels with new style
+      if (dataLoadedRef.current) {
+        renderGeoJson();
+        renderLabels();
+      }
+    },
+  }));
+
   // Initialize map and load data
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -199,13 +338,11 @@ const MapComponent: React.FC<MapComponentProps> = ({
     const map = L.map(containerRef.current, {
       zoomControl: false,
       attributionControl: false,
-    }).setView([59.89, 10.76], 11.5);
+    }).setView(DEFAULT_CENTER, DEFAULT_ZOOM);
 
-    // Tile layer – muted blue-grey tones for water/land context
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png', {
-      maxZoom: 19,
-      opacity: 1,
-    }).addTo(map);
+    // Default tile layer (blue)
+    const def = TILE_LAYERS.blue;
+    tileLayerRef.current = L.tileLayer(def.url, def.options).addTo(map);
 
     mapRef.current = map;
 
@@ -252,6 +389,8 @@ const MapComponent: React.FC<MapComponentProps> = ({
       style={{ background: '#E2E8F0' }}
     />
   );
-};
+});
+
+MapComponent.displayName = 'MapComponent';
 
 export default MapComponent;
