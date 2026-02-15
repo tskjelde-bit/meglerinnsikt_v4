@@ -121,7 +121,7 @@ const HomePage: React.FC<{
         setMapHeight('auto');
       } else if (headerRef.current) {
         const headerBottom = headerRef.current.getBoundingClientRect().bottom;
-        setMapHeight(`calc(100dvh - ${headerBottom}px)`);
+        setMapHeight(`calc(100dvh - ${headerBottom}px - 4px)`);
       }
     };
     updateMapHeight();
@@ -263,7 +263,7 @@ const HomePage: React.FC<{
                   </div>
                   <div className="relative grid grid-cols-3 md:grid-cols-4">
                     {/* Desktop chevron: overlaid, no extra row */}
-                    <div className={`hidden md:block absolute left-1/2 -translate-x-1/2 -top-2 z-10 transition-all duration-300 ${isDistrictSelected ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                    <div className={`hidden md:block absolute left-1/2 -translate-x-1/2 -top-[3px] z-10 transition-all duration-300 ${isDistrictSelected ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                       <button
                         onClick={() => setIsAnalysisOpen(!isAnalysisOpen)}
                         className="flex items-center justify-center text-white hover:text-white transition-colors drop-shadow-lg"
@@ -288,7 +288,7 @@ const HomePage: React.FC<{
                     })().map((stat, i) => (
                       <div
                         key={i}
-                        className={`flex flex-col items-center justify-center pt-0 md:pt-4 pb-4 px-2
+                        className={`flex flex-col items-center justify-center py-4 px-2
                           ${stat.hideOnMobile ? 'hidden md:flex' : ''}
                           ${i !== 0 && isDistrictSelected ? `border-l ${isDarkMode ? 'border-white/5' : 'border-slate-100'}` : ''}
                         `}
@@ -369,62 +369,56 @@ const HomePage: React.FC<{
                         </div>
                       </div>
 
-                      {/* Mobile: vertical list with round icons */}
+                      {/* Mobile: vertical list with round icons — colors match stat system */}
                       <div className="md:hidden flex flex-col px-4 pt-1 pb-2">
-                        {/* Prisutvikling */}
-                        <div className="py-1.5 flex items-center gap-2.5">
-                          <div className="w-6 h-6 rounded-full bg-[#03d392]/15 flex items-center justify-center shrink-0">
-                            <TrendingUp size={12} className="text-[#03d392]" />
-                          </div>
-                          <p className={`text-[12px] font-medium leading-snug ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
-                            {(() => {
-                              const osloSnitt = OSLO_DISTRICTS[0].priceChange;
-                              const diff = +(selectedDistrict.priceChange - osloSnitt).toFixed(1);
-                              if (selectedDistrict.id === 'oslo') return `Oslo-snittet ligger på +${osloSnitt}% prisvekst siste 12 mnd.`;
-                              if (diff > 0) return `+${diff} prosentpoeng over Oslo-snittet (${osloSnitt}%).`;
-                              if (diff < 0) return `${diff} prosentpoeng under Oslo-snittet (${osloSnitt}%).`;
-                              return `I takt med Oslo-snittet på +${osloSnitt}% prisvekst.`;
-                            })()}
-                          </p>
-                        </div>
-
-                        <div className={`border-t ${isDarkMode ? 'border-white/10' : 'border-slate-200'}`}></div>
-
-                        {/* Kvadratmeterpris */}
-                        <div className="py-1.5 flex items-center gap-2.5">
-                          <div className="w-6 h-6 rounded-full bg-blue-500/15 flex items-center justify-center shrink-0">
-                            <Ruler size={12} className="text-blue-400" />
-                          </div>
-                          <p className={`text-[12px] font-medium leading-snug ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
-                            {(() => {
-                              const osloSnitt = OSLO_DISTRICTS[0].pricePerSqm;
-                              const diff = selectedDistrict.pricePerSqm - osloSnitt;
-                              if (selectedDistrict.id === 'oslo') return `Oslo-snittet ligger på ${osloSnitt.toLocaleString('nb-NO')} kr/m².`;
-                              if (diff > 0) return `${diff.toLocaleString('nb-NO')} kr/m² over Oslo-snittet (${osloSnitt.toLocaleString('nb-NO')} kr/m²).`;
-                              if (diff < 0) return `${Math.abs(diff).toLocaleString('nb-NO')} kr/m² under Oslo-snittet (${osloSnitt.toLocaleString('nb-NO')} kr/m²).`;
-                              return `I takt med Oslo-snittet på ${osloSnitt.toLocaleString('nb-NO')} kr/m².`;
-                            })()}
-                          </p>
-                        </div>
-
-                        <div className={`border-t ${isDarkMode ? 'border-white/10' : 'border-slate-200'}`}></div>
-
-                        {/* Omløpshastighet */}
-                        <div className="py-1.5 flex items-center gap-2.5">
-                          <div className="w-6 h-6 rounded-full bg-[#F8B324]/15 flex items-center justify-center shrink-0">
-                            <Clock size={12} className="text-[#F8B324]" />
-                          </div>
-                          <p className={`text-[12px] font-medium leading-snug ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
-                            {(() => {
-                              const osloSnitt = OSLO_DISTRICTS[0].avgDaysOnMarket;
-                              const diff = selectedDistrict.avgDaysOnMarket - osloSnitt;
-                              if (selectedDistrict.id === 'oslo') return `Oslo-snittet ligger på ${osloSnitt} dager omløpstid.`;
-                              if (diff < 0) return `${Math.abs(diff)} dager raskere enn Oslo-snittet (${osloSnitt} dager).`;
-                              if (diff > 0) return `${diff} dager tregere enn Oslo-snittet (${osloSnitt} dager).`;
-                              return `I takt med Oslo-snittet på ${osloSnitt} dager omløpstid.`;
-                            })()}
-                          </p>
-                        </div>
+                        {(() => {
+                          const oslo = OSLO_DISTRICTS[0];
+                          const pDiff = +(selectedDistrict.priceChange - oslo.priceChange).toFixed(1);
+                          const sDiff = selectedDistrict.pricePerSqm - oslo.pricePerSqm;
+                          const dDiff = selectedDistrict.avgDaysOnMarket - oslo.avgDaysOnMarket;
+                          const getHex = (good: boolean, bad: boolean) => good ? '#03d392' : bad ? '#e05a5a' : '#F8B324';
+                          const isOslo = selectedDistrict.id === 'oslo';
+                          const priceHex = isOslo ? '#60a5fa' : getHex(pDiff > 0.3, pDiff < -0.3);
+                          const sqmHex = isOslo ? '#60a5fa' : getHex(sDiff > 0, sDiff < 0);
+                          const daysHex = isOslo ? '#60a5fa' : getHex(dDiff < -1, dDiff > 1);
+                          return <>
+                            <div className="py-1.5 flex items-center gap-2.5">
+                              <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: `${priceHex}20` }}>
+                                <TrendingUp size={12} style={{ color: priceHex }} />
+                              </div>
+                              <p className={`text-[12px] font-medium leading-snug ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
+                                {isOslo ? `Oslo-snittet ligger på +${oslo.priceChange}% prisvekst siste 12 mnd.`
+                                  : pDiff > 0 ? `+${pDiff} prosentpoeng over Oslo-snittet (${oslo.priceChange}%).`
+                                  : pDiff < 0 ? `${pDiff} prosentpoeng under Oslo-snittet (${oslo.priceChange}%).`
+                                  : `I takt med Oslo-snittet på +${oslo.priceChange}% prisvekst.`}
+                              </p>
+                            </div>
+                            <div className={`border-t ${isDarkMode ? 'border-white/10' : 'border-slate-200'}`}></div>
+                            <div className="py-1.5 flex items-center gap-2.5">
+                              <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: `${sqmHex}20` }}>
+                                <Ruler size={12} style={{ color: sqmHex }} />
+                              </div>
+                              <p className={`text-[12px] font-medium leading-snug ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
+                                {isOslo ? `Oslo-snittet ligger på ${oslo.pricePerSqm.toLocaleString('nb-NO')} kr/m².`
+                                  : sDiff > 0 ? `${sDiff.toLocaleString('nb-NO')} kr/m² over Oslo-snittet (${oslo.pricePerSqm.toLocaleString('nb-NO')} kr/m²).`
+                                  : sDiff < 0 ? `${Math.abs(sDiff).toLocaleString('nb-NO')} kr/m² under Oslo-snittet (${oslo.pricePerSqm.toLocaleString('nb-NO')} kr/m²).`
+                                  : `I takt med Oslo-snittet på ${oslo.pricePerSqm.toLocaleString('nb-NO')} kr/m².`}
+                              </p>
+                            </div>
+                            <div className={`border-t ${isDarkMode ? 'border-white/10' : 'border-slate-200'}`}></div>
+                            <div className="py-1.5 flex items-center gap-2.5">
+                              <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: `${daysHex}20` }}>
+                                <Clock size={12} style={{ color: daysHex }} />
+                              </div>
+                              <p className={`text-[12px] font-medium leading-snug ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
+                                {isOslo ? `Oslo-snittet ligger på ${oslo.avgDaysOnMarket} dager omløpstid.`
+                                  : dDiff < 0 ? `${Math.abs(dDiff)} dager raskere enn Oslo-snittet (${oslo.avgDaysOnMarket} dager).`
+                                  : dDiff > 0 ? `${dDiff} dager tregere enn Oslo-snittet (${oslo.avgDaysOnMarket} dager).`
+                                  : `I takt med Oslo-snittet på ${oslo.avgDaysOnMarket} dager omløpstid.`}
+                              </p>
+                            </div>
+                          </>;
+                        })()}
                       </div>
                     </div>
                   </div>
@@ -433,7 +427,7 @@ const HomePage: React.FC<{
                   <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
                     <button
                       onClick={() => setIsChatOpen(true)}
-                      className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-3 md:py-4 md:rounded-b-xl transition-all uppercase tracking-widest text-[12px] md:text-[11px]"
+                      className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-3 md:py-5 md:rounded-b-xl transition-all uppercase tracking-widest text-[12px] md:text-[15px]"
                     >
                       <span>{(() => {
                         let name = selectedDistrict.name.replace(' (Totalt)', '');
