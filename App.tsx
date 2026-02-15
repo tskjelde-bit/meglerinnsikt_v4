@@ -125,8 +125,15 @@ const HomePage: React.FC<{
       }
     };
     updateMapHeight();
+    // Re-measure after fonts/layout settle on load
+    const raf = requestAnimationFrame(() => updateMapHeight());
+    const timeout = setTimeout(() => updateMapHeight(), 200);
     window.addEventListener('resize', updateMapHeight);
-    return () => window.removeEventListener('resize', updateMapHeight);
+    return () => {
+      window.removeEventListener('resize', updateMapHeight);
+      cancelAnimationFrame(raf);
+      clearTimeout(timeout);
+    };
   }, [selectedDistrict, isDistrictSelected]);
 
   const handlePostClick = (post: BlogPost | BlogPostFull) => {
@@ -174,7 +181,7 @@ const HomePage: React.FC<{
         {/* GRID */}
         <div className="grid lg:grid-cols-12 gap-6 lg:gap-8 lg:items-stretch mb-0 md:mb-12 md:px-14">
           {/* MAP COLUMN */}
-          <div style={{ minHeight: mapHeight }} className={`lg:col-span-8 relative rounded-none md:rounded-2xl overflow-visible md:overflow-hidden shadow-2xl md:!h-[450px] lg:!h-auto flex flex-col transition-colors duration-300 ${
+          <div style={{ minHeight: mapHeight }} className={`lg:col-span-8 relative rounded-none md:rounded-2xl overflow-hidden shadow-2xl md:!h-[450px] lg:!h-auto flex flex-col transition-colors duration-300 ${
             isDarkMode ? 'bg-[#1a2333]/20' : 'md:border md:border-slate-200 bg-white'
           }`}>
             <div className="absolute inset-0 z-0 bg-white">
@@ -428,11 +435,11 @@ const HomePage: React.FC<{
                       onClick={() => setIsChatOpen(true)}
                       className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-3 md:py-4 md:rounded-b-xl transition-all uppercase tracking-widest text-[12px] md:text-[11px]"
                     >
-                      <span className="animate-[pulse-scale_2s_ease-in-out_infinite]">{(() => {
+                      <span>{(() => {
                         let name = selectedDistrict.name.replace(' (Totalt)', '');
                         if (name === 'St. Hanshaugen') name = 'St. Hansh.';
                         return `Hva er boligen din ${getPreposition(selectedDistrict.name)} ${name} verdt?`;
-                      })()}</span> <ArrowRight size={16} />
+                      })()}</span>
                     </button>
                   </div>
                 </div>
