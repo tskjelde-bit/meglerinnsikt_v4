@@ -24,18 +24,18 @@ const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || '';
 export const TILE_LAYERS: Record<TileLayerKey, { name: string; url: string; options?: L.TileLayerOptions }> = {
   blue: {
     name: 'Blue',
-    url: `https://api.mapbox.com/styles/v1/mapbox/light-v11/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`,
-    options: { maxZoom: 19, tileSize: 256 },
+    url: `https://api.mapbox.com/styles/v1/mapbox/light-v11/tiles/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`,
+    options: { maxZoom: 19, tileSize: 512, zoomOffset: -1 },
   },
   snapmap: {
     name: 'Snapmap',
-    url: `https://api.mapbox.com/styles/v1/drskjelde/cmkm3e0hv00it01sd4ddd4syy/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`,
-    options: { maxZoom: 19, tileSize: 256 },
+    url: `https://api.mapbox.com/styles/v1/drskjelde/cmkm3e0hv00it01sd4ddd4syy/tiles/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`,
+    options: { maxZoom: 19, tileSize: 512, zoomOffset: -1 },
   },
   dark: {
     name: 'Dark',
-    url: `https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`,
-    options: { maxZoom: 19, tileSize: 256 },
+    url: `https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`,
+    options: { maxZoom: 19, tileSize: 512, zoomOffset: -1 },
   },
 };
 
@@ -171,15 +171,21 @@ const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({
     const selected = selectedDistrictRef.current;
     const style = LAYER_STYLES[activeTileKeyRef.current];
 
-    // Snapmap: no overlay at all — Mapbox style handles districts + labels
-    if (!style.showOverlay) return;
-
     const layer = L.geoJSON(geoJsonData, {
       style: (feature) => {
         const name = feature?.properties?.BYDELSNAVN;
         const district = findDistrictByName(name);
 
-        if (style.showChoropleth) {
+        if (!style.showOverlay) {
+          // Snapmap: invisible interaction layer (Mapbox style handles visuals)
+          return {
+            fillColor: 'transparent',
+            fillOpacity: 0,
+            weight: 0,
+            color: 'transparent',
+            opacity: 0,
+          };
+        } else if (style.showChoropleth) {
           // Blue mode: full choropleth fill
           let fillColor = DEFAULT_COLOR;
           if (district) {
@@ -197,7 +203,7 @@ const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({
             opacity: style.borderOpacity,
           };
         } else {
-          // Snapmap / Dark: transparent fill, borders only
+          // Dark: transparent fill, borders only
           const isSelected = district && selected && district.name === selected.name;
           return {
             fillColor: isSelected ? style.selectedFillColor : 'transparent',
@@ -220,17 +226,20 @@ const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({
             const sel = selectedDistrictRef.current;
             const st = LAYER_STYLES[activeTileKeyRef.current];
             if (!sel || district.name !== sel.name) {
-              if (st.showChoropleth) {
-                target.setStyle({
-                  fillColor: getHoverColor(district.priceChange),
-                  fillOpacity: st.hoverFillOpacity,
-                });
-              } else {
-                target.setStyle({
-                  fillColor: getChoroplethColor(district.priceChange),
-                  fillOpacity: st.hoverFillOpacity,
-                });
+              if (st.showOverlay) {
+                if (st.showChoropleth) {
+                  target.setStyle({
+                    fillColor: getHoverColor(district.priceChange),
+                    fillOpacity: st.hoverFillOpacity,
+                  });
+                } else {
+                  target.setStyle({
+                    fillColor: getChoroplethColor(district.priceChange),
+                    fillOpacity: st.hoverFillOpacity,
+                  });
+                }
               }
+              // Snapmap: no hover style, but still need cursor
               target.bringToFront();
             }
             const el = (target as any)._path;
