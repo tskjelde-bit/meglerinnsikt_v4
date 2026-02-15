@@ -154,13 +154,13 @@ const HomePage: React.FC<{
             <div className={`hidden md:flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
               <span>Hjem</span> <ChevronRight size={10} className={isDarkMode ? 'text-slate-700' : 'text-slate-300'} /> <span className={isDarkMode ? 'text-slate-300' : 'text-slate-600'}>Eiendomsinnsikt</span>
             </div>
-            <h2 className={`text-[20px] md:text-[32px] lg:text-[40px] font-black leading-tight tracking-tight uppercase ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-              <span className="text-[18px] md:text-[32px] lg:text-[40px]">Boligmarkedet {getPreposition(selectedDistrict.name)} </span><span className="text-[18px] md:text-[32px] lg:text-[40px] text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')}</span>
+            <h2 className={`text-[20px] md:text-[32px] lg:text-[40px] font-black leading-tight tracking-tight uppercase md:normal-case ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+              <span className="text-[18px] md:text-[32px] lg:text-[40px]">Boligmarkedet {getPreposition(selectedDistrict.name)} </span><span className="text-[18px] md:text-[32px] lg:text-[40px] md:text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')}</span>
             </h2>
-            <p className={`text-[12px] md:text-sm font-black uppercase tracking-wider ${isDarkMode ? 'text-white/70' : 'text-slate-500'}`}>
+            <p className={`text-[12px] md:text-base font-black uppercase md:normal-case tracking-wider md:tracking-normal ${isDarkMode ? 'text-white/70' : 'text-slate-500'}`}>
               {isDistrictSelected
                 ? <span>{getMarketData(selectedDistrict).interpretation}</span>
-                : <><span className="text-blue-500">Selger</span> eller <span className="text-blue-500">kjøpers</span> marked akkurat nå?</>
+                : <><span className="md:text-slate-500">Selger</span> eller <span className="md:text-slate-500">kjøpers</span> marked akkurat nå?</>
               }
             </p>
           </div>
