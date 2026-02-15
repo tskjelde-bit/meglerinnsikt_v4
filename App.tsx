@@ -13,7 +13,7 @@ import {
   Building2, Menu, X, ChevronDown, Calendar, Download,
   Plus, Minus, Layers, Target, Zap, Coins,
   ChevronRight, Compass, TrendingUp, TrendingDown, Clock,
-  LineChart, ArrowRight,
+  LineChart, ArrowRight, Ruler,
   MessageSquareMore, Sun, Moon, MessageCircle, Handshake
 } from 'lucide-react';
 import TelegramChatWidget from './components/TelegramChatWidget';
@@ -243,7 +243,7 @@ const HomePage: React.FC<{
                 <div className={`rounded-none overflow-hidden transition-all duration-300 ${
                   isDistrictSelected
                     ? isDarkMode ? 'bg-[#242c3d] shadow-2xl' : 'bg-white shadow-2xl'
-                    : ''
+                    : 'bg-white/50'
                 }`}>
                   {/* Mobile chevron: outside grid, like original */}
                   <div className={`md:hidden overflow-hidden transition-all duration-300 ${isDistrictSelected ? 'max-h-10 opacity-100' : 'max-h-0 opacity-0'}`}>
@@ -362,37 +362,12 @@ const HomePage: React.FC<{
                         </div>
                       </div>
 
-                      {/* Mobile: vertical list with divider lines */}
+                      {/* Mobile: vertical list with round icons */}
                       <div className="md:hidden flex flex-col px-4 py-3">
-                        {/* Kvadratmeterpris */}
-                        <div className="py-2.5">
-                          <div className="flex items-center gap-2 mb-1">
-                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                            <span className={`text-[9px] font-black uppercase tracking-widest ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
-                              Kvadratmeterpris
-                            </span>
-                          </div>
-                          <p className={`text-[12px] font-medium leading-relaxed ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
-                            {(() => {
-                              const osloSnitt = OSLO_DISTRICTS[0].pricePerSqm;
-                              const diff = selectedDistrict.pricePerSqm - osloSnitt;
-                              if (selectedDistrict.id === 'oslo') return `Oslo-snittet ligger på ${osloSnitt.toLocaleString('nb-NO')} kr/m².`;
-                              if (diff > 0) return `${diff.toLocaleString('nb-NO')} kr/m² over Oslo-snittet (${osloSnitt.toLocaleString('nb-NO')} kr/m²).`;
-                              if (diff < 0) return `${Math.abs(diff).toLocaleString('nb-NO')} kr/m² under Oslo-snittet (${osloSnitt.toLocaleString('nb-NO')} kr/m²).`;
-                              return `I takt med Oslo-snittet på ${osloSnitt.toLocaleString('nb-NO')} kr/m².`;
-                            })()}
-                          </p>
-                        </div>
-
-                        <div className={`border-t ${isDarkMode ? 'border-white/10' : 'border-slate-200'}`}></div>
-
                         {/* Prisutvikling */}
-                        <div className="py-2.5">
-                          <div className="flex items-center gap-2 mb-1">
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#03d392]"></div>
-                            <span className={`text-[9px] font-black uppercase tracking-widest ${isDarkMode ? 'text-[#03d392]' : 'text-[#03d392]'}`}>
-                              Prisutvikling
-                            </span>
+                        <div className="py-2.5 flex items-start gap-3">
+                          <div className="w-8 h-8 rounded-full bg-[#03d392]/15 flex items-center justify-center shrink-0 mt-0.5">
+                            <TrendingUp size={15} className="text-[#03d392]" />
                           </div>
                           <p className={`text-[12px] font-medium leading-relaxed ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
                             {(() => {
@@ -408,13 +383,29 @@ const HomePage: React.FC<{
 
                         <div className={`border-t ${isDarkMode ? 'border-white/10' : 'border-slate-200'}`}></div>
 
+                        {/* Kvadratmeterpris */}
+                        <div className="py-2.5 flex items-start gap-3">
+                          <div className="w-8 h-8 rounded-full bg-blue-500/15 flex items-center justify-center shrink-0 mt-0.5">
+                            <Ruler size={15} className="text-blue-400" />
+                          </div>
+                          <p className={`text-[12px] font-medium leading-relaxed ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
+                            {(() => {
+                              const osloSnitt = OSLO_DISTRICTS[0].pricePerSqm;
+                              const diff = selectedDistrict.pricePerSqm - osloSnitt;
+                              if (selectedDistrict.id === 'oslo') return `Oslo-snittet ligger på ${osloSnitt.toLocaleString('nb-NO')} kr/m².`;
+                              if (diff > 0) return `${diff.toLocaleString('nb-NO')} kr/m² over Oslo-snittet (${osloSnitt.toLocaleString('nb-NO')} kr/m²).`;
+                              if (diff < 0) return `${Math.abs(diff).toLocaleString('nb-NO')} kr/m² under Oslo-snittet (${osloSnitt.toLocaleString('nb-NO')} kr/m²).`;
+                              return `I takt med Oslo-snittet på ${osloSnitt.toLocaleString('nb-NO')} kr/m².`;
+                            })()}
+                          </p>
+                        </div>
+
+                        <div className={`border-t ${isDarkMode ? 'border-white/10' : 'border-slate-200'}`}></div>
+
                         {/* Omløpshastighet */}
-                        <div className="py-2.5">
-                          <div className="flex items-center gap-2 mb-1">
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#F8B324]"></div>
-                            <span className={`text-[9px] font-black uppercase tracking-widest ${isDarkMode ? 'text-[#F8B324]' : 'text-[#F8B324]'}`}>
-                              Omløpshastighet
-                            </span>
+                        <div className="py-2.5 flex items-start gap-3">
+                          <div className="w-8 h-8 rounded-full bg-[#F8B324]/15 flex items-center justify-center shrink-0 mt-0.5">
+                            <Clock size={15} className="text-[#F8B324]" />
                           </div>
                           <p className={`text-[12px] font-medium leading-relaxed ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
                             {(() => {
@@ -438,12 +429,8 @@ const HomePage: React.FC<{
                       className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-3 md:py-4 md:rounded-b-xl transition-all uppercase tracking-widest text-[12px] md:text-[11px]"
                     >
                       <span className="animate-[pulse-scale_2s_ease-in-out_infinite]">{(() => {
-                        const { cta } = getMarketData(selectedDistrict);
                         const name = selectedDistrict.name.replace(' (Totalt)', '');
-                        if (cta === 'strong_seller') return 'Få gratis verdivurdering nå';
-                        if (cta === 'mod_seller') return 'Sjekk hva boligen din kan være verdt';
-                        if (cta === 'buyer') return 'Snakk med meg om markedet her';
-                        return `Få verdivurdering ${getPreposition(selectedDistrict.name)} ${name}`;
+                        return `Hva er boligen din ${getPreposition(selectedDistrict.name)} ${name} verdt?`;
                       })()}</span> <ArrowRight size={16} />
                     </button>
                   </div>
