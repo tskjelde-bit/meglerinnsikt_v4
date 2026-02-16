@@ -496,7 +496,7 @@ const HomePage: React.FC<{
                   </div>
 
                   {/* Toggle open button + CTA */}
-                  <div className={`relative overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+                  <div className={`relative overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected ? 'h-[48px] md:h-[60px] opacity-100' : 'max-h-0 opacity-0'}`}>
                     {/* Calculator overlay */}
                     {isCalculatorOpen && (
                       <div className="absolute inset-0 bg-[#1a2333] flex items-center px-3 md:px-4 z-10">
