@@ -9,6 +9,7 @@ import MarketStatsPanel from './components/MarketStatsPanel';
 import BlogPostDetail from './components/BlogPostDetail';
 import BlogPostPage from './components/BlogPostPage';
 import BlogAdmin from './components/admin/BlogAdmin';
+import FullMapPage from './components/FullMapPage';
 import {
   Building2, Menu, X, ChevronDown, Calendar, Download,
   Plus, Minus, Layers, Target, Zap, Coins,
@@ -918,6 +919,7 @@ const App: React.FC = () => {
 
             <nav ref={navRef} className="hidden lg:flex items-center gap-6">
               <button onClick={() => navigateTo('home')} className={`text-[14px] font-bold transition-colors ${activePage === 'home' ? 'text-blue-600' : 'text-slate-700 hover:text-blue-600'}`}>Forsiden</button>
+              <button onClick={() => navigate('/map')} className="text-[14px] font-bold text-slate-700 hover:text-blue-600">Kart</button>
               <button className="flex items-center gap-1.5 text-[14px] font-bold text-slate-700 hover:text-blue-600">
                 Markedsrapporter <ChevronDown size={14} />
               </button>
@@ -962,6 +964,7 @@ const App: React.FC = () => {
             <div className="flex-1 flex items-center justify-center p-20 text-slate-500 font-black uppercase tracking-widest text-xs">Siden er under utvikling</div>
           )
         } />
+        <Route path="/map" element={<FullMapPage isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />} />
         <Route path="/blog/:slug" element={<BlogPostPage />} />
       </Routes>
 
