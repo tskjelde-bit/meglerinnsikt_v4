@@ -290,7 +290,7 @@ const HomePage: React.FC<{
                 }`}>
                   {/* Calculator overlay */}
                   {isCalculatorOpen && (
-                    <div className="absolute inset-0 bg-[#1a2333] flex items-center justify-center px-4 md:px-8 z-[100]">
+                    <div className="absolute top-0 left-0 right-0 bottom-[48px] md:bottom-[60px] bg-[#1a2333] flex items-center justify-center px-4 md:px-8 z-[100]">
                       {/* Close button */}
                       <button
                         onClick={() => setIsCalculatorOpen(false)}
