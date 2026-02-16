@@ -499,22 +499,22 @@ const HomePage: React.FC<{
                   <div className={`relative overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
                     {/* Calculator overlay */}
                     {isCalculatorOpen && (
-                      <div className="absolute inset-0 bg-[#1a2333] flex flex-col p-4 md:p-6 z-10">
+                      <div className="absolute inset-0 bg-[#1a2333] flex items-center px-3 md:px-4 z-10">
                         {/* Close button */}
                         <button
                           onClick={() => setIsCalculatorOpen(false)}
-                          className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center text-white/70 hover:text-white transition-colors"
-                          aria-label="Lukk kalkulator"
+                          className="absolute top-1 right-1 w-8 h-8 flex items-center justify-center text-white/70 hover:text-white"
+                          aria-label="Lukk"
                         >
-                          <X size={20} />
+                          <X size={16} />
                         </button>
 
                         {/* Calculator content */}
-                        <div className="flex-1 flex flex-col justify-center gap-2 text-white text-xs">
+                        <div className="w-full grid grid-cols-2 gap-x-2 gap-y-1.5">
                           <select
                             value={calcPropertyType}
                             onChange={(e) => { setCalcPropertyType(e.target.value); setCalcError(''); }}
-                            className="bg-[#1a2333] border border-white/20 rounded px-2 py-1.5 text-white text-xs"
+                            className="bg-[#1a2333] border border-white/20 rounded px-2 h-7 text-white text-[10px] md:text-xs"
                           >
                             <option value="">Velg boligtype</option>
                             <option value="leilighet">Leilighet</option>
@@ -528,7 +528,7 @@ const HomePage: React.FC<{
                             onChange={(e) => { setCalcSqm(e.target.value); setCalcError(''); }}
                             onKeyDown={(e) => e.key === 'Enter' && calculatePropertyValue()}
                             placeholder="Antall kvm"
-                            className="bg-[#1a2333] border border-white/20 rounded px-2 py-1.5 text-white text-xs placeholder:text-white/40"
+                            className="bg-[#1a2333] border border-white/20 rounded px-2 h-7 text-white text-[10px] md:text-xs placeholder:text-white/40"
                           />
                           <input
                             type="number"
@@ -536,19 +536,19 @@ const HomePage: React.FC<{
                             onChange={(e) => { setCalcPricePerSqm(e.target.value); setCalcError(''); }}
                             onKeyDown={(e) => e.key === 'Enter' && calculatePropertyValue()}
                             placeholder="Pris per kvm"
-                            className="bg-[#1a2333] border border-white/20 rounded px-2 py-1.5 text-white text-xs placeholder:text-white/40"
+                            className="bg-[#1a2333] border border-white/20 rounded px-2 h-7 text-white text-[10px] md:text-xs placeholder:text-white/40"
                           />
                           <select
                             value={calcStandard}
                             onChange={(e) => { setCalcStandard(e.target.value); setCalcError(''); }}
-                            className="bg-[#1a2333] border border-white/20 rounded px-2 py-1.5 text-white text-xs"
+                            className="bg-[#1a2333] border border-white/20 rounded px-2 h-7 text-white text-[10px] md:text-xs"
                           >
-                            <option value="0">Standard (0 %)</option>
-                            <option value="0.08">Oppgradert (+8 %)</option>
-                            <option value="-0.10">Renoveringsbehov (−10 %)</option>
+                            <option value="0">Standard</option>
+                            <option value="0.08">Oppgradert</option>
+                            <option value="-0.10">Renovering</option>
                           </select>
-                          {calcError && <p className="text-red-400 text-xs">{calcError}</p>}
-                          {calcResult !== null && <p className="text-green-400 font-bold text-sm">{calcResult.toLocaleString('nb-NO')} kr</p>}
+                          {calcError && <p className="col-span-2 text-red-400 text-[9px] md:text-[10px] leading-tight">{calcError}</p>}
+                          {calcResult !== null && <p className="col-span-2 text-green-400 font-bold text-xs md:text-sm">{calcResult.toLocaleString('nb-NO')} kr</p>}
                         </div>
                       </div>
                     )}
