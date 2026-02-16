@@ -116,6 +116,7 @@ const HomePage: React.FC<{
   const [activeTileLayer, setActiveTileLayer] = useState<TileLayerKey>('blue');
   const [isLayerMenuOpen, setIsLayerMenuOpen] = useState(false);
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
+  const [hasCalculated, setHasCalculated] = useState(false);
   const [calcPropertyType, setCalcPropertyType] = useState('');
   const [calcSqm, setCalcSqm] = useState('');
   const [calcPricePerSqm, setCalcPricePerSqm] = useState('');
@@ -156,6 +157,7 @@ const HomePage: React.FC<{
     const adjustedValue = baseValue * (1 + standardFactor);
     const rounded = Math.round(adjustedValue / 1000) * 1000;
     setCalcResult(rounded);
+    setHasCalculated(true);
   };
 
   useEffect(() => {
@@ -290,57 +292,91 @@ const HomePage: React.FC<{
                 }`}>
                   {/* Calculator overlay */}
                   {isCalculatorOpen && (
-                    <div className="absolute top-0 left-0 right-0 bottom-[48px] md:bottom-[60px] bg-[#1a2333] flex items-center justify-center px-4 md:px-8 z-[100]">
+                    <div className="absolute inset-0 bg-[#1a2333] z-[100] flex flex-col">
                       {/* Close button */}
                       <button
-                        onClick={() => setIsCalculatorOpen(false)}
-                        className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center text-white/70 hover:text-white"
+                        onClick={() => {
+                          setIsCalculatorOpen(false);
+                          setHasCalculated(false);
+                          setCalcPropertyType('');
+                          setCalcSqm('');
+                          setCalcPricePerSqm('');
+                          setCalcStandard('0');
+                          setCalcResult(null);
+                          setCalcError('');
+                        }}
+                        className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center text-white/70 hover:text-white z-10"
                         aria-label="Lukk"
                       >
                         <X size={20} />
                       </button>
 
-                      {/* Calculator content */}
-                      <div className="w-full max-w-md grid grid-cols-2 gap-x-3 gap-y-2">
-                        <select
-                          value={calcPropertyType}
-                          onChange={(e) => { setCalcPropertyType(e.target.value); setCalcError(''); }}
-                          className="bg-[#1a2333] border border-white/20 rounded px-3 h-9 text-white text-xs"
-                        >
-                          <option value="">Velg boligtype</option>
-                          <option value="leilighet">Leilighet</option>
-                          <option value="rekkehus">Rekkehus</option>
-                          <option value="tomannsbolig">Tomannsbolig</option>
-                          <option value="enebolig">Enebolig</option>
-                        </select>
-                        <input
-                          type="number"
-                          value={calcSqm}
-                          onChange={(e) => { setCalcSqm(e.target.value); setCalcError(''); }}
-                          onKeyDown={(e) => e.key === 'Enter' && calculatePropertyValue()}
-                          placeholder="Antall kvm"
-                          className="bg-[#1a2333] border border-white/20 rounded px-3 h-9 text-white text-xs placeholder:text-white/40"
-                        />
-                        <input
-                          type="number"
-                          value={calcPricePerSqm}
-                          onChange={(e) => { setCalcPricePerSqm(e.target.value); setCalcError(''); }}
-                          onKeyDown={(e) => e.key === 'Enter' && calculatePropertyValue()}
-                          placeholder="Pris per kvm"
-                          className="bg-[#1a2333] border border-white/20 rounded px-3 h-9 text-white text-xs placeholder:text-white/40"
-                        />
-                        <select
-                          value={calcStandard}
-                          onChange={(e) => { setCalcStandard(e.target.value); setCalcError(''); }}
-                          className="bg-[#1a2333] border border-white/20 rounded px-3 h-9 text-white text-xs"
-                        >
-                          <option value="0">Standard</option>
-                          <option value="0.08">Oppgradert</option>
-                          <option value="-0.10">Renovering</option>
-                        </select>
-                        {calcError && <p className="col-span-2 text-red-400 text-xs text-center">{calcError}</p>}
-                        {calcResult !== null && <p className="col-span-2 text-green-400 font-bold text-sm text-center">{calcResult.toLocaleString('nb-NO')} kr</p>}
+                      {/* Calculator form - flex-1 fills available space */}
+                      <div className={`flex-1 flex items-center justify-center px-4 md:px-8 ${!hasCalculated ? 'pb-[60px] md:pb-[72px]' : 'pb-0'}`}>
+                        <div className="w-full max-w-md grid grid-cols-2 gap-x-3 gap-y-2.5">
+                          <select
+                            value={calcPropertyType}
+                            onChange={(e) => { setCalcPropertyType(e.target.value); setCalcError(''); }}
+                            className="bg-[#1a2333] border border-white/20 rounded px-3 h-10 text-white text-sm"
+                          >
+                            <option value="">Velg boligtype</option>
+                            <option value="leilighet">Leilighet</option>
+                            <option value="rekkehus">Rekkehus</option>
+                            <option value="tomannsbolig">Tomannsbolig</option>
+                            <option value="enebolig">Enebolig</option>
+                          </select>
+                          <input
+                            type="number"
+                            value={calcSqm}
+                            onChange={(e) => { setCalcSqm(e.target.value); setCalcError(''); }}
+                            onKeyDown={(e) => e.key === 'Enter' && calculatePropertyValue()}
+                            placeholder="Antall kvm"
+                            className="bg-[#1a2333] border border-white/20 rounded px-3 h-10 text-white text-sm placeholder:text-white/40"
+                          />
+                          <input
+                            type="number"
+                            value={calcPricePerSqm}
+                            onChange={(e) => { setCalcPricePerSqm(e.target.value); setCalcError(''); }}
+                            onKeyDown={(e) => e.key === 'Enter' && calculatePropertyValue()}
+                            placeholder="Pris per kvm"
+                            className="bg-[#1a2333] border border-white/20 rounded px-3 h-10 text-white text-sm placeholder:text-white/40"
+                          />
+                          <select
+                            value={calcStandard}
+                            onChange={(e) => { setCalcStandard(e.target.value); setCalcError(''); }}
+                            className="bg-[#1a2333] border border-white/20 rounded px-3 h-10 text-white text-sm"
+                          >
+                            <option value="0">Standard</option>
+                            <option value="0.08">Oppgradert</option>
+                            <option value="-0.10">Renovering</option>
+                          </select>
+                          {calcError && <p className="col-span-2 text-red-400 text-sm text-center">{calcError}</p>}
+                          {calcResult !== null && (
+                            <>
+                              <p className="col-span-2 text-green-400 font-bold text-lg text-center mt-1">
+                                {calcResult.toLocaleString('nb-NO')} kr
+                              </p>
+                              {/* Sekundær CTA - kun visuell */}
+                              <div className="col-span-2 mt-2">
+                                <div className="text-center">
+                                  <p className="text-white font-semibold text-sm">Få verdivurdering</p>
+                                  <p className="text-white/60 text-xs">Gratis og uforpliktende</p>
+                                </div>
+                              </div>
+                            </>
+                          )}
+                        </div>
                       </div>
+
+                      {/* TILSTAND A: Grønn "Beregn" footer - rendres KUN når ikke beregnet */}
+                      {!hasCalculated && (
+                        <button
+                          onClick={calculatePropertyValue}
+                          className="w-full bg-green-600 hover:bg-green-700 text-white font-black py-4 md:py-5 uppercase tracking-widest text-sm transition-colors"
+                        >
+                          Beregn
+                        </button>
+                      )}
                     </div>
                   )}
                   {/* Mobile chevron: outside grid, like original */}
@@ -554,10 +590,10 @@ const HomePage: React.FC<{
                   <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected ? 'h-[48px] md:h-[60px] opacity-100' : 'max-h-0 opacity-0'}`}>
                     {/* CTA button */}
                     <button
-                      onClick={() => isCalculatorOpen ? calculatePropertyValue() : setIsCalculatorOpen(true)}
-                      className={`w-full flex items-center justify-center gap-2 ${isCalculatorOpen ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'} text-white font-black py-3 md:py-5 md:rounded-b-xl transition-all uppercase tracking-widest text-[12px] md:text-[15px]`}
+                      onClick={() => setIsCalculatorOpen(true)}
+                      className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-3 md:py-5 md:rounded-b-xl transition-all uppercase tracking-widest text-[12px] md:text-[15px]"
                     >
-                      <span>{isCalculatorOpen ? 'Beregn' : (() => {
+                      <span>{(() => {
                         let name = selectedDistrict.name.replace(' (Totalt)', '');
                         if (name === 'St. Hanshaugen') name = 'St. Hansh.';
                         return `Hva er boligen din ${getPreposition(selectedDistrict.name)} ${name} verdt?`;
