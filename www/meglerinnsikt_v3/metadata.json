@@ -1,5 +1,5 @@
 {
-  "name": "Lumina Estate AI",
+  "name": "Meglerinnsikt",
   "description": "An interactive real estate platform featuring a dynamic map, AI-powered property insights, and a smart neighborhood assistant.",
   "requestFramePermissions": [
     "geolocation"

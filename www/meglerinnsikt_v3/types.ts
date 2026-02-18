@@ -36,6 +36,32 @@ export interface BlogPost {
   image: string;
 }
 
+// Content block types for the blog CMS
+export type ContentBlock =
+  | { type: 'paragraph'; text: string }
+  | { type: 'heading'; level: 2 | 3 | 4 | 5; text: string }
+  | { type: 'image'; url: string; caption?: string }
+  | { type: 'quote'; text: string }
+  | { type: 'bulletList'; title?: string; items: string[] }
+  | { type: 'numberedList'; items: { title: string; description: string }[] }
+  | { type: 'imageGrid'; images: { url: string; caption: string }[] };
+
+// Extended blog post with full content for CMS
+export interface BlogPostFull extends BlogPost {
+  slug: string;
+  dateISO: string;
+  excerpt: string;
+  author: {
+    name: string;
+    title: string;
+    image: string;
+  };
+  readTime: string;
+  tags: string[];
+  published: boolean;
+  content: ContentBlock[];
+}
+
 export interface ChatMessage {
   role: 'user' | 'model';
   text: string;

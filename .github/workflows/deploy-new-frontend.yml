@@ -27,14 +27,14 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: 'MInnsikt/package-lock.json'
+          cache-dependency-path: 'www/meglerinnsikt_v3/package-lock.json'
 
       - name: Install dependencies
-        working-directory: ./MInnsikt
+        working-directory: ./www/meglerinnsikt_v3
         run: npm ci
 
       - name: Build
-        working-directory: ./MInnsikt
+        working-directory: ./www/meglerinnsikt_v3
         run: npm run build
         env:
           NODE_ENV: production
@@ -42,7 +42,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./MInnsikt/dist
+          path: ./www/meglerinnsikt_v3/dist
 
   deploy:
     environment:

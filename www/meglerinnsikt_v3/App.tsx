@@ -1,31 +1,1027 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Property, DistrictInfo, BlogPost } from './types';
-import { MOCK_PROPERTIES, OSLO_DISTRICTS, MOCK_BLOG_POSTS } from './constants';
-import MapComponent from './components/MapComponent';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { Property, DistrictInfo, BlogPost, BlogPostFull } from './types';
+import { OSLO_DISTRICTS, MOCK_BLOG_POSTS } from './constants';
+import { blogService } from './services/blogService';
+import MapComponent, { MapComponentHandle, TileLayerKey, TILE_LAYERS } from './components/MapComponent';
 import MarketStatsPanel from './components/MarketStatsPanel';
-import ChatInterface from './components/ChatInterface';
-import { Building2, Menu, MessageCircle, X, Map as MapIcon, BarChart3, TrendingUp, Clock, Calculator, ChevronDown, Wallet, ChevronUp, Navigation, LayoutGrid, Users, Phone, ArrowRight } from 'lucide-react';
+import BlogPostDetail from './components/BlogPostDetail';
+import BlogPostPage from './components/BlogPostPage';
+import BlogAdmin from './components/admin/BlogAdmin';
+import FullMapPage from './components/FullMapPage';
+import {
+  Building2, Menu, X, ChevronDown, Calendar, Download,
+  Plus, Minus, Layers, Target, Zap, Coins,
+  ChevronRight, Compass, TrendingUp, TrendingDown, Clock,
+  LineChart, ArrowRight, Ruler,
+  MessageSquareMore, Sun, Moon, MessageCircle, Handshake
+} from 'lucide-react';
+import TelegramChatWidget from './components/TelegramChatWidget';
+
+const LOGO_URL = "https://cdn.prod.website-files.com/691779eac33d8a85e5cce47f/692a5a3fb0a7a66a7673d639_Azure-stacked-c.png";
+
+const HomePage: React.FC<{
+  displayPosts: (BlogPost | BlogPostFull)[];
+  blogPosts: BlogPostFull[];
+  onPostsChange: (posts: BlogPostFull[]) => void;
+  isAdminOpen: boolean;
+  setIsAdminOpen: (open: boolean) => void;
+  isDarkMode: boolean;
+  setIsDarkMode: (dark: boolean) => void;
+  setIsChatOpen: (open: boolean) => void;
+  activePage: 'home' | 'innsikt';
+  navigateTo: (page: 'home' | 'innsikt') => void;
+}> = ({ displayPosts, blogPosts, onPostsChange, isAdminOpen, setIsAdminOpen, isDarkMode, setIsDarkMode, setIsChatOpen, activePage, navigateTo }) => {
+  const navigate = useNavigate();
+
+  const getPreposition = (name: string): string => {
+    const paaDistricts = ['Grünerløkka', 'Sagene', 'St. Hanshaugen', 'Frogner', 'Ullern', 'Bjerke', 'Grorud', 'Stovner', 'Østensjø', 'Nordstrand'];
+    const iDistricts = ['Gamle Oslo', 'Vestre Aker', 'Nordre Aker', 'Alna', 'Søndre Nordstrand'];
+    const cleanName = name.replace(' (Totalt)', '');
+    if (paaDistricts.includes(cleanName)) return 'på';
+    if (iDistricts.includes(cleanName)) return 'i';
+    return 'i';
+  };
+
+  const getMarketData = (district: DistrictInfo) => {
+    const oslo = OSLO_DISTRICTS[0];
+    if (district.id === 'oslo') return { interpretation: 'Markedet følger Oslo-snittet både på pris og tempo.', trigger: false, cta: 'standard' as const };
+    const priceDiff = district.priceChange - oslo.priceChange;
+    const daysDiff = district.avgDaysOnMarket - oslo.avgDaysOnMarket;
+
+    // Styrkegrad prisvekst
+    const priceLevel = priceDiff > 0.7 ? 'strong_pos' : priceDiff > 0.3 ? 'mod_pos' : priceDiff >= -0.3 ? 'neutral' : priceDiff >= -0.7 ? 'mod_neg' : 'strong_neg';
+    // Styrkegrad omsetningstid
+    const speedLevel = daysDiff < -6 ? 'strong_fast' : daysDiff < -3 ? 'mod_fast' : daysDiff <= 2 ? 'neutral' : daysDiff <= 6 ? 'mod_slow' : 'strong_slow';
+
+    const matrix: Record<string, Record<string, string>> = {
+      strong_pos: {
+        strong_fast: 'Svært sterk etterspørsel og tydelig høyere prisvekst enn snittet.',
+        mod_fast: 'Høy prisvekst og rask omsetning sammenlignet med Oslo.',
+        neutral: 'Prisene stiger tydelig mer enn snittet.',
+      },
+      mod_pos: {
+        mod_fast: 'Noe sterkere prisvekst og raskere salg enn snittet.',
+        neutral: 'Prisveksten ligger over Oslo-snittet.',
+      },
+      neutral: {
+        mod_fast: 'Boliger selges raskere enn snittet, med stabil prisutvikling.',
+        neutral: 'Markedet følger Oslo-snittet både på pris og tempo.',
+        mod_slow: 'Salget tar noe lengre tid enn snittet.',
+      },
+      mod_neg: {
+        mod_fast: 'Rask omsetning, men svakere prisvekst enn snittet.',
+        neutral: 'Prisveksten ligger noe under Oslo-snittet.',
+        mod_slow: 'Svakere prisutvikling og tregere salg enn snittet.',
+      },
+      strong_neg: {
+        strong_slow: 'Tydelig svakere marked enn Oslo-snittet akkurat nå.',
+      },
+    };
+
+    // Fallback-regel
+    let interpretation: string;
+    if (matrix[priceLevel]?.[speedLevel]) {
+      interpretation = matrix[priceLevel][speedLevel];
+    } else if (priceDiff > 0 && daysDiff < 0) {
+      interpretation = 'Høy prisvekst og rask omsetning sammenlignet med Oslo.';
+    } else if (priceDiff < 0 && daysDiff > 0) {
+      interpretation = 'Svakere prisutvikling og tregere salg enn snittet.';
+    } else {
+      interpretation = 'Markedet følger Oslo-snittet både på pris og tempo.';
+    }
+
+    // Selger-trigger: price_diff > +0.7 og days_diff < -3
+    const trigger = priceDiff > 0.7 && daysDiff < -3;
+
+    // CTA-logikk
+    let cta: 'strong_seller' | 'mod_seller' | 'buyer' | 'standard';
+    if (priceDiff > 0.7 && daysDiff < -3) {
+      cta = 'strong_seller';
+    } else if (priceLevel === 'mod_pos' || priceLevel === 'strong_pos') {
+      cta = 'mod_seller';
+    } else if ((priceLevel === 'mod_neg' || priceLevel === 'strong_neg') && (speedLevel === 'mod_slow' || speedLevel === 'strong_slow')) {
+      cta = 'buyer';
+    } else {
+      cta = 'standard';
+    }
+
+    return { interpretation, trigger, cta };
+  };
+
+  const [selectedDistrict, setSelectedDistrict] = useState<DistrictInfo>(OSLO_DISTRICTS[0]);
+  const [isDistrictListOpen, setIsDistrictListOpen] = useState(false);
+  const [newsletterName, setNewsletterName] = useState('');
+  const [isDistrictSelected, setIsDistrictSelected] = useState(false);
+  const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
+  const [mapHeight, setMapHeight] = useState('100dvh');
+  const [activeTileLayer, setActiveTileLayer] = useState<TileLayerKey>('blue');
+  const [isLayerMenuOpen, setIsLayerMenuOpen] = useState(false);
+  const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
+  const [hasCalculated, setHasCalculated] = useState(false);
+  const [calcPropertyType, setCalcPropertyType] = useState('');
+  const [calcSqm, setCalcSqm] = useState('');
+  const [calcPricePerSqm, setCalcPricePerSqm] = useState('');
+  const [calcStandard, setCalcStandard] = useState('0');
+  const [calcResult, setCalcResult] = useState<number | null>(null);
+  const [calcError, setCalcError] = useState('');
+  const headerRef = useRef<HTMLDivElement>(null);
+  const mapComponentRef = useRef<MapComponentHandle>(null);
+
+  const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 768);
+
+  useEffect(() => {
+    const update = () => setIsDesktop(window.innerWidth >= 768);
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
+
+  useEffect(() => {
+    if (isCalculatorOpen && selectedDistrict.pricePerSqm) {
+      setCalcPricePerSqm(selectedDistrict.pricePerSqm.toString());
+    }
+  }, [isCalculatorOpen, selectedDistrict.pricePerSqm]);
+
+  const calculatePropertyValue = () => {
+    setCalcError('');
+    if (!calcPropertyType || !calcSqm || !calcPricePerSqm) {
+      setCalcError('Alle feltene må fylles ut');
+      return;
+    }
+    const sqm = parseFloat(calcSqm);
+    const pricePerSqm = parseFloat(calcPricePerSqm);
+    if (sqm <= 0 || pricePerSqm <= 0) {
+      setCalcError('Verdiene må være positive');
+      return;
+    }
+    const propertyFactors: Record<string, number> = {
+      leilighet: 1.00,
+      rekkehus: 0.92,
+      tomannsbolig: 0.88,
+      enebolig: 0.85,
+    };
+    const factor = propertyFactors[calcPropertyType] || 1.00;
+    const effectivePrice = pricePerSqm * factor;
+    const baseValue = sqm * effectivePrice;
+    const standardFactor = parseFloat(calcStandard);
+    const adjustedValue = baseValue * (1 + standardFactor);
+    const rounded = Math.round(adjustedValue / 1000) * 1000;
+    setCalcResult(rounded);
+    setHasCalculated(true);
+  };
+
+  useEffect(() => {
+    const updateMapHeight = () => {
+      if (window.innerWidth >= 768) {
+        setMapHeight('auto');
+      } else if (headerRef.current) {
+        const headerBottom = headerRef.current.getBoundingClientRect().bottom;
+        setMapHeight(`calc(100dvh - ${headerBottom}px - 4px)`);
+      }
+    };
+    updateMapHeight();
+    // Re-measure after fonts/layout settle on load
+    const raf = requestAnimationFrame(() => updateMapHeight());
+    const timeout = setTimeout(() => updateMapHeight(), 200);
+    window.addEventListener('resize', updateMapHeight);
+    return () => {
+      window.removeEventListener('resize', updateMapHeight);
+      cancelAnimationFrame(raf);
+      clearTimeout(timeout);
+    };
+  }, [selectedDistrict, isDistrictSelected]);
+
+  const handlePostClick = (post: BlogPost | BlogPostFull) => {
+    if ('slug' in post && (post as BlogPostFull).slug) {
+      navigate(`/blog/${(post as BlogPostFull).slug}`);
+    }
+  };
+
+  return (
+    <>
+      {isDesktop ? (
+        /* ─── DESKTOP / TABLET SPLIT HERO ─── */
+        <div className="flex h-screen overflow-hidden">
+
+          {/* ── LEFT COLUMN ── */}
+          <div className="w-[38%] lg:w-[40%] shrink-0 bg-white flex flex-col relative border-r border-slate-100">
+
+            {/* Dark mode toggle — top-right of left col */}
+            <button
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              className="absolute top-6 right-6 w-10 h-10 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-500 hover:bg-slate-50 transition-all z-10"
+            >
+              {isDarkMode ? <Moon size={18} /> : <Sun size={18} className="text-amber-500" />}
+            </button>
+
+            {/* Logo */}
+            <div className="p-10 lg:p-14 pt-10 lg:pt-12">
+              <img src={LOGO_URL} alt="Meglerinnsikt" className="h-12 lg:h-16 w-auto object-contain" />
+            </div>
+
+            {/* Vertical nav — lg only */}
+            <nav className="hidden lg:flex flex-col px-10 gap-0.5 mt-2">
+              {[
+                { label: 'Forsiden', action: () => navigateTo('home'), active: activePage === 'home' },
+                { label: 'Kart', action: () => navigate('/map'), active: false },
+                { label: 'Markedsrapporter', action: () => {}, active: false },
+                { label: 'Innsikt', action: () => navigateTo('innsikt'), active: activePage === 'innsikt' },
+                { label: 'Blog', action: () => {}, active: false },
+              ].map(({ label, action, active }) => (
+                <button key={label} onClick={action}
+                  className={`text-left py-3 px-4 text-[14px] font-bold rounded-xl transition-colors ${
+                    active ? 'text-blue-600 bg-blue-50' : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50'
+                  }`}>
+                  {label}
+                </button>
+              ))}
+            </nav>
+
+            {/* Flex spacer */}
+            <div className="flex-1" />
+
+            {/* CTA button — lg only */}
+            <div className="hidden lg:block px-10 pb-4">
+              <button onClick={() => setIsChatOpen(true)}
+                className="w-full bg-[#03d392] hover:bg-[#02be84] text-white font-black py-4 rounded-xl uppercase tracking-widest text-sm transition-all">
+                FÅ VERDIVURDERING
+              </button>
+            </div>
+
+            {/* Calculator form — lg only */}
+            <div className="hidden lg:block px-10 pb-10">
+              <div className="bg-slate-50 rounded-xl p-5">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Beregn boligverdi</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <select value={calcPropertyType} onChange={(e) => { setCalcPropertyType(e.target.value); setCalcError(''); }}
+                    className="col-span-2 bg-white border border-slate-200 rounded-lg px-3 h-10 text-slate-800 text-sm">
+                    <option value="">Velg boligtype</option>
+                    <option value="leilighet">Leilighet</option>
+                    <option value="rekkehus">Rekkehus</option>
+                    <option value="tomannsbolig">Tomannsbolig</option>
+                    <option value="enebolig">Enebolig</option>
+                  </select>
+                  <input type="number" value={calcSqm} onChange={(e) => { setCalcSqm(e.target.value); setCalcError(''); }}
+                    placeholder="Ant. kvm" className="bg-white border border-slate-200 rounded-lg px-3 h-10 text-slate-800 text-sm placeholder:text-slate-400" />
+                  <input type="number" value={calcPricePerSqm} onChange={(e) => { setCalcPricePerSqm(e.target.value); setCalcError(''); }}
+                    placeholder="Kr/kvm" className="bg-white border border-slate-200 rounded-lg px-3 h-10 text-slate-800 text-sm placeholder:text-slate-400" />
+                  <select value={calcStandard} onChange={(e) => { setCalcStandard(e.target.value); setCalcError(''); }}
+                    className="col-span-2 bg-white border border-slate-200 rounded-lg px-3 h-10 text-slate-800 text-sm">
+                    <option value="0">Standard</option>
+                    <option value="0.08">Oppgradert</option>
+                    <option value="-0.10">Trenger renovering</option>
+                  </select>
+                  {calcError && <p className="col-span-2 text-red-500 text-xs">{calcError}</p>}
+                  {calcResult !== null && (
+                    <p className="col-span-2 text-[#03d392] font-black text-lg text-center">
+                      {calcResult.toLocaleString('nb-NO')} kr
+                    </p>
+                  )}
+                </div>
+                <button onClick={calculatePropertyValue}
+                  className="w-full mt-3 bg-slate-900 hover:bg-blue-600 text-white font-black py-3 rounded-lg uppercase tracking-widest text-xs transition-all">
+                  Beregn
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* ── RIGHT COLUMN — MAP ── */}
+          <div className="flex-1 relative overflow-hidden">
+            <div className="absolute inset-0">
+              <MapComponent
+                ref={mapComponentRef}
+                properties={[]}
+                districts={OSLO_DISTRICTS}
+                selectedProperty={null}
+                selectedDistrict={selectedDistrict}
+                onPropertySelect={() => {}}
+                onDistrictSelect={(d) => { setSelectedDistrict(d); setIsDistrictSelected(true); setIsAnalysisOpen(true); }}
+              />
+            </div>
+
+            {/* MAP CONTROLS - CIRCULAR */}
+            <div className="absolute top-1/2 -translate-y-1/2 right-4 z-[500] flex flex-col gap-2 pointer-events-auto">
+              <button onClick={() => mapComponentRef.current?.zoomIn()} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all bg-white text-slate-700 border border-slate-200 shadow-sm"><Plus size={14} /></button>
+              <button onClick={() => mapComponentRef.current?.zoomOut()} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all bg-white text-slate-700 border border-slate-200 shadow-sm"><Minus size={14} /></button>
+              <div className="relative mt-2">
+                <button onClick={() => setIsLayerMenuOpen(!isLayerMenuOpen)} className={`w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all ${isLayerMenuOpen ? 'bg-blue-600 text-white' : 'bg-white text-slate-700 border border-slate-200 shadow-sm'}`}><Layers size={14} /></button>
+                {isLayerMenuOpen && (
+                  <div className="absolute right-full mr-2 top-0 rounded-lg shadow-xl overflow-hidden border bg-white border-slate-200" style={{ minWidth: '120px' }}>
+                    {(Object.keys(TILE_LAYERS) as TileLayerKey[]).map((key) => (
+                      <button
+                        key={key}
+                        onClick={() => { mapComponentRef.current?.setTileLayer(key); setActiveTileLayer(key); setIsLayerMenuOpen(false); }}
+                        className={`w-full flex items-center gap-2 px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wider transition-colors ${
+                          activeTileLayer === key ? 'bg-blue-600 text-white' : 'text-slate-700 hover:bg-slate-50'
+                        }`}
+                      >
+                        {TILE_LAYERS[key].name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <button onClick={() => { mapComponentRef.current?.resetView(); setSelectedDistrict(OSLO_DISTRICTS[0]); setIsDistrictSelected(false); setIsAnalysisOpen(false); }} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all bg-white text-slate-700 border border-slate-200 shadow-sm"><Target size={14} /></button>
+            </div>
+
+            {/* CONSOLIDATED INSIGHT BOX */}
+            <div className="absolute bottom-0 left-0 right-0 z-[500] pointer-events-none">
+              <div className="pointer-events-auto flex flex-col gap-3">
+                <div className={`relative rounded-none overflow-hidden transition-all duration-300 ${
+                  isDistrictSelected ? 'bg-white shadow-2xl' : 'bg-white/50'
+                }`}>
+                  {/* Chevron toggle */}
+                  <div className={`absolute left-1/2 -translate-x-1/2 -top-[3px] z-10 transition-all duration-300 ${isDistrictSelected ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                    <button
+                      onClick={() => setIsAnalysisOpen(!isAnalysisOpen)}
+                      className="flex items-center justify-center text-white hover:text-white transition-colors drop-shadow-lg"
+                    >
+                      <ChevronDown size={44} className={`transition-transform ${isAnalysisOpen ? '' : 'rotate-180'}`} />
+                    </button>
+                  </div>
+
+                  {/* Stat boxes — 4 columns */}
+                  <div className="relative grid grid-cols-4">
+                    {(() => {
+                      const oslo = OSLO_DISTRICTS[0];
+                      const priceDiff = selectedDistrict.priceChange - oslo.priceChange;
+                      const daysDiff = selectedDistrict.avgDaysOnMarket - oslo.avgDaysOnMarket;
+                      const sqmDiff = selectedDistrict.pricePerSqm - oslo.pricePerSqm;
+                      const priceColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (priceDiff > 0.3 ? 'text-[#03d392]' : priceDiff < -0.3 ? 'text-[#e05a5a]' : 'text-[#F8B324]');
+                      const daysColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (daysDiff < -1 ? 'text-[#03d392]' : daysDiff > 1 ? 'text-[#e05a5a]' : 'text-[#F8B324]');
+                      const sqmColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (sqmDiff > 0 ? 'text-[#03d392]' : sqmDiff < 0 ? 'text-[#e05a5a]' : 'text-[#F8B324]');
+                      return [
+                        { label: "Prisendring", value: `+${selectedDistrict.priceChange}%`, iconColor: priceColor },
+                        { label: "Salgstid", value: `${selectedDistrict.avgDaysOnMarket} dager`, iconColor: daysColor },
+                        { label: "Medianpris", value: `${(selectedDistrict.medianPrice / 1000000).toFixed(1)}M`, iconColor: 'text-blue-400' },
+                        { label: "per M2", value: `${Math.round(selectedDistrict.pricePerSqm / 1000)} K`, iconColor: sqmColor },
+                      ].map((stat, i) => (
+                        <div
+                          key={i}
+                          className={`flex flex-col items-center justify-center py-4 px-2 ${
+                            i !== 0 && isDistrictSelected ? 'border-l border-slate-100' : ''
+                          }`}
+                        >
+                          <div className="flex flex-col items-center">
+                            <div className={`text-[24px] lg:text-[28px] font-black leading-tight ${selectedDistrict.id === 'oslo' ? 'text-[#242c3d]' : stat.iconColor}`}>
+                              {stat.value}
+                            </div>
+                            <div className={`text-[10px] font-black uppercase tracking-widest leading-none mt-0.5 ${selectedDistrict.id === 'oslo' ? 'text-[#242c3d]/60' : stat.iconColor}`}>
+                              {stat.label}
+                            </div>
+                          </div>
+                        </div>
+                      ));
+                    })()}
+                  </div>
+
+                  {/* Expanded district analysis */}
+                  <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected && isAnalysisOpen ? 'max-h-[650px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <div>
+                      <div className="grid grid-cols-4 gap-4 p-5 pt-2">
+                        {(() => {
+                          const oslo = OSLO_DISTRICTS[0];
+                          const pDiff = +(selectedDistrict.priceChange - oslo.priceChange).toFixed(1);
+                          const sDiff = selectedDistrict.pricePerSqm - oslo.pricePerSqm;
+                          const dDiff = selectedDistrict.avgDaysOnMarket - oslo.avgDaysOnMarket;
+                          const mDiff = selectedDistrict.medianPrice - oslo.medianPrice;
+                          const isOslo = selectedDistrict.id === 'oslo';
+                          const getHex = (good: boolean, bad: boolean) => good ? '#03d392' : bad ? '#e05a5a' : '#F8B324';
+                          const priceHex = isOslo ? '#60a5fa' : getHex(pDiff > 0.3, pDiff < -0.3);
+                          const daysHex = isOslo ? '#60a5fa' : getHex(dDiff < -1, dDiff > 1);
+                          const medianHex = '#60a5fa';
+                          const sqmHex = isOslo ? '#60a5fa' : getHex(sDiff > 0, sDiff < 0);
+                          return <>
+                            <div className="col-span-1 rounded-xl p-4 bg-slate-100/80">
+                              <div className="flex items-center gap-2 mb-2">
+                                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: priceHex }}></div>
+                                <span className="text-[11px] font-black uppercase tracking-widest" style={{ color: priceHex }}>Prisutvikling</span>
+                              </div>
+                              <p className="text-[14px] font-medium leading-relaxed text-slate-600">
+                                {(() => {
+                                  const osloSnitt = oslo.priceChange;
+                                  if (isOslo) return `Oslo-snittet ligger på +${osloSnitt}% prisvekst siste 12 måneder.`;
+                                  if (pDiff > 0) return `+${pDiff} prosentpoeng over Oslo-snittet (${osloSnitt}%). Sterkere prisvekst enn byen for øvrig.`;
+                                  if (pDiff < 0) return `${pDiff} prosentpoeng under Oslo-snittet (${osloSnitt}%). Svakere prisvekst enn byen for øvrig.`;
+                                  return `I takt med Oslo-snittet på +${osloSnitt}% prisvekst.`;
+                                })()}
+                              </p>
+                            </div>
+                            <div className="col-span-1 rounded-xl p-4 bg-slate-100/80">
+                              <div className="flex items-center gap-2 mb-2">
+                                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: daysHex }}></div>
+                                <span className="text-[11px] font-black uppercase tracking-widest" style={{ color: daysHex }}>Omløpshastighet</span>
+                              </div>
+                              <p className="text-[14px] font-medium leading-relaxed text-slate-600">
+                                {(() => {
+                                  const osloSnitt = oslo.avgDaysOnMarket;
+                                  const diff = selectedDistrict.avgDaysOnMarket - osloSnitt;
+                                  if (isOslo) return `Oslo-snittet ligger på ${osloSnitt} dager omløpstid.`;
+                                  if (diff < 0) return `${Math.abs(diff)} dager raskere enn Oslo-snittet (${osloSnitt} dager). Svært likvid marked.`;
+                                  if (diff > 0) return `${diff} dager tregere enn Oslo-snittet (${osloSnitt} dager). Lavere likviditet.`;
+                                  return `I takt med Oslo-snittet på ${osloSnitt} dager omløpstid.`;
+                                })()}
+                              </p>
+                            </div>
+                            <div className="col-span-1 rounded-xl p-4 bg-slate-100/80">
+                              <div className="flex items-center gap-2 mb-2">
+                                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: medianHex }}></div>
+                                <span className="text-[11px] font-black uppercase tracking-widest" style={{ color: medianHex }}>Medianpris</span>
+                              </div>
+                              <p className="text-[14px] font-medium leading-relaxed text-slate-600">
+                                {(() => {
+                                  const osloSnitt = oslo.medianPrice;
+                                  if (isOslo) return `Oslo-snittet ligger på ${(osloSnitt / 1000000).toFixed(1)} mill. kr i medianpris.`;
+                                  if (mDiff > 0) return `${(mDiff / 1000000).toFixed(1)} mill. kr over Oslo-snittet (${(osloSnitt / 1000000).toFixed(1)} mill.). Høyere prisnivå.`;
+                                  if (mDiff < 0) return `${(Math.abs(mDiff) / 1000000).toFixed(1)} mill. kr under Oslo-snittet (${(osloSnitt / 1000000).toFixed(1)} mill.). Lavere prisnivå.`;
+                                  return `I takt med Oslo-snittet på ${(osloSnitt / 1000000).toFixed(1)} mill. kr.`;
+                                })()}
+                              </p>
+                            </div>
+                            <div className="col-span-1 rounded-xl p-4 bg-slate-100/80">
+                              <div className="flex items-center gap-2 mb-2">
+                                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: sqmHex }}></div>
+                                <span className="text-[11px] font-black uppercase tracking-widest" style={{ color: sqmHex }}>Kvadratmeterpris</span>
+                              </div>
+                              <p className="text-[14px] font-medium leading-relaxed text-slate-600">
+                                {(() => {
+                                  const osloSnitt = oslo.pricePerSqm;
+                                  const diff = selectedDistrict.pricePerSqm - osloSnitt;
+                                  if (isOslo) return `Oslo-snittet ligger på ${osloSnitt.toLocaleString('nb-NO')} kr/m² i snitt.`;
+                                  if (diff > 0) return `${diff.toLocaleString('nb-NO')} kr/m² over Oslo-snittet (${osloSnitt.toLocaleString('nb-NO')} kr/m²). Høyere prisnivå enn byen for øvrig.`;
+                                  if (diff < 0) return `${Math.abs(diff).toLocaleString('nb-NO')} kr/m² under Oslo-snittet (${osloSnitt.toLocaleString('nb-NO')} kr/m²). Lavere prisnivå enn byen for øvrig.`;
+                                  return `I takt med Oslo-snittet på ${osloSnitt.toLocaleString('nb-NO')} kr/m².`;
+                                })()}
+                              </p>
+                            </div>
+                          </>;
+                        })()}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      ) : (
+        /* ─── MOBILE MAP SECTION ─── */
+        <section className={`max-w-[1700px] mx-auto w-full pt-4 pb-0 md:py-8 transition-colors duration-300 ${isDarkMode ? '' : ''}`}>
+          <div ref={headerRef} className="px-3 md:px-14 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-2 md:mb-8">
+            <div className="space-y-1 md:space-y-3">
+              <div className={`hidden md:flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                <span>Hjem</span> <ChevronRight size={10} className={isDarkMode ? 'text-slate-700' : 'text-slate-300'} /> <span className={isDarkMode ? 'text-slate-300' : 'text-slate-600'}>Eiendomsinnsikt</span>
+              </div>
+              <h2 className={`text-[20px] md:text-[32px] lg:text-[40px] font-black leading-tight tracking-tight uppercase md:normal-case ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                <span className="text-[18px] md:text-[32px] lg:text-[40px]">Boligmarkedet {getPreposition(selectedDistrict.name)} </span><span className="text-[18px] md:text-[32px] lg:text-[40px] md:text-blue-500">{selectedDistrict.name.replace(' (Totalt)', '')}</span>
+              </h2>
+              <p className={`text-[12px] md:text-base font-black uppercase md:normal-case tracking-wider md:tracking-normal ${isDarkMode ? 'text-white/70' : 'text-slate-500'}`}>
+                {isDistrictSelected
+                  ? <span>{getMarketData(selectedDistrict).interpretation}</span>
+                  : <><span className="md:text-slate-500">Selger</span> eller <span className="md:text-slate-500">kjøpers</span> marked akkurat nå?</>
+                }
+              </p>
+            </div>
+
+            <div className="hidden md:flex items-center gap-3 shrink-0">
+              <button className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all ${
+                isDarkMode
+                  ? 'bg-[#1a2333] border border-white/5 text-white hover:bg-[#252f44]'
+                  : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 shadow-sm'
+              }`}>
+                <Calendar size={14} className={isDarkMode ? 'text-slate-400' : 'text-slate-400'} />
+                Siste 30 dager
+              </button>
+              <button className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-900/10 transition-all">
+                <Download size={14} />
+                Eksporter data
+              </button>
+            </div>
+          </div>
+
+          {/* GRID */}
+          <div className="grid lg:grid-cols-12 gap-6 lg:gap-8 lg:items-stretch mb-0 md:mb-12 md:px-14">
+            {/* MAP COLUMN */}
+            <div style={{ minHeight: mapHeight }} className={`lg:col-span-8 relative rounded-none md:rounded-2xl overflow-hidden shadow-2xl md:!h-[450px] lg:!h-auto flex flex-col transition-colors duration-300 ${
+              isDarkMode ? 'bg-[#1a2333]/20' : 'md:border md:border-slate-200 bg-white'
+            }`}>
+              <div className="absolute inset-0 z-0">
+                <MapComponent
+                  ref={mapComponentRef}
+                  properties={[]}
+                  districts={OSLO_DISTRICTS}
+                  selectedProperty={null}
+                  selectedDistrict={selectedDistrict}
+                  onPropertySelect={() => {}}
+                  onDistrictSelect={(d) => { setSelectedDistrict(d); setIsDistrictSelected(true); setIsAnalysisOpen(true); }}
+                />
+              </div>
+
+
+              {/* MAP CONTROLS - CIRCULAR */}
+              <div className="absolute top-1/2 -translate-y-1/2 right-4 z-[500] flex flex-col gap-2 pointer-events-auto">
+                {/* Zoom in */}
+                <button onClick={() => mapComponentRef.current?.zoomIn()} className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all ${
+                  isDarkMode ? 'bg-[#0b1120] text-white border border-white/5' : 'bg-white text-slate-700 border border-slate-200 shadow-sm'
+                }`}><Plus size={14} /></button>
+                {/* Zoom out */}
+                <button onClick={() => mapComponentRef.current?.zoomOut()} className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all ${
+                  isDarkMode ? 'bg-[#0b1120] text-white border border-white/5' : 'bg-white text-slate-700 border border-slate-200 shadow-sm'
+                }`}><Minus size={14} /></button>
+                {/* Layers toggle */}
+                <div className="relative mt-1 md:mt-2">
+                  <button onClick={() => setIsLayerMenuOpen(!isLayerMenuOpen)} className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all ${
+                    isLayerMenuOpen ? 'bg-blue-600 text-white' : isDarkMode ? 'bg-[#0b1120] text-white border border-white/5' : 'bg-white text-slate-700 border border-slate-200 shadow-sm'
+                  }`}><Layers size={14} /></button>
+                  {/* Layer menu popup */}
+                  {isLayerMenuOpen && (
+                    <div className={`absolute right-full mr-2 top-0 rounded-lg shadow-xl overflow-hidden border ${isDarkMode ? 'bg-[#0b1120] border-white/10' : 'bg-white border-slate-200'}`} style={{ minWidth: '120px' }}>
+                      {(Object.keys(TILE_LAYERS) as TileLayerKey[]).map((key) => (
+                        <button
+                          key={key}
+                          onClick={() => { mapComponentRef.current?.setTileLayer(key); setActiveTileLayer(key); setIsLayerMenuOpen(false); }}
+                          className={`w-full flex items-center gap-2 px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wider transition-colors ${
+                            activeTileLayer === key
+                              ? 'bg-blue-600 text-white'
+                              : isDarkMode ? 'text-white hover:bg-white/10' : 'text-slate-700 hover:bg-slate-50'
+                          }`}
+                        >
+                          {TILE_LAYERS[key].name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {/* Reset / center */}
+                <button onClick={() => { mapComponentRef.current?.resetView(); setSelectedDistrict(OSLO_DISTRICTS[0]); setIsDistrictSelected(false); setIsAnalysisOpen(false); }} className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all ${
+                  isDarkMode ? 'bg-[#0b1120] text-white border border-white/5' : 'bg-white text-slate-700 border border-slate-200 shadow-sm'
+                }`}><Target size={14} /></button>
+              </div>
+
+              {/* CONSOLIDATED INSIGHT BOX */}
+              <div className="absolute bottom-0 left-0 right-0 z-[500] pointer-events-none">
+                <div className="pointer-events-auto flex flex-col gap-3">
+                  <div className={`relative rounded-none overflow-hidden transition-all duration-300 ${
+                    isDistrictSelected
+                      ? isDarkMode ? 'bg-[#242c3d] shadow-2xl' : 'bg-white shadow-2xl'
+                      : 'bg-white/50'
+                  }`}>
+                    {/* Calculator overlay */}
+                    {isCalculatorOpen && (
+                      <div className="absolute inset-0 bg-[#1a2333] z-[100] flex flex-col">
+                        {/* Close button */}
+                        <button
+                          onClick={() => {
+                            setIsCalculatorOpen(false);
+                            setHasCalculated(false);
+                            setCalcPropertyType('');
+                            setCalcSqm('');
+                            setCalcPricePerSqm('');
+                            setCalcStandard('0');
+                            setCalcResult(null);
+                            setCalcError('');
+                          }}
+                          className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center text-white/70 hover:text-white z-10"
+                          aria-label="Lukk"
+                        >
+                          <X size={20} />
+                        </button>
+
+                        {/* Calculator form - flex-1 fills available space */}
+                        <div className={`flex-1 flex items-center justify-center px-4 md:px-8 ${!hasCalculated ? 'pb-[60px] md:pb-[72px]' : 'pb-0'}`}>
+                          <div className="w-full max-w-md grid grid-cols-2 gap-x-3 gap-y-2.5">
+                            <select
+                              value={calcPropertyType}
+                              onChange={(e) => { setCalcPropertyType(e.target.value); setCalcError(''); }}
+                              className="bg-[#1a2333] border border-white/20 rounded px-3 h-10 text-white text-sm"
+                            >
+                              <option value="">Velg boligtype</option>
+                              <option value="leilighet">Leilighet</option>
+                              <option value="rekkehus">Rekkehus</option>
+                              <option value="tomannsbolig">Tomannsbolig</option>
+                              <option value="enebolig">Enebolig</option>
+                            </select>
+                            <input
+                              type="number"
+                              value={calcSqm}
+                              onChange={(e) => { setCalcSqm(e.target.value); setCalcError(''); }}
+                              onKeyDown={(e) => e.key === 'Enter' && calculatePropertyValue()}
+                              placeholder="Antall kvm"
+                              className="bg-[#1a2333] border border-white/20 rounded px-3 h-10 text-white text-sm placeholder:text-white/40"
+                            />
+                            <input
+                              type="number"
+                              value={calcPricePerSqm}
+                              onChange={(e) => { setCalcPricePerSqm(e.target.value); setCalcError(''); }}
+                              onKeyDown={(e) => e.key === 'Enter' && calculatePropertyValue()}
+                              placeholder="Pris per kvm"
+                              className="bg-[#1a2333] border border-white/20 rounded px-3 h-10 text-white text-sm placeholder:text-white/40"
+                            />
+                            <select
+                              value={calcStandard}
+                              onChange={(e) => { setCalcStandard(e.target.value); setCalcError(''); }}
+                              className="bg-[#1a2333] border border-white/20 rounded px-3 h-10 text-white text-sm"
+                            >
+                              <option value="0">Standard</option>
+                              <option value="0.08">Oppgradert</option>
+                              <option value="-0.10">Renovering</option>
+                            </select>
+                            {calcError && <p className="col-span-2 text-red-400 text-sm text-center">{calcError}</p>}
+                            {calcResult !== null && (
+                              <>
+                                <p className="col-span-2 text-green-400 font-bold text-lg text-center mt-1">
+                                  {calcResult.toLocaleString('nb-NO')} kr
+                                </p>
+                                {/* Sekundær CTA - kun visuell */}
+                                <div className="col-span-2 mt-2">
+                                  <div className="text-center">
+                                    <p className="text-white font-semibold text-sm">Få verdivurdering</p>
+                                    <p className="text-white/60 text-xs">Gratis og uforpliktende</p>
+                                  </div>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* TILSTAND A: Grønn "Beregn" footer - rendres KUN når ikke beregnet */}
+                        {!hasCalculated && (
+                          <button
+                            onClick={calculatePropertyValue}
+                            className="w-full bg-green-600 hover:bg-green-700 text-white font-black py-4 md:py-5 uppercase tracking-widest text-sm transition-colors"
+                          >
+                            Beregn
+                          </button>
+                        )}
+                      </div>
+                    )}
+                    {/* Mobile chevron: outside grid, like original */}
+                    <div className={`md:hidden overflow-hidden transition-all duration-300 ${isDistrictSelected ? 'max-h-10 opacity-100' : 'max-h-0 opacity-0'}`}>
+                      <button
+                        onClick={() => setIsAnalysisOpen(!isAnalysisOpen)}
+                        className="w-full flex items-center justify-center py-1 transition-colors text-white"
+                      >
+                        <ChevronDown size={28} className={`transition-transform ${isAnalysisOpen ? '' : 'rotate-180'}`} />
+                      </button>
+                    </div>
+                    <div className="relative grid grid-cols-3 md:grid-cols-4">
+                      {/* Desktop chevron: overlaid, no extra row */}
+                      <div className={`hidden md:block absolute left-1/2 -translate-x-1/2 -top-[3px] z-10 transition-all duration-300 ${isDistrictSelected ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                        <button
+                          onClick={() => setIsAnalysisOpen(!isAnalysisOpen)}
+                          className="flex items-center justify-center text-white hover:text-white transition-colors drop-shadow-lg"
+                        >
+                          <ChevronDown size={44} className={`transition-transform ${isAnalysisOpen ? '' : 'rotate-180'}`} />
+                        </button>
+                      </div>
+                      {(() => {
+                        const oslo = OSLO_DISTRICTS[0];
+                        const priceDiff = selectedDistrict.priceChange - oslo.priceChange;
+                        const daysDiff = selectedDistrict.avgDaysOnMarket - oslo.avgDaysOnMarket;
+                        const sqmDiff = selectedDistrict.pricePerSqm - oslo.pricePerSqm;
+                        const priceColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (priceDiff > 0.3 ? 'text-[#03d392]' : priceDiff < -0.3 ? 'text-[#e05a5a]' : 'text-[#F8B324]');
+                        const daysColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (daysDiff < -1 ? 'text-[#03d392]' : daysDiff > 1 ? 'text-[#e05a5a]' : 'text-[#F8B324]');
+                        const sqmColor = selectedDistrict.id === 'oslo' ? 'text-blue-400' : (sqmDiff > 0 ? 'text-[#03d392]' : sqmDiff < 0 ? 'text-[#e05a5a]' : 'text-[#F8B324]');
+                        return [
+                          { label: "Prisendring", value: `+${selectedDistrict.priceChange}%`, iconColor: priceColor, hideOnMobile: false },
+                          { label: "Salgstid", value: `${selectedDistrict.avgDaysOnMarket} dager`, iconColor: daysColor, hideOnMobile: false },
+                          { label: "Medianpris", value: `${(selectedDistrict.medianPrice / 1000000).toFixed(1)}M`, iconColor: 'text-blue-400', hideOnMobile: true },
+                          { label: "per M2", value: `${Math.round(selectedDistrict.pricePerSqm / 1000)} K`, iconColor: sqmColor, hideOnMobile: false }
+                        ];
+                      })().map((stat, i) => (
+                        <div
+                          key={i}
+                          className={`flex flex-col items-center justify-center py-4 px-2
+                            ${stat.hideOnMobile ? 'hidden md:flex' : ''}
+                            ${i !== 0 && isDistrictSelected ? `border-l ${isDarkMode ? 'border-white/5' : 'border-slate-100'}` : ''}
+                          `}
+                        >
+                          <div className="flex flex-col items-center">
+                            <div className={`text-[15px] md:text-[24px] lg:text-[28px] font-black leading-tight ${selectedDistrict.id === 'oslo' ? 'text-[#242c3d]' : stat.iconColor}`}>
+                              {stat.value}
+                            </div>
+                            <div className={`text-[10px] font-black uppercase tracking-widest leading-none mt-0.5 ${selectedDistrict.id === 'oslo' ? 'text-[#242c3d]/60' : stat.iconColor}`}>
+                              {stat.label}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Expanded district analysis */}
+                    <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected && isAnalysisOpen ? 'max-h-[650px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                      <div>
+
+                        {/* Desktop: 4-column grid matching stats: Prisendring, Salgstid, Medianpris, per M2 */}
+                        <div className="hidden md:grid grid-cols-4 gap-4 p-5 pt-2">
+                          {(() => {
+                            const oslo = OSLO_DISTRICTS[0];
+                            const pDiff = +(selectedDistrict.priceChange - oslo.priceChange).toFixed(1);
+                            const sDiff = selectedDistrict.pricePerSqm - oslo.pricePerSqm;
+                            const dDiff = selectedDistrict.avgDaysOnMarket - oslo.avgDaysOnMarket;
+                            const mDiff = selectedDistrict.medianPrice - oslo.medianPrice;
+                            const isOslo = selectedDistrict.id === 'oslo';
+                            const getHex = (good: boolean, bad: boolean) => good ? '#03d392' : bad ? '#e05a5a' : '#F8B324';
+                            const priceHex = isOslo ? '#60a5fa' : getHex(pDiff > 0.3, pDiff < -0.3);
+                            const daysHex = isOslo ? '#60a5fa' : getHex(dDiff < -1, dDiff > 1);
+                            const medianHex = '#60a5fa';
+                            const sqmHex = isOslo ? '#60a5fa' : getHex(sDiff > 0, sDiff < 0);
+                            return <>
+                              {/* 1: Prisutvikling — under Prisendring */}
+                              <div className={`col-span-1 rounded-xl p-4 ${isDarkMode ? 'bg-white/5' : 'bg-slate-100/80'}`}>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: priceHex }}></div>
+                                  <span className="text-[11px] font-black uppercase tracking-widest" style={{ color: priceHex }}>
+                                    Prisutvikling
+                                  </span>
+                                </div>
+                                <p className={`text-[14px] font-medium leading-relaxed ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
+                                  {(() => {
+                                    const osloSnitt = oslo.priceChange;
+                                    if (isOslo) return `Oslo-snittet ligger på +${osloSnitt}% prisvekst siste 12 måneder.`;
+                                    if (pDiff > 0) return `+${pDiff} prosentpoeng over Oslo-snittet (${osloSnitt}%). Sterkere prisvekst enn byen for øvrig.`;
+                                    if (pDiff < 0) return `${pDiff} prosentpoeng under Oslo-snittet (${osloSnitt}%). Svakere prisvekst enn byen for øvrig.`;
+                                    return `I takt med Oslo-snittet på +${osloSnitt}% prisvekst.`;
+                                  })()}
+                                </p>
+                              </div>
+
+                              {/* 2: Omløpshastighet — under Salgstid */}
+                              <div className={`col-span-1 rounded-xl p-4 ${isDarkMode ? 'bg-white/5' : 'bg-slate-100/80'}`}>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: daysHex }}></div>
+                                  <span className="text-[11px] font-black uppercase tracking-widest" style={{ color: daysHex }}>
+                                    Omløpshastighet
+                                  </span>
+                                </div>
+                                <p className={`text-[14px] font-medium leading-relaxed ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
+                                  {(() => {
+                                    const osloSnitt = oslo.avgDaysOnMarket;
+                                    const diff = selectedDistrict.avgDaysOnMarket - osloSnitt;
+                                    if (isOslo) return `Oslo-snittet ligger på ${osloSnitt} dager omløpstid.`;
+                                    if (diff < 0) return `${Math.abs(diff)} dager raskere enn Oslo-snittet (${osloSnitt} dager). Svært likvid marked.`;
+                                    if (diff > 0) return `${diff} dager tregere enn Oslo-snittet (${osloSnitt} dager). Lavere likviditet.`;
+                                    return `I takt med Oslo-snittet på ${osloSnitt} dager omløpstid.`;
+                                  })()}
+                                </p>
+                              </div>
+
+                              {/* 3: Medianpris — under Medianpris */}
+                              <div className={`col-span-1 rounded-xl p-4 ${isDarkMode ? 'bg-white/5' : 'bg-slate-100/80'}`}>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: medianHex }}></div>
+                                  <span className="text-[11px] font-black uppercase tracking-widest" style={{ color: medianHex }}>
+                                    Medianpris
+                                  </span>
+                                </div>
+                                <p className={`text-[14px] font-medium leading-relaxed ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
+                                  {(() => {
+                                    const osloSnitt = oslo.medianPrice;
+                                    if (isOslo) return `Oslo-snittet ligger på ${(osloSnitt / 1000000).toFixed(1)} mill. kr i medianpris.`;
+                                    if (mDiff > 0) return `${(mDiff / 1000000).toFixed(1)} mill. kr over Oslo-snittet (${(osloSnitt / 1000000).toFixed(1)} mill.). Høyere prisnivå.`;
+                                    if (mDiff < 0) return `${(Math.abs(mDiff) / 1000000).toFixed(1)} mill. kr under Oslo-snittet (${(osloSnitt / 1000000).toFixed(1)} mill.). Lavere prisnivå.`;
+                                    return `I takt med Oslo-snittet på ${(osloSnitt / 1000000).toFixed(1)} mill. kr.`;
+                                  })()}
+                                </p>
+                              </div>
+
+                              {/* 4: Kvadratmeterpris — under per M2 */}
+                              <div className={`col-span-1 rounded-xl p-4 ${isDarkMode ? 'bg-white/5' : 'bg-slate-100/80'}`}>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: sqmHex }}></div>
+                                  <span className="text-[11px] font-black uppercase tracking-widest" style={{ color: sqmHex }}>
+                                    Kvadratmeterpris
+                                  </span>
+                                </div>
+                                <p className={`text-[14px] font-medium leading-relaxed ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
+                                  {(() => {
+                                    const osloSnitt = oslo.pricePerSqm;
+                                    const diff = selectedDistrict.pricePerSqm - osloSnitt;
+                                    if (isOslo) return `Oslo-snittet ligger på ${osloSnitt.toLocaleString('nb-NO')} kr/m² i snitt.`;
+                                    if (diff > 0) return `${diff.toLocaleString('nb-NO')} kr/m² over Oslo-snittet (${osloSnitt.toLocaleString('nb-NO')} kr/m²). Høyere prisnivå enn byen for øvrig.`;
+                                    if (diff < 0) return `${Math.abs(diff).toLocaleString('nb-NO')} kr/m² under Oslo-snittet (${osloSnitt.toLocaleString('nb-NO')} kr/m²). Lavere prisnivå enn byen for øvrig.`;
+                                    return `I takt med Oslo-snittet på ${osloSnitt.toLocaleString('nb-NO')} kr/m².`;
+                                  })()}
+                                </p>
+                              </div>
+                            </>;
+                          })()}
+                        </div>
+
+                        {/* Mobile: vertical list with round icons — colors match stat system */}
+                        <div className="md:hidden flex flex-col px-4 pt-1 pb-2">
+                          {(() => {
+                            const oslo = OSLO_DISTRICTS[0];
+                            const pDiff = +(selectedDistrict.priceChange - oslo.priceChange).toFixed(1);
+                            const sDiff = selectedDistrict.pricePerSqm - oslo.pricePerSqm;
+                            const dDiff = selectedDistrict.avgDaysOnMarket - oslo.avgDaysOnMarket;
+                            const getHex = (good: boolean, bad: boolean) => good ? '#03d392' : bad ? '#e05a5a' : '#F8B324';
+                            const isOslo = selectedDistrict.id === 'oslo';
+                            const priceHex = isOslo ? '#60a5fa' : getHex(pDiff > 0.3, pDiff < -0.3);
+                            const sqmHex = isOslo ? '#60a5fa' : getHex(sDiff > 0, sDiff < 0);
+                            const daysHex = isOslo ? '#60a5fa' : getHex(dDiff < -1, dDiff > 1);
+                            return <>
+                              <div className="py-1.5 flex items-center gap-2.5">
+                                <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: `${priceHex}20` }}>
+                                  <TrendingUp size={12} style={{ color: priceHex }} />
+                                </div>
+                                <p className={`text-[12px] font-medium leading-snug ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
+                                  {isOslo ? `Oslo-snittet ligger på +${oslo.priceChange}% prisvekst siste 12 mnd.`
+                                    : pDiff > 0 ? `+${pDiff} prosentpoeng over Oslo-snittet (${oslo.priceChange}%).`
+                                    : pDiff < 0 ? `${pDiff} prosentpoeng under Oslo-snittet (${oslo.priceChange}%).`
+                                    : `I takt med Oslo-snittet på +${oslo.priceChange}% prisvekst.`}
+                                </p>
+                              </div>
+                              <div className={`border-t ${isDarkMode ? 'border-white/10' : 'border-slate-200'}`}></div>
+                              <div className="py-1.5 flex items-center gap-2.5">
+                                <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: `${sqmHex}20` }}>
+                                  <Ruler size={12} style={{ color: sqmHex }} />
+                                </div>
+                                <p className={`text-[12px] font-medium leading-snug ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
+                                  {isOslo ? `Oslo-snittet ligger på ${oslo.pricePerSqm.toLocaleString('nb-NO')} kr/m².`
+                                    : sDiff > 0 ? `${sDiff.toLocaleString('nb-NO')} kr/m² over Oslo-snittet (${oslo.pricePerSqm.toLocaleString('nb-NO')} kr/m²).`
+                                    : sDiff < 0 ? `${Math.abs(sDiff).toLocaleString('nb-NO')} kr/m² under Oslo-snittet (${oslo.pricePerSqm.toLocaleString('nb-NO')} kr/m²).`
+                                    : `I takt med Oslo-snittet på ${oslo.pricePerSqm.toLocaleString('nb-NO')} kr/m².`}
+                                </p>
+                              </div>
+                              <div className={`border-t ${isDarkMode ? 'border-white/10' : 'border-slate-200'}`}></div>
+                              <div className="py-1.5 flex items-center gap-2.5">
+                                <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: `${daysHex}20` }}>
+                                  <Clock size={12} style={{ color: daysHex }} />
+                                </div>
+                                <p className={`text-[12px] font-medium leading-snug ${isDarkMode ? 'text-white' : 'text-slate-600'}`}>
+                                  {isOslo ? `Oslo-snittet ligger på ${oslo.avgDaysOnMarket} dager omløpstid.`
+                                    : dDiff < 0 ? `${Math.abs(dDiff)} dager raskere enn Oslo-snittet (${oslo.avgDaysOnMarket} dager).`
+                                    : dDiff > 0 ? `${dDiff} dager tregere enn Oslo-snittet (${oslo.avgDaysOnMarket} dager).`
+                                    : `I takt med Oslo-snittet på ${oslo.avgDaysOnMarket} dager omløpstid.`}
+                                </p>
+                              </div>
+                            </>;
+                          })()}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Toggle open button + CTA */}
+                    <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isDistrictSelected ? 'h-[48px] md:h-[60px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                      {/* CTA button */}
+                      <button
+                        onClick={() => setIsCalculatorOpen(true)}
+                        className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-3 md:py-5 md:rounded-b-xl transition-all uppercase tracking-widest text-[12px] md:text-[15px]"
+                      >
+                        <span>{(() => {
+                          let name = selectedDistrict.name.replace(' (Totalt)', '');
+                          if (name === 'St. Hanshaugen') name = 'St. Hansh.';
+                          return `Hva er boligen din ${getPreposition(selectedDistrict.name)} ${name} verdt?`;
+                        })()}</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* SIDEBAR COLUMN - desktop only */}
+            <div className="lg:col-span-4 hidden lg:flex flex-col">
+              <div className={`rounded-2xl flex flex-col shadow-xl h-full transition-colors duration-300 ${
+                isDarkMode ? 'bg-[#1e293b] border border-white/5' : 'bg-white border border-slate-200'
+              }`}>
+                <div className="flex justify-between items-center p-8 pb-6 shrink-0">
+                  <h3 className={`text-[14px] font-black uppercase tracking-wider ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Siste innlegg</h3>
+                  <button className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] hover:underline">Se alle</button>
+                </div>
+
+                <div className="px-8 pb-8 flex flex-col gap-6 overflow-hidden">
+                  {/* Featured Article with image */}
+                  {displayPosts.length > 0 && (
+                    <div className="group cursor-pointer shrink-0" onClick={() => handlePostClick(displayPosts[0])}>
+                      <div className={`relative aspect-[16/10] rounded-xl overflow-hidden mb-4 shadow-lg ${isDarkMode ? 'border border-white/5' : 'border border-slate-100'}`}>
+                        <img src={displayPosts[0].image} alt={displayPosts[0].title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                        <div className="absolute top-4 right-4 bg-blue-600 text-white text-[9px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest shadow-xl">{displayPosts[0].category}</div>
+                      </div>
+                      <div className={`text-[9px] font-black uppercase mb-1 tracking-widest flex items-center gap-1.5 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                        <span>{displayPosts[0].date}</span> <span className={isDarkMode ? 'text-slate-700' : 'text-slate-300'}>&bull;</span> <span>{displayPosts[0].category}</span>
+                      </div>
+                      <h4 className={`text-[15px] font-black leading-tight uppercase tracking-tight group-hover:text-blue-400 transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                        {displayPosts[0].title}
+                      </h4>
+                    </div>
+                  )}
+
+                  {/* List Articles - text only */}
+                  <div className="space-y-5 shrink-0">
+                    {displayPosts.slice(1, 3).map((post) => (
+                      <div key={post.id} className={`group cursor-pointer pt-5 ${isDarkMode ? 'border-t border-white/5' : 'border-t border-slate-100'}`} onClick={() => handlePostClick(post)}>
+                        <div className={`text-[9px] font-black uppercase mb-1 tracking-widest flex items-center gap-1.5 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                          <span>{post.date}</span> <span className={isDarkMode ? 'text-slate-700' : 'text-slate-300'}>&bull;</span> <span>{post.category}</span>
+                        </div>
+                        <h4 className={`text-[15px] font-black leading-tight uppercase tracking-tight group-hover:text-blue-400 transition-colors ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                          {post.title}
+                        </h4>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Premium Box */}
+                  <div className={`mt-2 p-6 rounded-2xl relative overflow-hidden group shadow-2xl shrink-0 transition-colors duration-300 ${
+                    isDarkMode ? 'bg-[#0f172a] border border-blue-500/20' : 'bg-blue-50 border border-blue-100'
+                  }`}>
+                    <div className="relative z-10">
+                      <div className="flex items-center gap-2 mb-3 text-blue-500">
+                        <Zap size={14} fill="currentColor" />
+                        <h5 className="text-[10px] font-black uppercase tracking-[0.25em]">Premium Innsikt</h5>
+                      </div>
+                      <p className={`text-[12px] font-medium leading-relaxed mb-4 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                        Få tilgang til dypere data og historiske trender med vår Pro-pakke.
+                      </p>
+                      <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-xl transition-all uppercase tracking-widest text-[10px] shadow-xl shadow-blue-600/20 active:scale-[0.98]">
+                        Oppgrader nå
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── DARK BLOG SECTION (all screen sizes) ── */}
+      <section className="bg-[#0f172a] py-16">
+        <div className="max-w-[1700px] mx-auto px-4 md:px-14">
+          <div className="flex justify-between items-center mb-8">
+            <h3 className="text-[13px] font-black uppercase tracking-[0.2em] text-white">SISTE INNLEGG</h3>
+            <button className="text-[10px] font-bold text-blue-400 uppercase tracking-[0.2em] hover:underline flex items-center gap-1">
+              SE ALLE <ArrowRight size={12} />
+            </button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {displayPosts.slice(0, 3).map((post) => (
+              <div key={post.id} onClick={() => handlePostClick(post)}
+                className="group cursor-pointer border-t border-white/10 pt-6 md:border-0 md:pt-0 first:border-0 first:pt-0">
+                <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 flex items-center gap-2">
+                  <span>{post.date}</span>
+                  <span className="text-slate-700">•</span>
+                  <span className="bg-blue-600/20 text-blue-400 px-2 py-0.5 rounded-md">{post.category}</span>
+                </div>
+                <h4 className="text-[15px] font-black text-white leading-tight uppercase tracking-tight group-hover:text-blue-400 transition-colors">
+                  {post.title}
+                </h4>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {isAdminOpen && (
+        <BlogAdmin
+          posts={blogPosts}
+          onPostsChange={onPostsChange}
+          onClose={() => setIsAdminOpen(false)}
+        />
+      )}
+    </>
+  );
+};
 
 const App: React.FC = () => {
   const [activePage, setActivePage] = useState<'home' | 'innsikt'>('home');
-  const [selectedDistrict, setSelectedDistrict] = useState<DistrictInfo>(OSLO_DISTRICTS[0]);
-  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
-  const [showChat, setShowChat] = useState(false);
-  const [mobileView, setMobileView] = useState<'map' | 'stats'>('map');
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [isDistrictDropdownOpen, setIsDistrictDropdownOpen] = useState(false);
   const [activeNavDropdown, setActiveNavDropdown] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
-  const districtDropdownRef = useRef<HTMLDivElement>(null);
+  const [blogPosts, setBlogPosts] = useState<BlogPostFull[]>([]);
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Load blog posts from posts.json
+  useEffect(() => {
+    blogService.fetchPosts().then(posts => {
+      if (posts.length > 0) {
+        setBlogPosts(posts);
+      }
+    });
+  }, []);
+
+  // Admin keyboard shortcut: Ctrl+Shift+A
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+        e.preventDefault();
+        setIsAdminOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (districtDropdownRef.current && !districtDropdownRef.current.contains(event.target as Node)) {
-        setIsDistrictDropdownOpen(false);
-      }
       if (navRef.current && !navRef.current.contains(event.target as Node)) {
         setActiveNavDropdown(null);
       }
@@ -34,453 +1030,71 @@ const App: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleDistrictSelect = (district: DistrictInfo) => {
-    setSelectedDistrict(district);
-    setSelectedProperty(null);
-    setIsExpanded(true);
-    setIsDistrictDropdownOpen(false);
-  };
-
-  const onDistrictSelectFromMap = (district: DistrictInfo) => {
-    setSelectedDistrict(district);
-    setSelectedProperty(null);
-    setIsExpanded(true);
-  };
-
-  const toggleNavDropdown = (name: string) => {
-    setActiveNavDropdown(activeNavDropdown === name ? null : name);
-  };
+  // Use CMS posts if available, otherwise fall back to mock data
+  const displayPosts: (BlogPost | BlogPostFull)[] = blogPosts.length > 0 ? blogPosts : MOCK_BLOG_POSTS;
 
   const navigateTo = (page: 'home' | 'innsikt') => {
     setActivePage(page);
     setIsMobileMenuOpen(false);
+    navigate('/');
   };
 
-  const formatMedianPrice = (price: number) => {
-    if (price >= 1000000) return (price / 1000000).toFixed(1) + 'M';
-    return (price / 1000).toFixed(0) + 'k';
-  };
-
-  const ViewSwitcher = ({ compact = false }: { compact?: boolean }) => (
-    <div className={`flex bg-slate-100/80 backdrop-blur p-1 rounded-full border border-slate-200/50 ${compact ? 'scale-90 origin-left' : ''}`}>
-      <button 
-        onClick={() => {
-          setActivePage('home');
-          setMobileView('map');
-        }}
-        className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-[9px] font-black transition-all uppercase tracking-wider ${activePage === 'home' && mobileView === 'map' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400'}`}
-      >
-        <MapIcon size={12} /> Kart
-      </button>
-      <button 
-        onClick={() => {
-          navigateTo('innsikt');
-        }}
-        className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-[9px] font-black transition-all uppercase tracking-wider ${activePage === 'innsikt' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400'}`}
-      >
-        <BarChart3 size={12} /> Innsikt
-      </button>
-    </div>
-  );
+  // Check if we're on a blog post page
+  const isBlogPostPage = location.pathname.startsWith('/blog/');
 
   return (
-    <div className="flex flex-col bg-white min-h-screen">
-      {/* Header */}
-      <header className="h-16 md:h-20 bg-white border-b border-slate-100 flex items-center justify-between px-4 md:px-12 z-[1000] sticky top-0 shrink-0">
-        <div className="flex items-center gap-12">
-          {/* Logo */}
-          <div 
-            onClick={() => navigateTo('home')}
-            className="flex items-center gap-3 cursor-pointer group"
-          >
-            <div className="bg-blue-600 w-9 h-9 rounded-xl flex items-center justify-center shadow-lg shadow-blue-100 group-hover:scale-105 transition-transform">
-              <Building2 className="text-white" size={18} />
-            </div>
-            <h1 className="text-xl font-black text-slate-950 tracking-tighter uppercase">Lumina</h1>
-          </div>
-
-          {/* Main Desktop Navigation */}
-          <nav ref={navRef} className="hidden lg:flex items-center gap-2">
-            <button 
-              onClick={() => navigateTo('home')}
-              className={`px-4 py-2 text-[15px] font-bold transition-colors ${activePage === 'home' ? 'text-blue-600' : 'text-slate-700 hover:text-blue-600'}`}
-            >
-              Forsiden
-            </button>
-            
-            <div className="relative">
-              <button 
-                onClick={() => toggleNavDropdown('rapporter')}
-                className={`flex items-center gap-1.5 px-5 py-2.5 rounded-full text-[15px] font-bold transition-all ${activeNavDropdown === 'rapporter' ? 'bg-slate-50 text-slate-950' : 'text-slate-700 hover:text-blue-600'}`}
-              >
-                Markedsrapporter 
-                <ChevronDown size={14} className={`transition-transform duration-200 ${activeNavDropdown === 'rapporter' ? 'rotate-180' : ''}`} />
-              </button>
-              
-              {activeNavDropdown === 'rapporter' && (
-                <div className="absolute top-full left-0 mt-2 w-72 bg-white shadow-2xl rounded-[24px] border border-slate-100 py-4 z-[1100] animate-in fade-in slide-in-from-top-2">
-                  <button className="w-full px-6 py-3 text-left text-[16px] font-bold text-slate-900 hover:bg-slate-50 transition-colors">Markedsrapport januar 2026</button>
-                  <button className="w-full px-6 py-3 text-left text-[16px] font-bold text-slate-900 hover:bg-slate-50 transition-colors">Markedsrapport desember 2025</button>
-                  <button className="w-full px-6 py-3 text-left text-[16px] font-bold text-slate-900 hover:bg-slate-50 transition-colors">Markedsrapport november 2025</button>
-                </div>
-              )}
-            </div>
-
-            <button 
-              onClick={() => navigateTo('innsikt')}
-              className={`px-4 py-2 text-[15px] font-bold transition-colors ${activePage === 'innsikt' ? 'text-blue-600 underline decoration-2 underline-offset-8' : 'text-slate-700 hover:text-blue-600'}`}
-            >
-              Innsikt
-            </button>
-
-            <div className="relative">
-              <button 
-                onClick={() => toggleNavDropdown('blog')}
-                className={`flex items-center gap-1.5 px-5 py-2.5 rounded-full text-[15px] font-bold transition-all ${activeNavDropdown === 'blog' ? 'bg-slate-50 text-slate-950' : 'text-slate-700 hover:text-blue-600'}`}
-              >
-                Blog 
-                <ChevronDown size={14} className={`transition-transform duration-200 ${activeNavDropdown === 'blog' ? 'rotate-180' : ''}`} />
-              </button>
-
-              {activeNavDropdown === 'blog' && (
-                <div className="absolute top-full left-0 mt-2 w-48 bg-white shadow-2xl rounded-[20px] border border-slate-100 py-3 z-[1100] animate-in fade-in slide-in-from-top-2">
-                  <button className="w-full px-6 py-2.5 text-left text-[16px] font-bold text-slate-900 hover:bg-slate-50 transition-colors">Topic 1</button>
-                  <button className="w-full px-6 py-2.5 text-left text-[16px] font-bold text-slate-900 hover:bg-slate-50 transition-colors">Topic 2</button>
-                  <button className="w-full px-6 py-2.5 text-left text-[16px] font-bold text-slate-900 hover:bg-slate-50 transition-colors">Topic 3</button>
-                </div>
-              )}
-            </div>
-            <a href="#" className="px-4 py-2 text-[15px] font-bold text-slate-700 hover:text-blue-600 transition-colors">Om</a>
-            <a href="#" className="px-4 py-2 text-[15px] font-bold text-slate-700 hover:text-blue-600 transition-colors">Omtaler</a>
-          </nav>
-        </div>
-
-        {/* Right Action Buttons */}
-        <div className="flex items-center gap-3">
-          <button className="hidden sm:block border border-slate-200 text-slate-900 px-6 py-2.5 rounded-xl font-bold hover:bg-slate-50 transition-all text-[15px]">
-            Kontakt
-          </button>
-          <button className="bg-slate-950 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-blue-600 transition-all shadow-sm text-[15px]">
-            Selge bolig?
-          </button>
-          <button 
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden p-2 text-slate-900 hover:bg-slate-100 rounded-lg border border-slate-200"
-          >
-            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
-        </div>
-      </header>
-
-      {/* Mobile Menu Drawer */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 top-16 bg-white z-[2000] animate-in slide-in-from-top duration-300">
-          <nav className="flex flex-col p-6 gap-6">
-            <button onClick={() => navigateTo('home')} className="text-left text-xl font-black uppercase tracking-tight text-slate-900">Forsiden</button>
-            <button onClick={() => navigateTo('innsikt')} className="text-left text-xl font-black uppercase tracking-tight text-slate-900">Innsikt</button>
-            <button className="text-left text-xl font-black uppercase tracking-tight text-slate-900">Markedsrapporter</button>
-            <button className="text-left text-xl font-black uppercase tracking-tight text-slate-900">Blog</button>
-            <button className="text-left text-xl font-black uppercase tracking-tight text-slate-900">Om</button>
-            <button className="text-left text-xl font-black uppercase tracking-tight text-slate-900">Kontakt</button>
-          </nav>
-        </div>
-      )}
-
-      {/* Conditional Page Rendering */}
-      {activePage === 'home' ? (
-        <>
-          {/* Main Hero Area (Map + Side Panel) */}
-          <section className="h-[calc(100vh-64px)] md:h-[calc(100vh-80px)] flex flex-col lg:flex-row relative shrink-0 overflow-hidden bg-slate-50 border-b border-slate-100">
-            
-            {/* Map Area */}
-            <div className="flex-1 relative flex flex-col">
-              {/* Dropdown Selector */}
-              <div className="absolute top-4 left-4 z-[500] w-[calc(100%-32px)] md:w-[320px]" ref={districtDropdownRef}>
-                <button 
-                  onClick={() => setIsDistrictDropdownOpen(!isDistrictDropdownOpen)}
-                  className="w-full bg-white shadow-xl rounded-2xl border border-slate-100 p-3 md:p-4 flex items-center justify-between text-left transition-all hover:bg-slate-50 group"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="bg-slate-50 p-2 rounded-xl text-slate-900 group-hover:bg-blue-50 group-hover:text-blue-600 shrink-0">
-                      <Navigation size={16} className="-rotate-90 fill-current" />
-                    </div>
-                    <div className="min-w-0">
-                      <h3 className="text-xs font-black text-slate-900 leading-tight truncate uppercase">
-                        {selectedDistrict.id === 'oslo' ? 'Utforsk Oslo' : selectedDistrict.name}
-                      </h3>
-                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Markedsdata</p>
-                    </div>
-                  </div>
-                  <ChevronDown className={`text-slate-300 transition-transform ${isDistrictDropdownOpen ? 'rotate-180' : ''}`} size={14} />
-                </button>
-
-                {isDistrictDropdownOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-full bg-white shadow-2xl rounded-2xl border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                    <div className="max-h-[300px] overflow-y-auto py-2">
-                      {OSLO_DISTRICTS.map(d => (
-                        <button
-                          key={d.id}
-                          onClick={() => handleDistrictSelect(d)}
-                          className={`w-full px-5 py-2.5 text-left flex items-center justify-between hover:bg-slate-50 ${selectedDistrict.id === d.id ? 'bg-blue-50/50' : ''}`}
-                        >
-                          <span className={`text-xs font-bold uppercase tracking-tight ${selectedDistrict.id === d.id ? 'text-blue-600' : 'text-slate-700'}`}>{d.name}</span>
-                          {selectedDistrict.id === d.id && <div className="w-1 h-1 bg-blue-600 rounded-full"></div>}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <MapComponent 
-                properties={MOCK_PROPERTIES} 
-                districts={OSLO_DISTRICTS}
-                selectedProperty={selectedProperty}
-                selectedDistrict={selectedDistrict}
-                onPropertySelect={(p) => setSelectedProperty(p)}
-                onDistrictSelect={onDistrictSelectFromMap}
+    <div className={`flex flex-col min-h-screen font-sans overflow-x-hidden transition-colors duration-300 ${isDarkMode ? 'bg-[#0b1120] text-white' : 'bg-slate-50 text-slate-900'} ${isBlogPostPage ? '' : ''}`}>
+      {/* 1. Global Header - hidden on md+ (desktop uses split-hero left col instead), only show on mobile */}
+      {!isBlogPostPage && (
+        <header className="md:hidden h-16 bg-white flex items-center justify-between px-3 z-[1000] sticky top-0 shrink-0 shadow-sm">
+          <div className="flex items-center gap-10">
+            <div onClick={() => navigateTo('home')} className="flex items-center gap-3 cursor-pointer group">
+              <img
+                src={LOGO_URL}
+                alt="Meglerinnsikt Logo"
+                className="h-10 w-auto object-contain"
               />
-
-              {/* Floating Controls */}
-              <div className="absolute bottom-6 left-4 right-4 z-[500] flex flex-col items-center pointer-events-none">
-                <div className="flex items-center gap-3 mb-3 pointer-events-auto">
-                  <ViewSwitcher />
-
-                  <button 
-                    onClick={() => setShowChat(true)}
-                    className="bg-white/95 backdrop-blur text-slate-900 w-9 h-9 rounded-xl shadow-lg border border-slate-100 flex items-center justify-center pointer-events-auto hover:bg-slate-50 transition-colors"
-                  >
-                    <MessageCircle size={18} className="text-blue-600" />
-                  </button>
-                </div>
-
-                {/* Unified Data Box */}
-                <div className="w-full max-w-[1000px] bg-white shadow-2xl rounded-[32px] p-1 border border-slate-100 pointer-events-auto overflow-hidden">
-                  <div onClick={() => setIsExpanded(!isExpanded)} className="grid grid-cols-4 items-center px-4 py-3 md:py-4 lg:px-6 cursor-pointer hover:bg-slate-50/50 transition-colors">
-                    <div className="flex items-center justify-center gap-2 md:gap-4">
-                      <TrendingUp className="text-blue-600 w-4 h-4 md:w-8 md:h-8" />
-                      <div>
-                        <div className="text-xs md:text-xl font-black text-slate-900 leading-none">+{selectedDistrict.priceChange}%</div>
-                        <div className="text-[6px] md:text-[8px] font-bold text-slate-400 uppercase tracking-tight">Prisendring</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-center gap-2 md:gap-4 border-l border-slate-100">
-                      <Clock className="text-blue-600 w-4 h-4 md:w-8 md:h-8" />
-                      <div>
-                        <div className="text-xs md:text-xl font-black text-slate-900 leading-none">{selectedDistrict.avgDaysOnMarket}</div>
-                        <div className="text-[6px] md:text-[8px] font-bold text-slate-400 uppercase tracking-tight">Omløp</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-center gap-2 md:gap-4 border-l border-slate-100">
-                      <Wallet className="text-blue-600 w-4 h-4 md:w-8 md:h-8" />
-                      <div>
-                        <div className="text-xs md:text-xl font-black text-slate-900 leading-none">{formatMedianPrice(selectedDistrict.medianPrice)}</div>
-                        <div className="text-[6px] md:text-[8px] font-bold text-slate-400 uppercase tracking-tight">Median</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-center gap-2 md:gap-4 border-l border-slate-100">
-                      <Calculator className="text-blue-600 w-4 h-4 md:w-8 md:h-8" />
-                      <div>
-                        <div className="text-xs md:text-xl font-black text-slate-900 leading-none">{Math.round(selectedDistrict.pricePerSqm / 1000)}k</div>
-                        <div className="text-[6px] md:text-[8px] font-bold text-slate-400 uppercase tracking-tight">Kr/m²</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {isExpanded && (
-                    <div className="px-6 py-5 border-t border-slate-50 bg-slate-50/30 flex flex-col md:flex-row gap-6 items-center animate-in fade-in slide-in-from-bottom-2 duration-300">
-                      <div className="flex-1 text-center md:text-left">
-                        <h4 className="text-sm font-black text-slate-900 uppercase tracking-tighter mb-1 flex items-center gap-2 justify-center md:justify-start">
-                          Markedsinnsikt ({selectedDistrict.name})
-                          <div className="w-1.5 h-1.5 bg-blue-600 rounded-full"></div>
-                        </h4>
-                        <p className="text-slate-600 text-xs md:text-sm font-medium leading-relaxed italic">"{selectedDistrict.description}"</p>
-                      </div>
-                      
-                      <div className="flex items-center gap-4 shrink-0">
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white font-black py-2.5 px-6 rounded-xl shadow-lg shadow-blue-200 transition-all active:scale-95 flex items-center gap-2 text-[10px] md:text-xs uppercase tracking-widest">
-                          Analyser min bolig
-                          <ArrowRight size={14} />
-                        </button>
-                        <button onClick={() => setIsExpanded(false)} className="p-2 text-slate-300 hover:text-slate-600 transition-colors">
-                          <ChevronUp size={20} />
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Right Side Panel - Desktop */}
-            <div className="hidden lg:block w-[380px] xl:w-[450px] border-l border-slate-100 shrink-0 bg-white h-full overflow-hidden">
-              <MarketStatsPanel district={selectedDistrict} />
-            </div>
-          </section>
-
-          {/* ADDITIONAL SECTIONS */}
-          <div className="flex flex-col w-full">
-            {/* Features Section */}
-            <section className="bg-white py-32 px-8">
-              <div className="max-w-7xl mx-auto">
-                <div className="mb-20 text-center">
-                  <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tighter uppercase mb-6">Få mer ut av markedet</h2>
-                  <div className="h-1.5 w-24 bg-blue-600 mx-auto rounded-full"></div>
-                </div>
-                
-                <div className="grid md:grid-cols-3 gap-16">
-                  <div className="flex flex-col gap-6 group">
-                    <div className="w-16 h-16 bg-blue-50 rounded-3xl flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
-                      <LayoutGrid size={28} />
-                    </div>
-                    <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase">Sanntidsanalyse</h3>
-                    <p className="text-slate-500 leading-relaxed font-medium">Jeg overvåker markedet 24/7 og gir deg oppdaterte tall på alt fra omløpshastighet til prisutvikling i ditt nabolag.</p>
-                  </div>
-                  <div className="flex flex-col gap-6 group">
-                    <div className="w-16 h-16 bg-blue-50 rounded-3xl flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
-                      <Users size={28} />
-                    </div>
-                    <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase">AI-Rådgivning</h3>
-                    <p className="text-slate-500 leading-relaxed font-medium">Lumina AI hjelper deg med å forstå de komplekse faktorene som påvirker verdien av din bolig og det lokale markedet.</p>
-                  </div>
-                  <div className="flex flex-col gap-6 group">
-                    <div className="w-16 h-16 bg-blue-50 rounded-3xl flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
-                      <Phone size={28} />
-                    </div>
-                    <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase">Personlig Oppfølging</h3>
-                    <p className="text-slate-500 leading-relaxed font-medium">Kombiner digital presisjon med menneskelig ekspertise. Jeg står klar når du trenger det mest.</p>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* Selected Blog Posts Section - FIXED ALIGNMENT */}
-            <section className="bg-white py-32 px-8 border-t border-slate-50">
-              <div className="max-w-7xl mx-auto">
-                <div className="mb-16">
-                  <h2 className="text-3xl md:text-5xl font-black text-slate-950 tracking-tighter uppercase">Utvalgte innlegg</h2>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
-                  {MOCK_BLOG_POSTS.map((post) => (
-                    <div key={post.id} className="group cursor-pointer flex flex-col">
-                      <div className="aspect-[4/3] overflow-hidden rounded-xl bg-slate-100 mb-6 relative shrink-0">
-                        <img 
-                          src={post.image} 
-                          alt={post.title} 
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                      </div>
-                      <h3 className="text-[20px] font-bold text-slate-950 leading-[1.2] mb-3 group-hover:text-blue-600 transition-colors line-clamp-3 h-[72px]">
-                        {post.title}
-                      </h3>
-                      <div className="flex items-center gap-2 text-[11px] font-black tracking-widest text-slate-400 uppercase mt-auto">
-                        <span>{post.date}</span>
-                        <span className="text-slate-200">•</span>
-                        <span className="text-slate-600">{post.category}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </section>
-
-            {/* Call to Action Section */}
-            <section className="bg-slate-950 py-32 px-8 text-white">
-              <div className="max-w-4xl mx-auto text-center">
-                <h2 className="text-4xl md:text-6xl font-black tracking-tighter uppercase mb-8 leading-[0.9]">Klar for å <br/><span className="text-blue-500">ta neste steg?</span></h2>
-                <p className="text-slate-400 text-lg mb-12 font-medium">Enten du skal selge nå eller bare er nysgjerrig på verdien, gir jeg deg de verktøyene du trenger.</p>
-                <div className="flex flex-col md:flex-row gap-4 justify-center">
-                  <button className="bg-blue-600 hover:bg-blue-700 px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-sm transition-all shadow-xl shadow-blue-900/20">Vurder min bolig</button>
-                  <button className="bg-white/10 hover:bg-white/20 backdrop-blur px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-sm transition-all border border-white/10">Snakk med en rådgiver</button>
-                </div>
-              </div>
-            </section>
-          </div>
-        </>
-      ) : (
-        /* Blank Insight Page - Fullscreen for all devices */
-        <div className="flex-1 bg-white animate-in fade-in duration-500 min-h-[calc(100vh-64px)] md:min-h-[calc(100vh-80px)]">
-          <div className="max-w-7xl mx-auto px-6 md:px-12 py-12 md:py-20">
-            <h2 className="text-[12px] font-black text-slate-300 uppercase tracking-[0.3em] mb-4">Innsikt</h2>
-            <div className="h-[1px] w-12 bg-slate-100 mb-12"></div>
-            {/* Blank page as requested */}
-            <div className="flex flex-col items-center justify-center py-20">
-              <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-200 mb-4">
-                <BarChart3 size={24} />
-              </div>
-              <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Innhold kommer snart</p>
             </div>
           </div>
-        </div>
-      )}
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-slate-100 py-16 px-8">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-12">
-          <div className="col-span-2">
-            <div className="flex items-center gap-3 mb-6">
-              <Building2 className="text-blue-600" size={28} />
-              <span className="text-2xl font-black tracking-tighter uppercase">LUMINA</span>
-            </div>
-            <p className="text-slate-500 max-w-sm font-medium">Norges ledende plattform for datadrevet eiendomsinnsikt. Jeg gjør boligmarkedet gjennomsiktig og forståelig for alle.</p>
-          </div>
-          <div>
-            <h4 className="font-black uppercase tracking-widest text-xs mb-6">Selskapet</h4>
-            <ul className="space-y-4 text-sm font-bold text-slate-400">
-              <li><a href="#" className="hover:text-blue-600 transition-colors">Om oss</a></li>
-              <li><a href="#" className="hover:text-blue-600 transition-colors">Karriere</a></li>
-              <li><a href="#" className="hover:text-blue-600 transition-colors">Presse</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-black uppercase tracking-widest text-xs mb-6">Ressurser</h4>
-            <ul className="space-y-4 text-sm font-bold text-slate-400">
-              <li><a href="#" className="hover:text-blue-600 transition-colors">Markedsrapporter</a></li>
-              <li><a href="#" className="hover:text-blue-600 transition-colors">API Dokumentasjon</a></li>
-              <li><a href="#" className="hover:text-blue-600 transition-colors">Brukervilkår</a></li>
-            </ul>
-          </div>
-        </div>
-      </footer>
-
-      {/* Chat Modal */}
-      {showChat && (
-        <div className="fixed inset-0 z-[3000] flex items-center justify-center p-0 md:p-4 bg-slate-900/40 backdrop-blur-sm">
-          <div className="w-full md:max-w-2xl h-full md:h-[80vh] bg-white md:rounded-3xl overflow-hidden shadow-2xl flex flex-col">
-            <div className="p-4 bg-slate-900 text-white flex justify-between items-center shrink-0">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <h3 className="font-bold text-xs uppercase tracking-wider">Lumina AI Assistent</h3>
-              </div>
-              <button onClick={() => setShowChat(false)} className="p-2 text-slate-400 hover:text-white transition-colors">
-                <X size={20} />
-              </button>
-            </div>
-            <div className="flex-1 relative overflow-hidden">
-              <ChatInterface selectedProperty={selectedProperty} />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Mobile Stats View Overlay */}
-      {mobileView === 'stats' && activePage === 'home' && (
-        <div className="lg:hidden fixed inset-x-0 bottom-0 top-16 bg-white z-[1500] overflow-y-auto animate-in slide-in-from-bottom duration-300">
-          <div className="px-4 py-4 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-10 shadow-sm">
-            <ViewSwitcher compact />
-            <button 
-              onClick={() => setMobileView('map')} 
-              className="text-blue-600 font-black text-[11px] uppercase tracking-widest hover:opacity-70 active:scale-95 transition-all"
-            >
-              Lukk
+          <div className="flex items-center gap-4">
+            <button onClick={() => setIsChatOpen(true)} className="bg-slate-950 text-white px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-tight hover:bg-blue-600 transition-all">
+              Få verdivurdering
+            </button>
+            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 text-slate-900">
+              {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
-          <div className="pb-20">
-            <MarketStatsPanel district={selectedDistrict} />
-          </div>
-        </div>
+        </header>
       )}
+
+      <Routes>
+        <Route path="/" element={
+          activePage === 'home' ? (
+            <HomePage
+              displayPosts={displayPosts}
+              blogPosts={blogPosts}
+              onPostsChange={(posts) => setBlogPosts(posts)}
+              isAdminOpen={isAdminOpen}
+              setIsAdminOpen={setIsAdminOpen}
+              isDarkMode={isDarkMode}
+              setIsDarkMode={setIsDarkMode}
+              setIsChatOpen={setIsChatOpen}
+              activePage={activePage}
+              navigateTo={navigateTo}
+            />
+          ) : (
+            <div className="flex-1 flex items-center justify-center p-20 text-slate-500 font-black uppercase tracking-widest text-xs">Siden er under utvikling</div>
+          )
+        } />
+        <Route path="/map" element={<FullMapPage isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />} />
+        <Route path="/blog/:slug" element={<BlogPostPage />} />
+      </Routes>
+
+      {/* Admin overlay - available on all pages */}
+      {isAdminOpen && !isBlogPostPage && null}
+
+      <TelegramChatWidget isDarkMode={isDarkMode} isOpen={isChatOpen} setIsOpen={setIsChatOpen} />
     </div>
   );
 };
